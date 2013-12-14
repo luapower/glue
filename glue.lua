@@ -1,4 +1,4 @@
---glue library, see http://code.google.com/p/lua-files/wiki/glue
+--glue library by Cosmin Apreutesei (public domain).
 
 local glue = {}
 
