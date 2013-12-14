@@ -1,4 +1,0 @@
-glue
-====
-
-everyday Lua functions
