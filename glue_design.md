@@ -1,4 +1,8 @@
-# design of glue
+---
+project:     glue
+tagline:     how and why
+---
+
 [back](glue.html)
 
 ## Scope

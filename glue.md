@@ -1,47 +1,49 @@
+---
+project:     glue
+tagline:     everyday Lua functions
+---
+
 v2.0 | [design](glue_design.html) | LuaJIT 2, Lua 5.1, Lua 5.2
 
-### `local glue = require'glue'`
+## `local glue = require'glue'`
 
------------------------------------------------------------------------ --------------------------------------------------
+---------------------------------------------------------------- ----------------------------------------------------------------
 __tables__
-glue.index(t) -> dt                                                     [switch keys with values](#index)
-glue.keys(t[, sorted | cmp]) -> dt                                      [make a list of all the keys](#keys)
-glue.update(dt,t1,...) -> dt                                            [merge tables - overwrites keys](#update)
-glue.merge(dt,t1,...) -> dt                                             [merge tables - no overwriting](#merge)
-glue.sortedpairs(t[, cmp])-> iterator<k,v>                              [like pairs() but in key order](#sortedpairs)
+glue.index(t) -> dt                                              [switch keys with values](#index)
+glue.keys(t[, sorted | cmp]) -> dt                               [make a list of all the keys](#keys)
+glue.update(dt,t1,...) -> dt                                     [merge tables - overwrites keys](#update)
+glue.merge(dt,t1,...) -> dt                                      [merge tables - no overwriting](#merge)
+glue.sortedpairs(t[, cmp])-> iterator<k,v>                       [like pairs() but in key order](#sortedpairs)
 __lists__
-glue.extend(dt,t1,...) -> dt                                            [extend a list](#extend)
-glue.append(dt,v1,...) -> dt                                            [append values to a list](#append)
-glue.shift(t,i,n) -> t                                                  [shift list elements](#shift)
+glue.extend(dt,t1,...) -> dt                                     [extend a list](#extend)
+glue.append(dt,v1,...) -> dt                                     [append values to a list](#append)
+glue.shift(t,i,n) -> t                                           [shift list elements](#shift)
 __strings__
-glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>                [split a string by a pattern](#gsplit)
-glue.trim(s) -> s                                                       [remove padding](#trim)
-glue.escape(s[,mode])-> s                                               [escape magic pattern characters](#escape)
-glue.tohex(s) -> s                                                      [string to hex](#tohex)
-glue.fromhex(s) -> s                                                    [hex to string](#fromhex)
+glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>         [split a string by a pattern](#gsplit)
+glue.trim(s) -> s                                                [remove padding](#trim)
+glue.escape(s[,mode])-> s                                        [escape magic pattern characters](#escape)
+glue.tohex(s) -> s                                               [string to hex](#tohex)
+glue.fromhex(s) -> s                                             [hex to string](#fromhex)
 __iterators__
-glue.collect([i,]iterator)-> t                                          [collect iterated values into a list](#collect)
-glue.ipcall(iterator<v1,v2,...>) -> iterator<ok,v1,v2,...>              [iterator pcall](#ipcall)
+glue.collect([i,]iterator)-> t                                   [collect iterated values into a list](#collect)
+glue.ipcall(iterator<v1,v2,...>) -> iterator<ok,v1,v2,...>       [iterator pcall](#ipcall)
 __closures__
-glue.pass(...) -> ...                                                   [does nothing, returns back all arguments](#pass)
+glue.pass(...) -> ...                                            [does nothing, returns back all arguments](#pass)
 __metatables__
-glue.inherit(t,parent) -> t                                             [set or clear inheritance](#inherit)
+glue.inherit(t,parent) -> t                                      [set or clear inheritance](#inherit)
 __i/o__
-glue.fileexists(file) -> true | false                                   [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[format]) -> s                                        [read the contents of a file into a string](#readfile)
-glue.writefile(file,s[,format])                                         [write a string to a file](#writefile)
+glue.fileexists(file) -> true | false                            [check if a file exists and it's readable](#fileexists)
+glue.readfile(file[format]) -> s                                 [read the contents of a file into a string](#readfile)
+glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
 __errors__
-glue.assert(v,[message[,args...]]) -> args                              [assert with error message formatting](#assert)
-glue.unprotect(ok,result,...) -> result,...  nil,result,...             [unprotect a protected call](#unprotect)
-glue.pcall(f,...) -> true,... | false,error..'\n'..traceback            [pcall that appends the traceback to the error message](#pcall) _(not for Lua 5.1)_
-glue.fpcall(f,...) -> result | nil,error..'\n'..traceback               [coding with finally and except clauses](#fpcall)
+glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
+glue.unprotect(ok,result,...) -> result,...  nil,result,...      [unprotect a protected call](#unprotect)
+glue.pcall(f,...) -> true,... | false,traceback                  [pcall with traceback](#pcall) _(not for Lua 5.1)_
+glue.fpcall(f,...) -> result | nil,traceback                     [coding with finally and except](#fpcall)
 glue.fcall(f,...) -> result
 __modules__
-glue.autoload(t, submodule_t) -> t                                      [autoload table keys from submodules](#autoload)
------------------------------------------------------------------------ --------------------------------------------------
-
-
---------------------------------------------------------------------------------------------------------------------------
+glue.autoload(t, submodule_t) -> t                               [autoload table keys from submodules](#autoload)
+---------------------------------------------------------------- ----------------------------------------------------------------
 
 ## `glue.index(t) -> dt` {#index}
 
@@ -69,15 +71,18 @@ end
 for k,v in pairs(rfc850date'Sunday, 06-Nov-94 08:49:37 GMT') do
    print(k,v)
 end
-
-> day	6
-> sec	37
-> wday	1
-> min	49
-> year	1994
-> month	11
-> hour	8
 ~~~
+
+Output:
+
+	day	6
+	sec	37
+	wday	1
+	min	49
+	year	1994
+	month	11
+	hour	8
+
 
 Copy-paste a bunch of defines from a C header file and create an inverse lookup table to find the name of a value at runtime.
 
@@ -92,9 +97,11 @@ info_end_codes = {
 }
 info_end_code_names = glue.index(info_end_codes)
 print(info_end_code_names[64])
-
-> isc_info_svc_timeout
 ~~~
+
+Output:
+
+	isc_info_svc_timeout
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -488,7 +495,7 @@ thus this variant that appends the traceback to the error message.
 
 ## `glue.fcall(f,...) -> result`
 
-These constructs bring the ubiquitous try/finally/except clauses to Lua. The first variant returns nil,error
+These constructs bring the ubiquitous try/finally/except idiom to Lua. The first variant returns nil,error
 when errors occur while the second re-raises the error.
 
 ### Pseudo-example:
@@ -509,31 +516,37 @@ end, ...)
 
 ## `glue.autoload(t, submodules) -> t` {#autoload}
 
-Assign a metatable to `t` such that when a missing key is accessed, the module said to contain thekey is require'd automatically.
+Assign a metatable to `t` such that when a missing key is accessed, the module said to contain that key is require'd automatically.
 
 The `submodules` argument is a table of form `{key = module_name | load_function}` specifying the corresponding
 Lua module (or load function) that make each key available to `t`.
+
+### Motivation:
+
+Module autoloading allows you to split the implementation of a module in many submodules containing optional,
+self-contained functionality, without having to make this visible in the user API. This effectively separates
+how you split your APIs from how you split the implementation, allowing you to change the way the implementation
+is split at a later time while keeping the API intact.
 
 ### Example:
 
 **main module (foo.lua):**
 
 ~~~{.lua}
-local function bar() --function is implemented in the main module
+local function bar() --function implemented in the main module
   ...
 end
 
---at the end of the module file, create/return the module table
-
+--create and return the module table
 return glue.autoload({
    ...
    bar = bar,
 }, {
-   baz = 'foo_baz', --autoloaded function, implemented in a submodule
+   baz = 'foo_extra', --autoloaded function, implemented in module foo_extra
 })
 ~~~
 
-**submodule (foo_baz.lua):**
+**submodule (foo_extra.lua):**
 
 ~~~{.lua}
 local foo = require'foo'
@@ -543,20 +556,13 @@ function foo.baz(...)
 end
 ~~~
 
-**user module:**
+**in usage:**
 
 ~~~{.lua}
 local foo = require'foo'
 
-foo.baz(...) -- foo_baz.lua was require'd automatically
+foo.baz(...) -- foo_extra was now loaded automatically
 ~~~
-
-### Motivation:
-
-Module autoloading allows you to split the implementation of a module in many submodules containing optional,
-self-contained functionality, without having to make this visible in the user API. This effectively separates
-how you split your APIs from how you split the implementation, allowing you to change the way the implementation
-is split at a later time while keeping the API intact.
 
 --------------------------------------------------------------------------------------------------------------------------
 

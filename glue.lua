@@ -1,4 +1,4 @@
---glue library by Cosmin Apreutesei (public domain).
+--glue (Cosmin Apreutesei, public domain)
 
 local glue = {}
 
