@@ -293,6 +293,7 @@ end
 function glue.autoload(t, submodules)
 	local mt = getmetatable(t) or {}
 	assert(not mt.__index, '__index alread assigned')
+	mt.__autoload = submodules
 	mt.__index = function(t, k)
 		if submodules[k] then
 			if type(submodules[k]) == 'string' then
