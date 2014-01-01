@@ -115,7 +115,7 @@ An API expects a list of things but you have them as keys in a table because you
 
 For instance, you have a table of the form `{socket = thread}` but `socket.select` wants a list of sockets.
 
-*See also:* [glue.sortedpairs](#sortedpairs).
+See also: [glue.sortedpairs](#sortedpairs).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ Static multiple inheritance:
 C = glue.update({}, A, B) --#TODO: find real-world example of multiple inheritance
 ~~~
 
-*See also:* [glue.extend](#extend), [glue.inherit](#inherit).
+See also: [glue.extend](#extend), [glue.inherit](#inherit).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ Normalize a data object with default values:
 glue.merge(t, defaults)
 ~~~
 
-*See also:* [glue.update](#update).
+See also: [glue.update](#update).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -175,8 +175,7 @@ Like pairs() but in key order.
 
 The implementation creates a temporary table to sort the keys in.
 
-----
-*See also:* [glue.keys](#keys).
+See also: [glue.keys](#keys).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -191,7 +190,7 @@ Extend the list with the elements of other lists.
 
 Accumulating values from multiple list sources.
 
-*See also:* [glue.append](#append), [glue.update](#update).
+See also: [glue.append](#append), [glue.update](#update).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -203,7 +202,7 @@ Append one or more values to a list.
 
 Appending an object to a flattened list of lists (eg. appending a path element to a 2d path).
 
-*See also:* [glue.extend](#extend), [glue.update](#update).
+See also: [glue.extend](#extend), [glue.update](#update).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -222,7 +221,7 @@ When `n` is -1, the effect is the same as for `table.remove(t, i)`.
 
 Removing a portion of a list or making room for more elements inside the list.
 
-*See also:* [glue.extend](#extend).
+See also: [glue.extend](#extend).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -290,7 +289,7 @@ Convert a binary string or a Lua number to its hex representation.
   * uppercase if `upper` is anything non-false, like say, the string "upper"
   * numbers must be in the unsigned 32 bit integer range
 
-*See also:* [glue.fromhex](#fromhex).
+See also: [glue.fromhex](#fromhex).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -298,7 +297,7 @@ Convert a binary string or a Lua number to its hex representation.
 
 Convert a hex string to its binary representation.
 
-*See also:* [glue.tohex](#tohex).
+See also: [glue.tohex](#tohex).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -422,7 +421,7 @@ A top-level class could provide this simply by defining `function Object:parent(
 
 Checks whether a file exists and it's available for reading.
 
-*See also:* [glue.readfile](#readfile).
+See also: [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -432,7 +431,7 @@ Read the contents of a file into a string.
 
   * `format` can be `t` in which case the file will be read in text mode (default is binary mode).
 
-*See also:* [glue.writefile](#writefile), [glue.fileexists](#fileexists).
+See also: [glue.writefile](#writefile), [glue.fileexists](#fileexists).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -442,7 +441,7 @@ Write the contents of a string to a file.
 
   * `format` can be `t` in which case the file will be written in text mode (default is binary mode).
 
-*See also:* [glue.readfile](#readfile).
+See also: [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
