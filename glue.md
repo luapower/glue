@@ -1,6 +1,7 @@
 ---
-project:     glue
-tagline:     everyday Lua functions
+project:  glue
+tagline:  everyday Lua functions
+category: Language
 ---
 
 v2.0 | [design](glue_design.html) | LuaJIT 2, Lua 5.1, Lua 5.2
@@ -37,7 +38,7 @@ glue.readfile(file[format]) -> s                                 [read the conte
 glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
 __errors__
 glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
-glue.unprotect(ok,result,...) -> result,...  nil,result,...      [unprotect a protected call](#unprotect)
+glue.unprotect(ok,result,...) -> result,... | nil,result,...     [unprotect a protected call](#unprotect)
 glue.pcall(f,...) -> true,... | false,traceback                  [pcall with traceback](#pcall) _(not for Lua 5.1)_
 glue.fpcall(f,...) -> result | nil,traceback                     [coding with finally and except](#fpcall)
 glue.fcall(f,...) -> result
