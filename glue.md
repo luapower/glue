@@ -4,8 +4,6 @@ tagline:  everyday Lua functions
 category: Language
 ---
 
-v2.0 | [design](glue_design.html) | LuaJIT 2, Lua 5.1, Lua 5.2
-
 ## `local glue = require'glue'`
 
 ---------------------------------------------------------------- ----------------------------------------------------------------
@@ -583,3 +581,7 @@ _for syntax highlighting_
 glue.index, glue.keys, glue.update, glue.merge, glue.extend, glue.append, glue.shift, glue.gsplit, glue.trim,
 glue.escape, glue.collect, glue.ipcall, glue.pass, glue.inherit, glue.fileexists,
 glue.readfile, glue.writefile, glue.assert, glue.unprotect, glue.pcall, glue.fpcall, glue.fcall, glue.autoload
+
+### Design
+
+[glue_design]
