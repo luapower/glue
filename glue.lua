@@ -152,9 +152,9 @@ local function format_ci_pat(c)
 	return format('[%s%s]', c:lower(), c:upper())
 end
 function glue.string.escape(s, mode)
+	s = s:gsub('%%','%%%%'):gsub('%z','%%z'):gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1')
 	if mode == '*i' then s = s:gsub('[%a]', format_ci_pat) end
-	return (s:gsub('%%','%%%%'):gsub('%z','%%z')
-				:gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1'))
+	return s
 end
 
 function glue.string.tohex(s, upper)
