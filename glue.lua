@@ -51,6 +51,7 @@ end
 local keys = glue.keys
 function glue.sortedpairs(t, cmp)
 	local kt = keys(t, cmp)
+	table.sort(kt)
 	local i = 0
 	return function()
 		i = i + 1
