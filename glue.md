@@ -1,7 +1,6 @@
 ---
 project:  glue
 tagline:  everyday Lua functions
-category: Language
 ---
 
 ## `local glue = require'glue'`
