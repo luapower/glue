@@ -1,7 +1,7 @@
 ---
-title:       design of glue
-project:     glue
-tagline:     how and why
+title:    design of glue
+project:  glue
+tagline:  how and why
 ---
 
 [back](glue.html)

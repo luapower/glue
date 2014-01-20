@@ -1,6 +1,6 @@
 ---
-project:  glue
-tagline:  everyday Lua functions
+project: glue
+tagline: everyday Lua functions
 ---
 
 ## `local glue = require'glue'`
