@@ -50,8 +50,7 @@ end
 --TODO: document and test this if it's a keeper (used only for inspect functions)
 local keys = glue.keys
 function glue.sortedpairs(t, cmp)
-	local kt = keys(t, cmp)
-	table.sort(kt)
+	local kt = keys(t, cmp or true)
 	local i = 0
 	return function()
 		i = i + 1
