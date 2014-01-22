@@ -307,8 +307,14 @@ function glue.autoload(t, submodules)
 	return setmetatable(t, mt)
 end
 
+--find script's directory, based on lua-find-bin by David Manura
+--this is only useful if glue itself can already be found and require()'d (chicken/egg catch22 and the rest).
+--the bin path is relative to pwd(), it stops working after the first chdir().
+local script = arg and arg[0] or ''
+glue.bin = script:gsub('[/\\]?[^/\\]+$', '') --remove file name
+if glue.bin == '' then glue.bin = '.' end
+
 
 if not ... then require'glue_test' end
 
 return glue
-

@@ -33,6 +33,7 @@ __i/o__
 glue.fileexists(file) -> true | false                            [check if a file exists and it's readable](#fileexists)
 glue.readfile(file[format]) -> s                                 [read the contents of a file into a string](#readfile)
 glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
+glue.bin                                                         [get the script's directory](#bin)
 __errors__
 glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
 glue.unprotect(ok,result,...) -> result,... | nil,result,...     [unprotect a protected call](#unprotect)
@@ -443,6 +444,32 @@ See also: [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
+## `glue.bin` {#bin}
+
+Gets the script's directory, based on [lua-find-bin] by David Manura. This allows finding files in the script's
+directory regardless of the directory that Lua is started in.
+
+### Example:
+
+~~~{.lua}
+local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
+~~~
+
+### Caveats:
+
+This only works if glue itself can already be found and required (chicken/egg catch22 and the rest).
+The path is relative to the current directory, it stops working if the current directory is changed.
+The assumption is that if you can do `chdir()` then you can also do `getfullpath()` or at least `getcurrentdir()`,
+and thus correct `glue.bin` in time with:
+
+	glue.bin = getfullpath(glue.bin)
+
+or
+
+	glue.bin = getcurrentdir() .. '/' .. glue.bin
+
+--------------------------------------------------------------------------------------------------------------------------
+
 ## `glue.assert(v[, message[, format_args...]])` {#assert}
 
 Like `assert` but supports formatting of the error message using string.format.
@@ -584,3 +611,6 @@ glue.readfile, glue.writefile, glue.assert, glue.unprotect, glue.pcall, glue.fpc
 ### Design
 
 [glue_design]
+
+
+[lua-find-bin]:  https://github.com/davidm/lua-find-bin
