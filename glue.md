@@ -24,16 +24,14 @@ glue.tohex(s) -> s                                               [string to hex]
 glue.fromhex(s) -> s                                             [hex to string](#fromhex)
 __iterators__
 glue.collect([i,]iterator)-> t                                   [collect iterated values into a list](#collect)
-glue.ipcall(iterator<v1,v2,...>) -> iterator<ok,v1,v2,...>       [iterator pcall](#ipcall)
 __closures__
 glue.pass(...) -> ...                                            [does nothing, returns back all arguments](#pass)
 __metatables__
 glue.inherit(t,parent) -> t                                      [set or clear inheritance](#inherit)
 __i/o__
 glue.fileexists(file) -> true | false                            [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[format]) -> s                                 [read the contents of a file into a string](#readfile)
+glue.readfile(file[,format]) -> s                                [read the contents of a file into a string](#readfile)
 glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
-glue.bin                                                         [get the script's directory](#bin)
 __errors__
 glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
 glue.unprotect(ok,result,...) -> result,... | nil,result,...     [unprotect a protected call](#unprotect)
@@ -42,6 +40,9 @@ glue.fpcall(f,...) -> result | nil,traceback                     [coding with fi
 glue.fcall(f,...) -> result
 __modules__
 glue.autoload(t, submodule_t) -> t                               [autoload table keys from submodules](#autoload)
+glue.bin                                                         [get the script's directory](#bin)
+glue.luapath(path[, index[, ext]])                               [insert a path in package.path](#luapath)
+glue.cpath(path[, index])                                        [insert a path in package.cpath](#cpath)
 ---------------------------------------------------------------- ----------------------------------------------------------------
 
 ## `glue.index(t) -> dt` {#index}
@@ -333,16 +334,6 @@ Alt. name: `ipack` - like pack but for iterators; collect is better at suggestin
 
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.ipcall(iterator<v1,...>) -> iterator<true,v1,...|false,error>` {#ipcall}
-
-Wraps an iterator such that each iteration is wrapped in a pcall.
-
-### Uses:
-
-Iterators that can break with an error (eg. database fetch iterators).
-
---------------------------------------------------------------------------------------------------------------------------
-
 ## `glue.pass(...) -> ...` {#pass}
 
 The identity function. Does nothing, returns back all arguments.
@@ -441,32 +432,6 @@ Write the contents of a string to a file.
   * `format` can be `t` in which case the file will be written in text mode (default is binary mode).
 
 See also: [glue.readfile](#readfile).
-
---------------------------------------------------------------------------------------------------------------------------
-
-## `glue.bin` {#bin}
-
-Gets the script's directory, based on [lua-find-bin] by David Manura. This allows finding files in the script's
-directory regardless of the directory that Lua is started in.
-
-### Example:
-
-~~~{.lua}
-local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
-~~~
-
-### Caveats:
-
-This only works if glue itself can already be found and required (chicken/egg catch22 and the rest).
-The path is relative to the current directory, it stops working if the current directory is changed.
-The assumption is that if you can do `chdir()` then you can also do `getfullpath()` or at least `getcurrentdir()`,
-and thus correct `glue.bin` in time with:
-
-	glue.bin = getfullpath(glue.bin)
-
-or
-
-	glue.bin = getcurrentdir() .. '/' .. glue.bin
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -590,7 +555,56 @@ foo.baz(...) -- foo_extra was now loaded automatically
 
 --------------------------------------------------------------------------------------------------------------------------
 
-### Tips
+## `glue.bin` {#bin}
+
+Get the script's directory, based on [lua-find-bin] by David Manura. This allows finding files in the script's
+directory regardless of the directory that Lua is started in.
+
+### Example:
+
+~~~{.lua}
+local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
+~~~
+
+### Caveats:
+
+This only works if glue itself can already be found and required (chicken/egg catch22 and the rest).
+The path is relative to the current directory, it stops working if the current directory is changed.
+The assumption is that if you can do chdir() then you can also do getfullpath() or at least getcurrentdir(),
+and thus correct `glue.bin` in time with:
+
+	glue.bin = getfullpath(glue.bin)
+
+or
+
+	glue.bin = getcurrentdir() .. '/' .. glue.bin
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.luapath(path[, index[, ext]])` {#luapath}
+
+Insert a Lua search pattern in `package.path` such that `require` will be able to load Lua modules from that path.
+The optional `index` arg specifies the insert position (default is 1, that is, before all existing paths; can be
+negative, to start counting from the end; can be the string 'after', which is the same as 0). The optional `ext` arg
+specifies the file extension to use (default is "lua").
+
+## `glue.cpath(path[, index])` {#cpath}
+
+Insert a Lua search pattern in `package.cpath` such that `require` will be able to load Lua/C modules from that path.
+The `index` arg has the same meaning as with `glue.luapath`.
+
+### Example:
+
+~~~{.lua}
+glue.luapath(glue.bin)
+glue.cpath(glue.bin)
+
+require'foo' --looking for `foo` in the same directory as the running script first
+~~~
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## Tips
 
 String functions are also in the `glue.string` table. You can extend the Lua `string` namespace:
 
@@ -601,14 +615,15 @@ so you can use them as string methods:
 	s = s:trim()
 
 
-### Keywords
+## Keywords
 _for syntax highlighting_
 
 glue.index, glue.keys, glue.update, glue.merge, glue.extend, glue.append, glue.shift, glue.gsplit, glue.trim,
-glue.escape, glue.collect, glue.ipcall, glue.pass, glue.inherit, glue.fileexists,
-glue.readfile, glue.writefile, glue.assert, glue.unprotect, glue.pcall, glue.fpcall, glue.fcall, glue.autoload
+glue.escape, glue.collect, glue.pass, glue.inherit, glue.fileexists, glue.readfile, glue.writefile, glue.assert,
+glue.unprotect, glue.pcall, glue.fpcall, glue.fcall, glue.autoload, glue.bin, glue.luapath, glue.cpath
 
-### Design
+
+## Design
 
 [glue_design]
 

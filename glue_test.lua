@@ -67,18 +67,12 @@ test(glue.escape'%\0%', '%%%z%%')
 test(glue.collect(('abc'):gmatch('.')), {'a','b','c'})
 test(glue.collect(2,ipairs{5,7,2}), {5,7,2})
 
-do
-	local i = 0
-	local function testiter()
-		i = i + 1
-		if i % 2 == 0 then error('even',0) end
-		if i > 3 then return end
-		return i,i^2
-	end
-	t = {}
-	for ok,v1,v2 in glue.ipcall(testiter) do
-		t[#t+1] = {ok,v1,v2}
-	end
-	test(t, {{true,1,1}, {false,'even'}, {true,3,9}, {false,'even'}})
-end
-
+glue.luapath('foo')
+glue.cpath('bar')
+glue.luapath('baz', 'after')
+glue.cpath('zab', 'after')
+local norm = function(s) return s:gsub('/', package.config:sub(1,1)) end
+assert(package.path:match('^'..glue.escape(norm'foo/?.lua;')))
+assert(package.cpath:match('^'..glue.escape(norm'bar/?.dll;')))
+assert(package.path:match(glue.escape(norm'baz/?.lua;baz/?/init.lua')..'$'))
+assert(package.cpath:match(glue.escape(norm'zab/?.dll')..'$'))

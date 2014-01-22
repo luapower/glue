@@ -47,7 +47,6 @@ function glue.merge(dt,...)
 	return dt
 end
 
---TODO: document and test this if it's a keeper (used only for inspect functions)
 local keys = glue.keys
 function glue.sortedpairs(t, cmp)
 	local kt = keys(t, cmp or true)
@@ -122,6 +121,9 @@ end
 function glue.string.gsplit(s, sep, start, plain)
 	start = start or 1
 	plain = plain or false
+	if not s:find(sep, start, plain) then
+		return iterate_once, s
+	end
 	local done = false
 	local function pass(i, j, ...)
 		if i then
@@ -132,9 +134,6 @@ function glue.string.gsplit(s, sep, start, plain)
 			done = true
 			return s:sub(start)
 		end
-	end
-	if not s:find(sep, start, plain) then
-		return iterate_once, s
 	end
 	return function()
 		if done then return end
@@ -202,16 +201,6 @@ function glue.collect(n,...)
 		return collect_at(n,...)
 	else
 		return collect_first(n,...)
-	end
-end
-
-function glue.ipcall(f,s,v)
-	local function pass(ok,v1,...)
-		v = v1
-		return v and ok,v,...
-	end
-	return function()
-		return pass(pcall(f,v))
 	end
 end
 
@@ -307,12 +296,38 @@ function glue.autoload(t, submodules)
 	return setmetatable(t, mt)
 end
 
---find script's directory, based on lua-find-bin by David Manura
---this is only useful if glue itself can already be found and require()'d (chicken/egg catch22 and the rest).
---the bin path is relative to pwd(), it stops working after the first chdir().
-local script = arg and arg[0] or ''
-glue.bin = script:gsub('[/\\]?[^/\\]+$', '') --remove file name
-if glue.bin == '' then glue.bin = '.' end
+--script's directory, based on arg[0]; the path is relative to pwd().
+local dir = arg and arg[0] and arg[0]:gsub('[/\\]?[^/\\]+$', '') or '' --remove file name
+glue.bin = dir == '' and '.' or dir
+
+function glue.luapath(path, index, ext)
+	ext = ext or 'lua'
+	index = index or 1
+	local psep = package.config:sub(1,1) --'/'
+	local tsep = package.config:sub(3,3) --';'
+	local wild = package.config:sub(5,5) --'?'
+	local paths = glue.collect(glue.gsplit(package.path, tsep))
+	path = path:gsub('[/\\]', psep) --normalize slashes
+	if index == 'after' then index = 0 end
+	if index < 1 then index = #paths + 1 + index end
+	table.insert(paths, index,  path .. psep .. wild .. psep .. 'init.' .. ext)
+	table.insert(paths, index,  path .. psep .. wild .. '.' .. ext)
+	package.path = table.concat(paths, tsep)
+end
+
+function glue.cpath(path, index)
+	index = index or 1
+	local psep = package.config:sub(1,1) --'/'
+	local tsep = package.config:sub(3,3) --';'
+	local wild = package.config:sub(5,5) --'?'
+	local ext = package.cpath:match('%.([%a]+)%'..tsep..'?') --dll | so
+	local paths = glue.collect(glue.gsplit(package.cpath, tsep))
+	path = path:gsub('[/\\]', psep) --normalize slashes
+	if index == 'after' then index = 0 end
+	if index < 1 then index = #paths + 1 + index end
+	table.insert(paths, index,  path .. psep .. wild .. '.' .. ext)
+	package.cpath = table.concat(paths, tsep)
+end
 
 
 if not ... then require'glue_test' end
