@@ -4,8 +4,6 @@ project:  glue
 tagline:  how and why
 ---
 
-[back](glue.html)
-
 ## Scope
 
 A small, highly useful bag of tricks.

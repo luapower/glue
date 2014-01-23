@@ -5,7 +5,7 @@ tagline: everyday Lua functions
 
 ## `local glue = require'glue'`
 
-<div class="splash-logo"></div>
+<div class="bg bg-splash"></div>
 
 ---------------------------------------------------------------- ----------------------------------------------------------------
 __tables__
