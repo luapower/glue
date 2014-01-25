@@ -51,7 +51,7 @@ glue.cpath(path[, index])                                        [insert a path 
 
 Switch table keys with values.
 
-### Examples:
+### Examples
 
 Extract a rfc850 date from a string. Use lookup tables for weekdays and months.
 
@@ -111,7 +111,7 @@ Output:
 
 Make a list of all the keys of `t`, optionally sorted.
 
-### Examples:
+### Examples
 
 An API expects a list of things but you have them as keys in a table because you are indexing something on them.
 
@@ -127,7 +127,7 @@ Update a table with elements of other tables, overwriting any existing keys.
 
   * nil arguments are skipped.
 
-### Examples:
+### Examples
 
 Create an options table by merging the options received as an argument (if any) over the default options.
 
@@ -159,7 +159,7 @@ Update a table with elements of other tables skipping on any existing keys.
 
   * nil arguments are skipped.
 
-### Examples:
+### Examples
 
 Normalize a data object with default values:
 
@@ -188,7 +188,7 @@ Extend the list with the elements of other lists.
   * nil arguments are skipped.
   * list elements are the ones from 1 to `#dt`.
 
-### Uses:
+### Uses
 
 Accumulating values from multiple list sources.
 
@@ -200,7 +200,7 @@ See also: [glue.append](#append), [glue.update](#update).
 
 Append one or more values to a list.
 
-### Uses:
+### Uses
 
 Appending an object to a flattened list of lists (eg. appending a path element to a 2d path).
 
@@ -219,7 +219,7 @@ The old values at index `i` to `i+n-1` are preserved, so `#t` still works after 
 For a negative `n`, shift the elements to the left, effectively removing the `n` elements at index `i`.
 When `n` is -1, the effect is the same as for `table.remove(t, i)`.
 
-### Uses:
+### Uses
 
 Removing a portion of a list or making room for more elements inside the list.
 
@@ -237,7 +237,7 @@ Split a string by a separator pattern (or plain string) and iterate over the ele
   * captures are allowed in sep and they are returned after the element, except for the last element for
     which they don't match (by definition).
 
-### Examples:
+### Examples
 
 ~~~{.lua}
 for s in glue.gsplit('Spam eggs spam spam and ham', '%s*spam%s*') do
@@ -270,7 +270,7 @@ Escape magic characters of the string `s` so that it can be used as a pattern to
     character in `s` will also be escaped as `[aA]` so that it matches both its lowercase and uppercase variants.
   * escapes embedded zeroes as the `%z` pattern.
 
-### Uses:
+### Uses
 
   * workaround for lack of pattern syntax for "this part of a match is an arbitrary string"
   * workaround for lack of a case-insensitive flag in pattern matching functions
@@ -309,7 +309,7 @@ Iterate an iterator and collect its i'th return value of every step into a list.
 
   * i defaults to 1
 
-### Examples:
+### Examples
 
 Implementation of `keys()` and `values()` in terms of `collect()`
 
@@ -340,7 +340,7 @@ Alt. name: `ipack` - like pack but for iterators; collect is better at suggestin
 
 The identity function. Does nothing, returns back all arguments.
 
-### Uses:
+### Uses
 
 Default value for optional callback arguments:
 
@@ -363,7 +363,7 @@ Set a table to inherit attributes from a parent table, or clear inheritance.
 
 If the table has no metatable (and inheritance has to be set, not cleared) make it one.
 
-### Examples:
+### Examples
 
 Logging mixin:
 
@@ -444,7 +444,7 @@ Like `assert` but supports formatting of the error message using string.format.
 This is better than `assert(string.format(message, format_args...))` because it avoids creating
 the message string when the assertion is true.
 
-### Example:
+### Example
 
 ~~~{.lua}
 glue.assert(depth <= maxdepth, 'maximum depth %d exceeded', maxdepth)
@@ -489,7 +489,7 @@ thus this variant that appends the traceback to the error message.
 These constructs bring the ubiquitous try/finally/except idiom to Lua. The first variant returns nil,error
 when errors occur while the second re-raises the error.
 
-### Pseudo-example:
+### Example
 
 ~~~{.lua}
 local result = glue.fpcall(function(finally, except, ...)
@@ -519,7 +519,7 @@ self-contained functionality, without having to make this visible in the user AP
 how you split your APIs from how you split the implementation, allowing you to change the way the implementation
 is split at a later time while keeping the API intact.
 
-### Example:
+### Example
 
 **main module (foo.lua):**
 
@@ -562,7 +562,7 @@ foo.baz(...) -- foo_extra was now loaded automatically
 Get the script's directory, based on [lua-find-bin] by David Manura. This allows finding files in the script's
 directory regardless of the directory that Lua is started in.
 
-### Example:
+### Example
 
 ~~~{.lua}
 local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
@@ -595,7 +595,7 @@ specifies the file extension to use (default is "lua").
 Insert a Lua search pattern in `package.cpath` such that `require` will be able to load Lua/C modules from that path.
 The `index` arg has the same meaning as with `glue.luapath`.
 
-### Example:
+### Example
 
 ~~~{.lua}
 glue.luapath(glue.bin)
