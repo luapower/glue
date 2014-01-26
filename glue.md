@@ -75,7 +75,7 @@ for k,v in pairs(rfc850date'Sunday, 06-Nov-94 08:49:37 GMT') do
 end
 ~~~
 
-Output:
+Output
 
 	day	6
 	sec	37
@@ -101,7 +101,7 @@ info_end_code_names = glue.index(info_end_codes)
 print(info_end_code_names[64])
 ~~~
 
-Output:
+Output
 
 	isc_info_svc_timeout
 
@@ -249,7 +249,7 @@ end
 > "and ham"
 ~~~
 
-### Design notes:
+### Design notes
 
   * name choice: associate with `gmatch` and `gsub`
   * allowing captures in `sep` doesn't have very readable semantics
@@ -275,7 +275,7 @@ Escape magic characters of the string `s` so that it can be used as a pattern to
   * workaround for lack of pattern syntax for "this part of a match is an arbitrary string"
   * workaround for lack of a case-insensitive flag in pattern matching functions
 
-### Design notes:
+### Design notes
 
 Test the performance of the case-insensitive hack to see if it's feasible.
 
@@ -330,7 +330,7 @@ for i=1,#t do print(t[i]) end
 > c
 ~~~
 
-### Design notes:
+### Design notes
 
 Alt. name: `ipack` - like pack but for iterators; collect is better at suggesting a process done in steps.
 
@@ -398,7 +398,7 @@ Hints:
   * to get the effect of static (single or multiple) inheritance, use [glue.update](#update).
   * when setting inheritance, you can pass in a function.
 
-### Design notes:
+### Design notes
 
 `t = setmetatable({},{__index=parent})` is not much longer and it's idiomatic, but doesn't shout
 inheritance at you (you have to process the indirection, like with functional idioms) and you can't
@@ -512,7 +512,7 @@ Assign a metatable to `t` such that when a missing key is accessed, the module s
 The `submodules` argument is a table of form `{key = module_name | load_function}` specifying the corresponding
 Lua module (or load function) that make each key available to `t`.
 
-### Motivation:
+### Motivation
 
 Module autoloading allows you to split the implementation of a module in many submodules containing optional,
 self-contained functionality, without having to make this visible in the user API. This effectively separates
@@ -568,7 +568,7 @@ directory regardless of the directory that Lua is started in.
 local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
 ~~~
 
-### Caveats:
+### Caveats
 
 This only works if glue itself can already be found and required (chicken/egg catch22 and the rest).
 The path is relative to the current directory, it stops working if the current directory is changed.
