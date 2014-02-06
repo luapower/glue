@@ -297,7 +297,7 @@ function glue.autoload(t, submodules)
 end
 
 --script's directory, based on arg[0]; the path is relative to pwd().
-local dir = arg and arg[0] and arg[0]:gsub('[/\\]?[^/\\]+$', '') or '' --remove file name
+local dir = rawget(_G, 'arg') and arg[0] and arg[0]:gsub('[/\\]?[^/\\]+$', '') or '' --remove file name
 glue.bin = dir == '' and '.' or dir
 
 function glue.luapath(path, index, ext)
@@ -320,7 +320,7 @@ function glue.cpath(path, index)
 	local psep = package.config:sub(1,1) --'/'
 	local tsep = package.config:sub(3,3) --';'
 	local wild = package.config:sub(5,5) --'?'
-	local ext = package.cpath:match('%.([%a]+)%'..tsep..'?') --dll | so
+	local ext = package.cpath:match('%.([%a]+)%'..tsep..'?') --dll | so | dylib
 	local paths = glue.collect(glue.gsplit(package.cpath, tsep))
 	path = path:gsub('[/\\]', psep) --normalize slashes
 	if index == 'after' then index = 0 end
