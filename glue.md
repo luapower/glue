@@ -5,8 +5,6 @@ tagline: everyday Lua functions
 
 ## `local glue = require'glue'`
 
-<div class="bg bg-splash"></div>
-
 ---------------------------------------------------------------- ----------------------------------------------------------------
 __tables__
 glue.index(t) -> dt                                              [switch keys with values](#index)
