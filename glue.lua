@@ -242,10 +242,10 @@ function glue.assert(v,err,...)
 	error(err, 2)
 end
 
-function glue.unprotect(ok,result,...)
-	if not ok then return nil,result,... end
+function glue.unprotect(ok, result, ...)
+	if not ok then return nil, result, ... end
 	if result == nil then result = true end
-	return result,...
+	return result, ...
 end
 
 local function pcall_error(e)
