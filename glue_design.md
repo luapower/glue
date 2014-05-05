@@ -20,7 +20,7 @@ For non-obvious O(n) operations, use verbs to emphasize the process rather than 
 
 ## Semantics
 
-They follow the general [APIDesign] rules.
+They follow the general [api-design] rules.
 
 ### Objects vs glue
 
