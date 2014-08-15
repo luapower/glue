@@ -255,8 +255,7 @@ function glue.pcall(f, ...) --luajit and lua 5.2 only!
 	return xpcall(f, pcall_error, ...)
 end
 
-local unprotect = glue.unprotect
-function glue.fpcall(f,...) --bloated: 2 tables, 4 closures. can we reduce the overhead?
+local function fpcall(f,...) --bloated: 2 tables, 4 closures. can we reduce the overhead?
 	local fint, errt = {}, {}
 	local function finally(f) fint[#fint+1] = f end
 	local function onerror(f) errt[#errt+1] = f end
@@ -269,14 +268,22 @@ function glue.fpcall(f,...) --bloated: 2 tables, 4 closures. can we reduce the o
 		if ok then
 			for i=#fint,1,-1 do fint[i]() end
 		end
-		return unprotect(ok,...)
+		return ok,...
 	end
 	return pass(xpcall(f, err, finally, onerror, ...))
 end
 
-local fpcall = glue.fpcall
-function glue.fcall(f,...)
-	return assert(fpcall(f,...))
+local unprotect = glue.unprotect
+function glue.fpcall(...)
+	return unprotect(fpcall(...))
+end
+
+local function assert_fpcall(ok,...)
+	if not ok then error(...) end
+	return ...
+end
+function glue.fcall(...)
+	return assert_fpcall(fpcall(...))
 end
 
 function glue.autoload(t, submodules)
