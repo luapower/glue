@@ -1,4 +1,6 @@
---glue (Cosmin Apreutesei, public domain)
+
+--glue r5
+--Written by Cosmin Apreutesei. Public domain.
 
 local glue = {}
 
@@ -7,11 +9,13 @@ local select, pairs, tonumber, tostring, unpack, xpcall, assert, getmetatable, s
 local sort, format, byte, char, min, max =
 	table.sort, string.format, string.byte, string.char, math.min, math.max
 
+--reverse keys with values.
 function glue.index(t)
 	local dt={} for k,v in pairs(t) do dt[v]=k end
 	return dt
 end
 
+--list of keys, optionally sorted.
 function glue.keys(t, cmp)
 	local dt={}
 	for k in pairs(t) do
@@ -25,6 +29,7 @@ function glue.keys(t, cmp)
 	return dt
 end
 
+--update a table with the contents of other table(s).
 function glue.update(dt,...)
 	for i=1,select('#',...) do
 		local t=select(i,...)
@@ -35,6 +40,7 @@ function glue.update(dt,...)
 	return dt
 end
 
+--add the contents of other table(s) without overwrite.
 function glue.merge(dt,...)
 	for i=1,select('#',...) do
 		local t=select(i,...)
@@ -47,6 +53,7 @@ function glue.merge(dt,...)
 	return dt
 end
 
+--stateless pairs() that iterate elements in key order.
 local keys = glue.keys
 function glue.sortedpairs(t, cmp)
 	local kt = keys(t, cmp or true)
@@ -57,6 +64,7 @@ function glue.sortedpairs(t, cmp)
 	end
 end
 
+--extend a list with the elements of other lists.
 function glue.extend(dt,...)
 	for j=1,select('#',...) do
 		local t=select(j,...)
@@ -67,6 +75,7 @@ function glue.extend(dt,...)
 	return dt
 end
 
+--append arguments to a list.
 function glue.append(dt,...)
 	for i=1,select('#',...) do
 		dt[#dt+1] = select(i,...)
@@ -112,12 +121,14 @@ function glue.shift(t, i, n)
 	return t
 end
 
+--string submodule. has its own namespace so it can be merged with _G.string if wanted.
 glue.string = {}
 
+--split a string by a separator that can be a pattern or a plain string.
+--return a stateless iterator for the pieces.
 local function iterate_once(s, s1)
 	return s1 == nil and s or nil
 end
-
 function glue.string.gsplit(s, sep, start, plain)
 	start = start or 1
 	plain = plain or false
@@ -142,12 +153,13 @@ function glue.string.gsplit(s, sep, start, plain)
 	end
 end
 
--- string trim12 from lua wiki
+--string trim12 from lua wiki.
 function glue.string.trim(s)
 	local from = s:match('^%s*()')
 	return from > #s and '' or s:match('.*%S', from)
 end
 
+--escape a string so that it can be taken literally inside a pattern.
 local function format_ci_pat(c)
 	return format('[%s%s]', c:lower(), c:upper())
 end
@@ -157,6 +169,7 @@ function glue.string.escape(s, mode)
 	return s
 end
 
+--string to hex.
 function glue.string.tohex(s, upper)
 	if type(s) == 'number' then
 		return format(upper and '%08.8X' or '%08.8x', s)
@@ -172,14 +185,17 @@ function glue.string.tohex(s, upper)
 	end
 end
 
+--hex to string.
 function glue.string.fromhex(s)
 	return (s:gsub('..', function(cc)
 	  return char(tonumber(cc, 16))
 	end))
 end
 
+--publish the string submodule in the glue namespace.
 glue.update(glue, glue.string)
 
+--run an iterator and collect the n-th return value into a list.
 local function select_at(i,...)
 	return ...,select(i,...)
 end
@@ -205,8 +221,10 @@ function glue.collect(n,...)
 	end
 end
 
+--no-op filter.
 function glue.pass(...) return ... end
 
+--set up dynamic inheritance by creating or updating a table's metatable.
 function glue.inherit(t, parent)
 	local meta = getmetatable(t)
 	if meta then
@@ -217,25 +235,29 @@ function glue.inherit(t, parent)
 	return t
 end
 
+--check if a file exists and it's available for reading in binary mode.
 function glue.fileexists(name)
 	local f = io.open(name, 'rb')
 	if f then f:close() end
 	return f ~= nil and name or nil
 end
 
-function glue.readfile(name, format)
-	local f = assert(io.open(name, format=='t' and 'r' or 'rb'))
+--read a file into a string (in binary mode by default).
+function glue.readfile(name, mode)
+	local f = assert(io.open(name, mode=='t' and 'r' or 'rb'))
 	local s = f:read'*a'
 	f:close()
 	return s
 end
 
-function glue.writefile(name, s, format)
-	local f = assert(io.open(name, format=='t' and 'w' or 'wb'))
+--write a string to a file (in binary mode by default).
+function glue.writefile(name, s, mode)
+	local f = assert(io.open(name, mode=='t' and 'w' or 'wb'))
 	f:write(s)
 	f:close()
 end
 
+--assert() with string formatting (this should be a Lua built-in).
 function glue.assert(v,err,...)
 	if v then return v,err,... end
 	err = err or 'assertion failed!'
@@ -243,25 +265,35 @@ function glue.assert(v,err,...)
 	error(err, 2)
 end
 
+--transform the result of a pcall() to the Lua convention for functions that
+--can return an error, i.e. return nil,err for failure, and true if no result.
 function glue.unprotect(ok, result, ...)
 	if not ok then return nil, result, ... end
-	if result == nil then result = true end
+	if result == nil then result = true end --to distinguish from error.
 	return result, ...
 end
 
+--pcall with traceback. LuaJIT and Lua 5.2 only, unfortunately.
 local function pcall_error(e)
 	return tostring(e) .. '\n' .. debug.traceback()
 end
-function glue.pcall(f, ...) --luajit and lua 5.2 only!
+function glue.pcall(f, ...)
 	return xpcall(f, pcall_error, ...)
 end
 
-local function fpcall(f,...) --bloated: 2 tables, 4 closures. can we reduce the overhead?
+--pcall with finally and except "clauses":
+--		local ret,err = fpcall(function(finally, except)
+--			local foo = getfoo()
+--			finally(function() foo:free() end)
+--			except(function(err) io.stderr:write(err, '\n') end)
+--		emd)
+--NOTE: a bit bloated at 2 tables and 4 closures. Can we reduce the overhead?
+local function fpcall(f,...)
 	local fint, errt = {}, {}
 	local function finally(f) fint[#fint+1] = f end
 	local function onerror(f) errt[#errt+1] = f end
 	local function err(e)
-		for i=#errt,1,-1 do errt[i]() end
+		for i=#errt,1,-1 do errt[i](e) end
 		for i=#fint,1,-1 do fint[i]() end
 		return tostring(e) .. '\n' .. debug.traceback()
 	end
@@ -279,14 +311,17 @@ function glue.fpcall(...)
 	return unprotect(fpcall(...))
 end
 
-local function assert_fpcall(ok,...)
-	if not ok then error(...) end
+--fcall is like fpcall() but without the protection (i.e. raises errors).
+local function assert_fpcall(ok, ...)
+	if not ok then error(..., 2) end
 	return ...
 end
 function glue.fcall(...)
 	return assert_fpcall(fpcall(...))
 end
 
+--declare that certain keys of a module table are implemented in specific submodules.
+--eg. glue.autoload(foo, {bar = 'foo.bar'}); then accessing foo.bar triggers require'foo.bar'.
 function glue.autoload(t, submodules)
 	local mt = getmetatable(t) or {}
 	assert(not mt.__index, '__index alread assigned')
@@ -304,17 +339,20 @@ function glue.autoload(t, submodules)
 	return setmetatable(t, mt)
 end
 
---script's directory, based on arg[0]; the path is relative to pwd().
+--portable way to get script's directory, based on arg[0], as long as
+--pwd() doesn't change because the path in arg[0] is relative to pwd().
 local dir = rawget(_G, 'arg') and arg[0] and arg[0]:gsub('[/\\]?[^/\\]+$', '') or '' --remove file name
 glue.bin = dir == '' and '.' or dir
 
+--portable way to add more paths to package.path, at any place in the list.
+--negative indices count from the end of the list like string.sub(). index 'after' means 0.
 function glue.luapath(path, index, ext)
 	ext = ext or 'lua'
 	index = index or 1
 	local psep = package.config:sub(1,1) --'/'
 	local tsep = package.config:sub(3,3) --';'
 	local wild = package.config:sub(5,5) --'?'
-	local paths = glue.collect(glue.gsplit(package.path, tsep))
+	local paths = glue.collect(glue.gsplit(package.path, tsep, nil, true))
 	path = path:gsub('[/\\]', psep) --normalize slashes
 	if index == 'after' then index = 0 end
 	if index < 1 then index = #paths + 1 + index end
@@ -323,13 +361,15 @@ function glue.luapath(path, index, ext)
 	package.path = table.concat(paths, tsep)
 end
 
+--portable way to add more paths to package.cpath, at any place in the list.
+--negative indices count from the end of the list like string.sub(). index 'after' means 0.
 function glue.cpath(path, index)
 	index = index or 1
 	local psep = package.config:sub(1,1) --'/'
 	local tsep = package.config:sub(3,3) --';'
 	local wild = package.config:sub(5,5) --'?'
 	local ext = package.cpath:match('%.([%a]+)%'..tsep..'?') --dll | so | dylib
-	local paths = glue.collect(glue.gsplit(package.cpath, tsep))
+	local paths = glue.collect(glue.gsplit(package.cpath, tsep, nil, true))
 	path = path:gsub('[/\\]', psep) --normalize slashes
 	if index == 'after' then index = 0 end
 	if index < 1 then index = #paths + 1 + index end
