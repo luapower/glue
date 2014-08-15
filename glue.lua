@@ -142,9 +142,10 @@ function glue.string.gsplit(s, sep, start, plain)
 	end
 end
 
+-- string trim12 from lua wiki
 function glue.string.trim(s)
-	local from = s:match('^[%s]*()')
-	return from > #s and '' or s:match('.*[^%s]', from)
+	local from = s:match('^%s*()')
+	return from > #s and '' or s:match('.*%S', from)
 end
 
 local function format_ci_pat(c)
