@@ -87,3 +87,8 @@ assert(x == 1)
 assert(y == 1)
 assert(z == 1)
 assert(p == 1)
+
+--list the namespace
+for k,v in glue.sortedpairs(glue) do
+	print(string.format('glue.%-20s %s', k, v))
+end
