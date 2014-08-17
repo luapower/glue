@@ -76,3 +76,14 @@ assert(package.path:match('^'..glue.escape(norm'foo/?.lua;')))
 assert(package.cpath:match('^'..glue.escape(norm'bar/?.dll;')))
 assert(package.path:match(glue.escape(norm'baz/?.lua;baz/?/init.lua')..'$'))
 assert(package.cpath:match(glue.escape(norm'zab/?.dll')..'$'))
+
+local M = {}
+local x, y, z, p = 0, 0, 0, 0
+glue.autoload(M, 'x', function() x = x + 1 end)
+glue.autoload(M, 'y', function() y = y + 1 end)
+glue.autoload(M, {z = function() z = z + 1 end, p = function() p = p + 1 end})
+local _ = M.x, M.x, M.y, M.y, M.z, M.z, M.p, M.p
+assert(x == 1)
+assert(y == 1)
+assert(z == 1)
+assert(p == 1)

@@ -322,21 +322,33 @@ end
 
 --declare that certain keys of a module table are implemented in specific submodules.
 --eg. glue.autoload(foo, {bar = 'foo.bar'}); then accessing foo.bar triggers require'foo.bar'.
-function glue.autoload(t, submodules)
+function glue.autoload(t, k, v)
 	local mt = getmetatable(t) or {}
-	assert(not mt.__index, '__index alread assigned')
-	mt.__autoload = submodules
-	mt.__index = function(t, k)
-		if submodules[k] then
-			if type(submodules[k]) == 'string' then
-				require(submodules[k])
-			else
-				submodules[k](k)
-			end
+	if not mt.__autoload then
+		if mt.__index then
+			error('__index already assigned for something else')
 		end
-		return rawget(t, k)
+		local submodules = {}
+		mt.__autoload = submodules
+		mt.__index = function(t, k)
+			if submodules[k] then
+				if type(submodules[k]) == 'string' then
+					require(submodules[k]) --module
+				else
+					submodules[k](k) --custom loader
+				end
+				submodules[k] = nil --prevent loading twice
+			end
+			return rawget(t, k)
+		end
+		setmetatable(t, mt)
 	end
-	return setmetatable(t, mt)
+	if type(k) == 'table' then
+		glue.update(mt.__autoload, k) --multiple key -> module associations.
+	else
+		mt.__autoload[k] = v --single key -> module association.
+	end
+	return t
 end
 
 --portable way to get script's directory, based on arg[0], as long as

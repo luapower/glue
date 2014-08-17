@@ -39,7 +39,8 @@ glue.pcall(f,...) -> true,... | false,traceback                  [pcall with tra
 glue.fpcall(f,...) -> result | nil,traceback                     [coding with finally and except](#fpcall)
 glue.fcall(f,...) -> result
 __modules__
-glue.autoload(t, submodule_t) -> t                               [autoload table keys from submodules](#autoload)
+glue.autoload(t, submodule) -> t                                 [autoload table keys from submodules](#autoload)
+glue.autoload(t, key, module|loader) -> t                        [autoload table keys from submodules](#autoload)
 glue.bin                                                         [get the script's directory](#bin)
 glue.luapath(path[, index[, ext]])                               [insert a path in package.path](#luapath)
 glue.cpath(path[, index])                                        [insert a path in package.cpath](#cpath)
@@ -504,11 +505,13 @@ end, ...)
 --------------------------------------------------------------------------------------------------------------------------
 
 ## `glue.autoload(t, submodules) -> t` {#autoload}
+## `glue.autoload(t, key, module|loader) -> t`
 
 Assign a metatable to `t` such that when a missing key is accessed, the module said to contain that key is require'd automatically.
 
 The `submodules` argument is a table of form `{key = module_name | load_function}` specifying the corresponding
-Lua module (or load function) that make each key available to `t`.
+Lua module (or load function) that make each key available to `t`. The alternative syntax allows specifying
+the key - submodule associations one by one.
 
 ### Motivation
 
