@@ -14,7 +14,7 @@ glue.merge(dt,t1,...) -> dt                                      [merge tables -
 glue.sortedpairs(t[, cmp])-> iterator<k,v>                       [like pairs() but in key order](#sortedpairs)
 __lists__
 glue.extend(dt,t1,...) -> dt                                     [extend a list](#extend)
-glue.append(dt,v1,...) -> dt                                     [append values to a list](#append)
+glue.append(dt,v1,...) -> dt                                     [append non-nil values to a list](#append)
 glue.shift(t,i,n) -> t                                           [shift list elements](#shift)
 __strings__
 glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>         [split a string by a pattern](#gsplit)
@@ -197,7 +197,7 @@ See also: [glue.append](#append), [glue.update](#update).
 
 ## `glue.append(dt,v1,...) -> dt` {#append}
 
-Append one or more values to a list.
+Append non-nil arguments to a list.
 
 ### Uses
 

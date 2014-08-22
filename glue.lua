@@ -75,7 +75,7 @@ function glue.extend(dt,...)
 	return dt
 end
 
---append arguments to a list.
+--append non-nil arguments to a list.
 function glue.append(dt,...)
 	for i=1,select('#',...) do
 		dt[#dt+1] = select(i,...)
