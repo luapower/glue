@@ -244,7 +244,8 @@ end
 
 --read a file into a string (in binary mode by default).
 function glue.readfile(name, mode)
-	local f = assert(io.open(name, mode=='t' and 'r' or 'rb'))
+	local f, err = io.open(name, mode=='t' and 'r' or 'rb')
+	if not f then return nil, err end
 	local s = f:read'*a'
 	f:close()
 	return s

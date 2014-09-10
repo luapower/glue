@@ -30,7 +30,7 @@ __metatables__
 glue.inherit(t,parent) -> t                                      [set or clear inheritance](#inherit)
 __i/o__
 glue.fileexists(file) -> true | false                            [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[,format]) -> s                                [read the contents of a file into a string](#readfile)
+glue.readfile(file[,format]) -> s | nil, err                     [read the contents of a file into a string](#readfile)
 glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
 __errors__
 glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
@@ -416,7 +416,7 @@ See also: [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.readfile(file[,format]) -> s` {#readfile}
+## `glue.readfile(file[,format]) -> s | nil, err` {#readfile}
 
 Read the contents of a file into a string.
 
