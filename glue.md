@@ -5,46 +5,50 @@ tagline: everyday Lua functions
 
 ## `local glue = require'glue'`
 
----------------------------------------------------------------- ----------------------------------------------------------------
+----------------------------------------------------------------- ----------------------------------------------------------------
 __tables__
-glue.index(t) -> dt                                              [switch keys with values](#index)
-glue.keys(t[, sorted | cmp]) -> dt                               [make a list of all the keys](#keys)
-glue.update(dt,t1,...) -> dt                                     [merge tables - overwrites keys](#update)
-glue.merge(dt,t1,...) -> dt                                      [merge tables - no overwriting](#merge)
-glue.sortedpairs(t[, cmp])-> iterator<k,v>                       [like pairs() but in key order](#sortedpairs)
+glue.index(t) -> dt                                               [switch keys with values](#index)
+glue.keys(t[, sorted | cmp]) -> dt                                [make a list of all the keys](#keys)
+glue.update(dt,t1,...) -> dt                                      [merge tables - overwrites keys](#update)
+glue.merge(dt,t1,...) -> dt                                       [merge tables - no overwriting](#merge)
+glue.sortedpairs(t[, cmp])-> iterator<k,v>                        [like pairs() but in key order](#sortedpairs)
 __lists__
-glue.extend(dt,t1,...) -> dt                                     [extend a list](#extend)
-glue.append(dt,v1,...) -> dt                                     [append non-nil values to a list](#append)
-glue.shift(t,i,n) -> t                                           [shift list elements](#shift)
+glue.extend(dt,t1,...) -> dt                                      [extend a list](#extend)
+glue.append(dt,v1,...) -> dt                                      [append non-nil values to a list](#append)
+glue.shift(t,i,n) -> t                                            [shift list elements](#shift)
 __strings__
-glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>         [split a string by a pattern](#gsplit)
-glue.trim(s) -> s                                                [remove padding](#trim)
-glue.escape(s[,mode])-> s                                        [escape magic pattern characters](#escape)
-glue.tohex(s) -> s                                               [string to hex](#tohex)
-glue.fromhex(s) -> s                                             [hex to string](#fromhex)
+glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>          [split a string by a pattern](#gsplit)
+glue.trim(s) -> s                                                 [remove padding](#trim)
+glue.escape(s[,mode])-> s                                         [escape magic pattern characters](#escape)
+glue.tohex(s) -> s                                                [string to hex](#tohex)
+glue.fromhex(s) -> s                                              [hex to string](#fromhex)
 __iterators__
-glue.collect([i,]iterator)-> t                                   [collect iterated values into a list](#collect)
+glue.collect([i,]iterator)-> t                                    [collect iterated values into a list](#collect)
 __closures__
-glue.pass(...) -> ...                                            [does nothing, returns back all arguments](#pass)
+glue.pass(...) -> ...                                             [does nothing, returns back all arguments](#pass)
 __metatables__
-glue.inherit(t,parent) -> t                                      [set or clear inheritance](#inherit)
+glue.inherit(t,parent) -> t                                       [set or clear inheritance](#inherit)
 __i/o__
-glue.fileexists(file) -> true | false                            [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[,format]) -> s | nil, err                     [read the contents of a file into a string](#readfile)
-glue.writefile(file,s[,format])                                  [write a string to a file](#writefile)
+glue.fileexists(file) -> true | false                             [check if a file exists and it's readable](#fileexists)
+glue.readfile(file[,format]) -> s | nil, err                      [read the contents of a file into a string](#readfile)
+glue.writefile(file,s[,format])                                   [write a string to a file](#writefile)
 __errors__
-glue.assert(v,[message[,args...]]) -> args                       [assert with error message formatting](#assert)
-glue.unprotect(ok,result,...) -> result,... | nil,result,...     [unprotect a protected call](#unprotect)
-glue.pcall(f,...) -> true,... | false,traceback                  [pcall with traceback](#pcall) _(not for Lua 5.1)_
-glue.fpcall(f,...) -> result | nil,traceback                     [coding with finally and except](#fpcall)
+glue.assert(v,[message[,args...]]) -> args                        [assert with error message formatting](#assert)
+glue.unprotect(ok,result,...) -> result,... | nil,result,...      [unprotect a protected call](#unprotect)
+glue.pcall(f,...) -> true,... | false,traceback                   [pcall with traceback](#pcall) _(not for Lua 5.1)_
+glue.fpcall(f,...) -> result | nil,traceback                      [coding with finally and except](#fpcall)
 glue.fcall(f,...) -> result
 __modules__
-glue.autoload(t, submodule) -> t                                 [autoload table keys from submodules](#autoload)
-glue.autoload(t, key, module|loader) -> t                        [autoload table keys from submodules](#autoload)
-glue.bin                                                         [get the script's directory](#bin)
-glue.luapath(path[, index[, ext]])                               [insert a path in package.path](#luapath)
-glue.cpath(path[, index])                                        [insert a path in package.cpath](#cpath)
----------------------------------------------------------------- ----------------------------------------------------------------
+glue.autoload(t, submodule) -> t                                  [autoload table keys from submodules](#autoload)
+glue.autoload(t, key, module|loader) -> t                         [autoload table keys from submodules](#autoload)
+glue.bin                                                          [get the script's directory](#bin)
+glue.luapath(path[, index[, ext]])                                [insert a path in package.path](#luapath)
+glue.cpath(path[, index])                                         [insert a path in package.cpath](#cpath)
+__malloc__
+glue.malloc([ctype, ]size) -> cdata                               [allocate an array using system's malloc](#malloc-array)
+glue.malloc(ctype) -> cdata                                       [allocate a C type using system's malloc](#malloc-ctype)
+glue.free(cdata)                                                  [free malloc'ed memory](#free)
+----------------------------------------------------------------- ----------------------------------------------------------------
 
 ## `glue.index(t) -> dt` {#index}
 
@@ -586,15 +590,18 @@ or
 
 ## `glue.luapath(path[, index[, ext]])` {#luapath}
 
-Insert a Lua search pattern in `package.path` such that `require` will be able to load Lua modules from that path.
-The optional `index` arg specifies the insert position (default is 1, that is, before all existing paths; can be
-negative, to start counting from the end; can be the string 'after', which is the same as 0). The optional `ext` arg
-specifies the file extension to use (default is "lua").
+Insert a Lua search pattern in `package.path` such that `require` will be able
+to load Lua modules from that path. The optional `index` arg specifies the
+insert position (default is 1, that is, before all existing paths; can be
+negative, to start counting from the end; can be the string 'after', which is
+the same as 0). The optional `ext` arg specifies the file extension to use
+(default is "lua").
 
 ## `glue.cpath(path[, index])` {#cpath}
 
-Insert a Lua search pattern in `package.cpath` such that `require` will be able to load Lua/C modules from that path.
-The `index` arg has the same meaning as with `glue.luapath`.
+Insert a Lua search pattern in `package.cpath` such that `require` will be
+able to load Lua/C modules from that path. The `index` arg has the same
+meaning as with `glue.luapath`.
 
 ### Example
 
@@ -603,6 +610,49 @@ glue.luapath(glue.bin)
 glue.cpath(glue.bin)
 
 require'foo' --looking for `foo` in the same directory as the running script first
+~~~
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.malloc([ctype, ]size) -> cdata` {#malloc-array}
+
+Allocate a `ctype[size]` array with system's malloc. Useful for allocating
+larger chunks of memory without hitting the default allocator's 2GB limit.
+
+  * the returned cdata has the type `ctype(&)[size]` so ffi.sizeof(cdata)
+  returns the correct size.
+  * `ctype` defaults to `char`.
+  * failure to allocate results in error.
+  * the memory is freed when the cdata gets collected or with `glue.free()`.
+
+__REMEMBER!__ Just like with `ffi.new`, casting the result cdata further will
+get you _weak references_ to the allocated memory. To transfer ownership
+of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
+
+## `glue.malloc(ctype) -> cdata` {#malloc-ctype}
+
+Allocate a `ctype` with system's malloc. The result has the type `ctype&`.
+
+## `glue.free(cdata)` {#free}
+
+Free malloc'ed memory.
+
+### Example
+
+~~~{.lua}
+local data = glue.malloc(100)
+assert(ffi.sizeof(data) == 100)
+glue.free(data)
+
+local data = glue.malloc('int', 100)
+assert(ffi.sizeof(data) == 100 * ffi.sizeof'int')
+glue.free(data)
+
+local data = glue.malloc('struct S')
+assert(ffi.typeof(data) ==
+assert(ffi.sizeof(data) == ffi.sizeof'struct S')
+glue.free(data)
+
 ~~~
 
 --------------------------------------------------------------------------------------------------------------------------

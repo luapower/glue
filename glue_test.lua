@@ -88,6 +88,25 @@ assert(y == 1)
 assert(z == 1)
 assert(p == 1)
 
+if jit then
+	local ffi = require'ffi'
+	local function malloc(bytes, ctype, size)
+		local data = glue.malloc(ctype, size)
+		assert(ffi.sizeof(data) == bytes)
+		if size then
+			assert(ffi.typeof(data) == ffi.typeof('$(&)[$]', ffi.typeof(ctype or 'char'), size))
+		else
+			assert(ffi.typeof(data) == ffi.typeof('$&', ffi.typeof(ctype or 'char')))
+		end
+		glue.free(data)
+	end
+	malloc(400, 'int32_t', 100)
+	malloc(200, 'int16_t', 100)
+	malloc(100, nil, 100)
+	malloc(1)
+	malloc(4, 'int32_t')
+end
+
 --list the namespace
 for k,v in glue.sortedpairs(glue) do
 	print(string.format('glue.%-20s %s', k, v))

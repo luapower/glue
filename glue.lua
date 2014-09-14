@@ -1,5 +1,5 @@
 
---glue r5
+--glue r6
 --Written by Cosmin Apreutesei. Public domain.
 
 local glue = {}
@@ -390,6 +390,39 @@ function glue.cpath(path, index)
 	package.cpath = table.concat(paths, tsep)
 end
 
+if jit then
+
+	local ffi = require'ffi'
+
+	ffi.cdef[[
+	void* malloc (size_t size);
+	void  free   (void*);
+	]]
+
+	function glue.malloc(ctype, size)
+		if type(ctype) == 'number' then
+			ctype, size = 'char', ctype
+		end
+		ctype = ffi.typeof(ctype or 'char')
+		if size then
+			ctype = ffi.typeof('$(&)[$]', ctype, size)
+		else
+			ctype = ffi.typeof('$&', ctype)
+		end
+		local bytes = ffi.sizeof(ctype)
+		local data = ffi.C.malloc(bytes)
+		assert(data ~= nil, 'out of memory')
+		data = ffi.cast(ctype, data)
+		ffi.gc(data, glue.free)
+		return data
+	end
+
+	function glue.free(cdata)
+		ffi.gc(cdata, nil)
+		ffi.C.free(ffi.cast('void*', cdata))
+	end
+
+end
 
 if not ... then require'glue_test' end
 
