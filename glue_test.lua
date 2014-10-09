@@ -67,6 +67,20 @@ test(glue.escape'%\0%', '%%%z%%')
 test(glue.collect(('abc'):gmatch('.')), {'a','b','c'})
 test(glue.collect(2,ipairs{5,7,2}), {5,7,2})
 
+local t0 = {a = 1, b = 2}
+local t1 = glue.inherit({}, t0)
+local t2 = glue.inherit({}, t1)
+assert(t2.a == 1)
+assert(t2.b == 2)
+t0.b = 3
+assert(t2.b == 3)
+glue.inherit(t1)
+assert(not t2.a)
+
+local t = glue.autotable()
+t.a.b.c = 'x'
+assert(t.a.b.c == 'x')
+
 glue.luapath('foo')
 glue.cpath('bar')
 glue.luapath('baz', 'after')

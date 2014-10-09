@@ -1,5 +1,5 @@
 
---glue r6
+--glue r7
 --Written by Cosmin Apreutesei. Public domain.
 
 local glue = {}
@@ -234,6 +234,28 @@ function glue.inherit(t, parent)
 	end
 	return t
 end
+
+--set up a table so that missing keys are created automatically as autotables.
+local autotable
+local auto_meta = {
+	__index = function(t, k)
+		t[k] = autotable()
+		return t[k]
+	end,
+}
+function autotable(t)
+	t = t or {}
+	local meta = getmetatable(t)
+	if meta then
+		assert(not meta.__index or meta.__index == auto_meta.__index,
+			'__index already set')
+		meta.__index = auto_meta.__index
+	else
+		setmetatable(t, auto_meta)
+	end
+	return t
+end
+glue.autotable = autotable
 
 --check if a file exists and it's available for reading in binary mode.
 function glue.fileexists(name)

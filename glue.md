@@ -28,6 +28,7 @@ __closures__
 glue.pass(...) -> ...                                             [does nothing, returns back all arguments](#pass)
 __metatables__
 glue.inherit(t,parent) -> t                                       [set or clear inheritance](#inherit)
+glue.autotable([t]) -> t														[autotable pattern](#autotable)
 __i/o__
 glue.fileexists(file) -> true | false                             [check if a file exists and it's readable](#fileexists)
 glue.readfile(file[,format]) -> s | nil, err                      [read the contents of a file into a string](#readfile)
@@ -409,6 +410,20 @@ use it to change the parent (a minor quibble nevertheless).
 
 Overriding of methods needs an easy way to access the "parent" or to invoke a method on the parent.
 A top-level class could provide this simply by defining `function Object:parent() return getmetatable(self).__index end`.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.autotable([t]) -> t` {#autotable}
+
+Set a table to create/return missing keys as autotables.
+
+In the example below, `t.a`, `t.a.b`, `t.a.b.c` are created automatically
+as autotables.
+
+~~~{.lua}
+local t = autotable()
+t.a.b.c.d = 'hello'
+~~~
 
 --------------------------------------------------------------------------------------------------------------------------
 
