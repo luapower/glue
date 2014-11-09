@@ -491,12 +491,12 @@ end
 
 --------------------------------------------------------------------------------------------------------------------------
 
-__Note: Lua 5.2 and LuaJIT 2 only.__
-
 ## `glue.pcall(f,...) -> true,... | false,error..'\n'..traceback` {#pcall}
 
-With Lua's pcall() you lose the stack trace, and with usual uses of pcall() you don't want that,
-thus this variant that appends the traceback to the error message.
+With Lua's pcall() you lose the stack trace, and with usual uses of pcall()
+you don't want that. This variant appends the traceback to the error message.
+
+> __NOTE__: Lua 5.2 and LuaJIT only.
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -632,7 +632,7 @@ require'foo' --looking for `foo` in the same directory as the running script fir
 ## `glue.malloc([ctype, ]size) -> cdata` {#malloc-array}
 
 Allocate a `ctype[size]` array with system's malloc. Useful for allocating
-larger chunks of memory without hitting the default allocator's 2GB limit.
+larger chunks of memory without hitting the default allocator's 2 GB limit.
 
   * the returned cdata has the type `ctype(&)[size]` so ffi.sizeof(cdata)
   returns the correct size.
@@ -643,6 +643,8 @@ larger chunks of memory without hitting the default allocator's 2GB limit.
 __REMEMBER!__ Just like with `ffi.new`, casting the result cdata further will
 get you _weak references_ to the allocated memory. To transfer ownership
 of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
+
+> __NOTE__: LuaJIT only.
 
 ## `glue.malloc(ctype) -> cdata` {#malloc-ctype}
 
