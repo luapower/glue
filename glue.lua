@@ -9,6 +9,19 @@ local select, pairs, tonumber, tostring, unpack, xpcall, assert, getmetatable, s
 local sort, format, byte, char, min, max =
 	table.sort, string.format, string.byte, string.char, math.min, math.max
 
+--get t[k] and if not present, set t[k] = v0, which defaults to an empty table, and return that.
+function glue.attr(t, k, v0)
+	local v = t[k]
+	if v == nil then
+		if v0 == nil then
+			v0 = {}
+		end
+		v = v0
+		t[k] = v
+	end
+	return v
+end
+
 --reverse keys with values.
 function glue.index(t)
 	local dt={} for k,v in pairs(t) do dt[v]=k end
