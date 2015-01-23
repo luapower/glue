@@ -646,6 +646,9 @@ of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
 
 > __NOTE__: LuaJIT only.
 
+> __CAVEAT__: For primitive types, you must specify a size,
+or glue.free() will not work!
+
 ## `glue.malloc(ctype) -> cdata` {#malloc-ctype}
 
 Allocate a `ctype` with system's malloc. The result has the type `ctype&`.

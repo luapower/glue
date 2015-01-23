@@ -454,7 +454,7 @@ if jit then
 
 	function glue.free(cdata)
 		ffi.gc(cdata, nil)
-		ffi.C.free(ffi.cast('void*', cdata))
+		ffi.C.free(cdata)
 	end
 
 end

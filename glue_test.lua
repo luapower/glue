@@ -85,11 +85,12 @@ glue.luapath('foo')
 glue.cpath('bar')
 glue.luapath('baz', 'after')
 glue.cpath('zab', 'after')
+local so = package.cpath:match'%.dll' and 'dll' or 'so'
 local norm = function(s) return s:gsub('/', package.config:sub(1,1)) end
 assert(package.path:match('^'..glue.escape(norm'foo/?.lua;')))
-assert(package.cpath:match('^'..glue.escape(norm'bar/?.dll;')))
+assert(package.cpath:match('^'..glue.escape(norm'bar/?.'..so..';')))
 assert(package.path:match(glue.escape(norm'baz/?.lua;baz/?/init.lua')..'$'))
-assert(package.cpath:match(glue.escape(norm'zab/?.dll')..'$'))
+assert(package.cpath:match(glue.escape(norm'zab/?.'..so)..'$'))
 
 local M = {}
 local x, y, z, p = 0, 0, 0, 0
@@ -117,8 +118,10 @@ if jit then
 	malloc(400, 'int32_t', 100)
 	malloc(200, 'int16_t', 100)
 	malloc(100, nil, 100)
-	malloc(1)
-	malloc(4, 'int32_t')
+	ffi.cdef'typedef struct { char c; } S'
+	malloc(1, 'S')
+	--malloc(1) --NOTE: doesn't work for primitive types
+	malloc(4, 'int32_t', 1)
 end
 
 --list the namespace
