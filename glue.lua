@@ -9,6 +9,10 @@ local select, pairs, tonumber, tostring, unpack, xpcall, assert, getmetatable, s
 local sort, format, byte, char, min, max =
 	table.sort, string.format, string.byte, string.char, math.min, math.max
 
+function glue.clamp(x, x0, x1)
+	return min(max(x, x0), x1)
+end
+
 --get t[k] and if not present, set t[k] = v0, which defaults to an empty table, and return that.
 function glue.attr(t, k, v0)
 	local v = t[k]
