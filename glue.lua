@@ -1,5 +1,5 @@
 
---glue r7
+--glue: everyday Lua functions.
 --Written by Cosmin Apreutesei. Public domain.
 
 local glue = {}
