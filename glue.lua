@@ -26,6 +26,24 @@ function glue.attr(t, k, v0)
 	return v
 end
 
+--count the number of keys in table.
+function glue.count(t)
+	local n = 0
+	for _ in pairs(t) do
+		n = n + 1
+	end
+	return n
+end
+
+--scan array for value.
+function glue.indexof(t, v)
+	for i=1,#t do
+		if t[i] == v then
+			return i
+		end
+	end
+end
+
 --reverse keys with values.
 function glue.index(t)
 	local dt={} for k,v in pairs(t) do dt[v]=k end
@@ -282,12 +300,18 @@ function glue.fileexists(name)
 end
 
 --read a file into a string (in binary mode by default).
-function glue.readfile(name, mode)
-	local f, err = io.open(name, mode=='t' and 'r' or 'rb')
+function glue.readfile(name, mode, open)
+	open = open or io.open
+	local f, err = open(name, mode=='t' and 'r' or 'rb')
 	if not f then return nil, err end
 	local s = f:read'*a'
 	f:close()
 	return s
+end
+
+--read the output of a command into a string.
+function glue.readpipe(cmd, mode)
+	return glue.readfile(cmd, mode, io.popen)
 end
 
 --write a string to a file (in binary mode by default).
