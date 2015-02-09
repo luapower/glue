@@ -6,13 +6,17 @@ tagline: everyday Lua functions
 ## `local glue = require'glue'`
 
 ----------------------------------------------------------------- ----------------------------------------------------------------
+__math__
+glue.clamp(x, min, max)                                           [clamp x in range](#clamp)
 __tables__
+glue.count(t) -> n                                                [number of keys in table](#count)
 glue.index(t) -> dt                                               [switch keys with values](#index)
 glue.keys(t[, sorted | cmp]) -> dt                                [make a list of all the keys](#keys)
 glue.update(dt,t1,...) -> dt                                      [merge tables - overwrites keys](#update)
 glue.merge(dt,t1,...) -> dt                                       [merge tables - no overwriting](#merge)
 glue.sortedpairs(t[, cmp])-> iterator<k,v>                        [like pairs() but in key order](#sortedpairs)
 __lists__
+glue.indexof(t) -> dt                                             [scan array for value](#indexof)
 glue.extend(dt,t1,...) -> dt                                      [extend a list](#extend)
 glue.append(dt,v1,...) -> dt                                      [append non-nil values to a list](#append)
 glue.shift(t,i,n) -> t                                            [shift list elements](#shift)
@@ -20,7 +24,7 @@ __strings__
 glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>          [split a string by a pattern](#gsplit)
 glue.trim(s) -> s                                                 [remove padding](#trim)
 glue.escape(s[,mode])-> s                                         [escape magic pattern characters](#escape)
-glue.tohex(s) -> s                                                [string to hex](#tohex)
+glue.tohex(s|n[,upper]) -> s                                      [string to hex](#tohex)
 glue.fromhex(s) -> s                                              [hex to string](#fromhex)
 __iterators__
 glue.collect([i,]iterator)-> t                                    [collect iterated values into a list](#collect)
@@ -28,10 +32,12 @@ __closures__
 glue.pass(...) -> ...                                             [does nothing, returns back all arguments](#pass)
 __metatables__
 glue.inherit(t,parent) -> t                                       [set or clear inheritance](#inherit)
-glue.autotable([t]) -> t														[autotable pattern](#autotable)
+glue.attr(t, k1[, v])[k2] = v                                     [autofield pattern](#attr)
+glue.autotable([t]) -> t														              [autotable pattern](#autotable)
 __i/o__
 glue.fileexists(file) -> true | false                             [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[,format]) -> s | nil, err                      [read the contents of a file into a string](#readfile)
+glue.readfile(file[,format][, open]) -> s | nil, err              [read the contents of a file into a string](#readfile)
+glue.readpipe(cmd[,format][, open]) -> s | nil, err               [read the output of a command into a string](#readpipe)
 glue.writefile(file,s[,format])                                   [write a string to a file](#writefile)
 __errors__
 glue.assert(v,[message[,args...]]) -> args                        [assert with error message formatting](#assert)
@@ -39,6 +45,7 @@ glue.unprotect(ok,result,...) -> result,... | nil,result,...      [unprotect a p
 glue.pcall(f,...) -> true,... | false,traceback                   [pcall with traceback](#pcall) _(not for Lua 5.1)_
 glue.fpcall(f,...) -> result | nil,traceback                      [coding with finally and except](#fpcall)
 glue.fcall(f,...) -> result
+glue.memoize(f[,cache]) -> f                                      [memoize pattern](#memoize)
 __modules__
 glue.autoload(t, submodule) -> t                                  [autoload table keys from submodules](#autoload)
 glue.autoload(t, key, module|loader) -> t                         [autoload table keys from submodules](#autoload)
@@ -50,6 +57,18 @@ glue.malloc([ctype, ]size) -> cdata                               [allocate an a
 glue.malloc(ctype) -> cdata                                       [allocate a C type using system's malloc](#malloc-ctype)
 glue.free(cdata)                                                  [free malloc'ed memory](#free)
 ----------------------------------------------------------------- ----------------------------------------------------------------
+
+## `glue.clamp(x, min, max)` {#clamp}
+
+Clamp a value in range. Implemented as `math.min(math.max(x, min), max)`.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.count(t) -> n` {#count}
+
+Count all the keys in a table.
+
+--------------------------------------------------------------------------------------------------------------------------
 
 ## `glue.index(t) -> dt` {#index}
 
@@ -185,6 +204,12 @@ See also: [glue.keys](#keys).
 
 --------------------------------------------------------------------------------------------------------------------------
 
+## `glue.indexof(v, t) -> i` {#indexof}
+
+Scan an array (up to #t) for a value and if found, return the index.
+
+--------------------------------------------------------------------------------------------------------------------------
+
 ## `glue.extend(dt,t1,...) -> dt` {#extend}
 
 Extend the list with the elements of other lists.
@@ -262,7 +287,7 @@ end
 
 ## `glue.trim(s) -> s` {#trim}
 
-Remove whitespace (defined as Lua pattern `%s`) from the beginning and end of a string.
+Remove whitespace (defined as Lua pattern `"%s"`) from the beginning and end of a string.
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -271,7 +296,7 @@ Remove whitespace (defined as Lua pattern `%s`) from the beginning and end of a 
 Escape magic characters of the string `s` so that it can be used as a pattern to string matching functions.
 
   * the optional argument `mode` can have the value `"*i"` (for case insensitive), in which case each alphabetical
-    character in `s` will also be escaped as `[aA]` so that it matches both its lowercase and uppercase variants.
+    character in `s` will also be escaped as `"[aA]"` so that it matches both its lowercase and uppercase variants.
   * escapes embedded zeroes as the `%z` pattern.
 
 ### Uses
@@ -285,14 +310,12 @@ Test the performance of the case-insensitive hack to see if it's feasible.
 
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.tohex(s[,upper]) -> s` {#tohex}
-
-## `glue.tohex(n[,upper]) -> s`
+## `glue.tohex(s|n[,upper]) -> s` {#tohex}
 
 Convert a binary string or a Lua number to its hex representation.
 
   * lowercase by default
-  * uppercase if `upper` is anything non-false, like say, the string "upper"
+  * uppercase if the arg `upper` is truthy
   * numbers must be in the unsigned 32 bit integer range
 
 See also: [glue.fromhex](#fromhex).
@@ -413,6 +436,13 @@ A top-level class could provide this simply by defining `function Object:parent(
 
 --------------------------------------------------------------------------------------------------------------------------
 
+## `glue.attr(t, k1)[k2] = v` {#attr}
+
+Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
+Useful for when an autotable is not wanted.
+
+--------------------------------------------------------------------------------------------------------------------------
+
 ## `glue.autotable([t]) -> t` {#autotable}
 
 Set a table to create/return missing keys as autotables.
@@ -435,13 +465,22 @@ See also: [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.readfile(file[,format]) -> s | nil, err` {#readfile}
+## `glue.readfile(file[,format][,open]) -> s | nil, err` {#readfile}
 
 Read the contents of a file into a string.
 
-  * `format` can be `t` in which case the file will be read in text mode (default is binary mode).
+  * `format` can be `"t"` in which case the file will be read in text mode
+  (default is binary mode).
+  * `open` is the file open function which defaults to `io.open`.
 
 See also: [glue.writefile](#writefile), [glue.fileexists](#fileexists).
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.readpipe(cmd[,format][,open]) -> s | nil, err` {#readpipe}
+
+Read the output of a command into a string.
+The options are the same as for [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -449,7 +488,7 @@ See also: [glue.writefile](#writefile), [glue.fileexists](#fileexists).
 
 Write the contents of a string to a file.
 
-  * `format` can be `t` in which case the file will be written in text mode (default is binary mode).
+  * `format` can be `"t"` in which case the file will be written in text mode (default is binary mode).
 
 See also: [glue.readfile](#readfile).
 
@@ -520,6 +559,21 @@ local result = glue.fpcall(function(finally, except, ...)
   return final_resource
 end, ...)
 ~~~
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.memoize(f[,cache]) -> f` {#memoize}
+
+Memoization for functions with 1 retval and 1 or 2 fixed args or N varargs.
+Supports nil and NaN args and retvals.
+
+For fixed arg functions, missing trailing args are filled with nils, so that
+no distinction can be made between a nil arg and no arg. That distinction
+is preserved for vararg functions.
+
+The optional `cache` arg is the table to be used as the value cache.
+Cache layouts differ for each type of memoization (see source code).
+
+> __NOTE__: Memoization of vararg functions require the [tuple] module.
 
 --------------------------------------------------------------------------------------------------------------------------
 

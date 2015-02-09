@@ -4,26 +4,15 @@
 
 local glue = {}
 
-local select, pairs, tonumber, tostring, unpack, xpcall, assert, getmetatable, setmetatable, type, pcall =
-	   select, pairs, tonumber, tostring, unpack, xpcall, assert, getmetatable, setmetatable, type, pcall
+local select, pairs, tonumber, tostring, unpack, xpcall, assert =
+      select, pairs, tonumber, tostring, unpack, xpcall, assert
+local getmetatable, setmetatable, type, pcall =
+      getmetatable, setmetatable, type, pcall
 local sort, format, byte, char, min, max =
-	table.sort, string.format, string.byte, string.char, math.min, math.max
+      table.sort, string.format, string.byte, string.char, math.min, math.max
 
 function glue.clamp(x, x0, x1)
 	return min(max(x, x0), x1)
-end
-
---get t[k] and if not present, set t[k] = v0, which defaults to an empty table, and return that.
-function glue.attr(t, k, v0)
-	local v = t[k]
-	if v == nil then
-		if v0 == nil then
-			v0 = {}
-		end
-		v = v0
-		t[k] = v
-	end
-	return v
 end
 
 --count the number of keys in table.
@@ -35,18 +24,10 @@ function glue.count(t)
 	return n
 end
 
---scan array for value.
-function glue.indexof(t, v)
-	for i=1,#t do
-		if t[i] == v then
-			return i
-		end
-	end
-end
-
 --reverse keys with values.
 function glue.index(t)
-	local dt={} for k,v in pairs(t) do dt[v]=k end
+	local dt={}
+	for k,v in pairs(t) do dt[v]=k end
 	return dt
 end
 
@@ -62,6 +43,17 @@ function glue.keys(t, cmp)
 		sort(dt, cmp)
 	end
 	return dt
+end
+
+--stateless pairs() that iterate elements in key order.
+local keys = glue.keys
+function glue.sortedpairs(t, cmp)
+	local kt = keys(t, cmp or true)
+	local i = 0
+	return function()
+		i = i + 1
+		return kt[i], t[kt[i]]
+	end
 end
 
 --update a table with the contents of other table(s).
@@ -88,14 +80,12 @@ function glue.merge(dt,...)
 	return dt
 end
 
---stateless pairs() that iterate elements in key order.
-local keys = glue.keys
-function glue.sortedpairs(t, cmp)
-	local kt = keys(t, cmp or true)
-	local i = 0
-	return function()
-		i = i + 1
-		return kt[i], t[kt[i]]
+--scan array for value.
+function glue.indexof(v, t)
+	for i=1,#t do
+		if t[i] == v then
+			return i
+		end
 	end
 end
 
@@ -120,7 +110,8 @@ end
 
 local tinsert, tremove = table.insert, table.remove
 
---insert n elements at i, shifting elemens on the right of i (i inclusive) to the right.
+--insert n elements at i, shifting elemens on the right of i (i inclusive)
+--to the right.
 local function insert(t, i, n)
 	if n == 1 then --shift 1
 		tinsert(t, i, t[i])
@@ -131,7 +122,8 @@ local function insert(t, i, n)
 	end
 end
 
---remove n elements at i, shifting elements on the right of i (i inclusive) to the left.
+--remove n elements at i, shifting elements on the right of i (i inclusive)
+--to the left.
 local function remove(t, i, n)
 	n = min(n, #t-i+1)
 	if n == 1 then --shift 1
@@ -146,7 +138,8 @@ local function remove(t, i, n)
 	end
 end
 
---shift all the elements to the right of i (i inclusive) to the left or further to the right.
+--shift all the elements to the right of i (i inclusive) to the left
+--or further to the right.
 function glue.shift(t, i, n)
 	if n > 0 then
 		insert(t, i, n)
@@ -156,7 +149,7 @@ function glue.shift(t, i, n)
 	return t
 end
 
---string submodule. has its own namespace so it can be merged with _G.string if wanted.
+--string submodule. has its own namespace which can be merged with _G.string.
 glue.string = {}
 
 --split a string by a separator that can be a pattern or a plain string.
@@ -199,7 +192,8 @@ local function format_ci_pat(c)
 	return format('[%s%s]', c:lower(), c:upper())
 end
 function glue.string.escape(s, mode)
-	s = s:gsub('%%','%%%%'):gsub('%z','%%z'):gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1')
+	s = s:gsub('%%','%%%%'):gsub('%z','%%z')
+		:gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1')
 	if mode == '*i' then s = s:gsub('[%a]', format_ci_pat) end
 	return s
 end
@@ -270,6 +264,20 @@ function glue.inherit(t, parent)
 	return t
 end
 
+--get the value of a table field, and if the field is not present in the
+--table, create it as an empty table, and return nil.
+function glue.attr(t, k, v0)
+	local v = t[k]
+	if v == nil then
+		if v0 == nil then
+			v0 = {}
+		end
+		v = v0
+		t[k] = v
+	end
+	return v
+end
+
 --set up a table so that missing keys are created automatically as autotables.
 local autotable
 local auto_meta = {
@@ -310,8 +318,8 @@ function glue.readfile(name, mode, open)
 end
 
 --read the output of a command into a string.
-function glue.readpipe(cmd, mode)
-	return glue.readfile(cmd, mode, io.popen)
+function glue.readpipe(cmd, mode, open)
+	return glue.readfile(cmd, mode, open or io.popen)
 end
 
 --write a string to a file (in binary mode by default).
@@ -337,7 +345,7 @@ function glue.unprotect(ok, result, ...)
 	return result, ...
 end
 
---pcall with traceback. LuaJIT and Lua 5.2 only, unfortunately.
+--pcall with traceback. LuaJIT and Lua 5.2 only.
 local function pcall_error(e)
 	return tostring(e) .. '\n' .. debug.traceback()
 end
@@ -382,6 +390,75 @@ local function assert_fpcall(ok, ...)
 end
 function glue.fcall(...)
 	return assert_fpcall(fpcall(...))
+end
+
+--memoize for 1 and 2-arg and vararg and 1 retval functions.
+--NOTE: cache layouts differ for each type of memoization.
+--NOTE: vararg functions require the tuple module.
+local function memoize0(func) --for strict no-arg functions
+	local v, hasv
+	return function()
+		if not hasv then
+			v, hasv = func(), true
+		end
+		return v
+	end
+end
+local NIL = {}
+local NAN = {}
+local function memoize1(func, cache) --for strict single-arg functions
+	cache = cache or {}
+	return function(k)
+		local sk = k ~= k and NAN or k == nil and NIL or k
+		local v = cache[sk]
+		if v == nil then
+			v = func(k)
+			cache[sk] = v == nil and NIL or v
+		else
+			if v == NIL then v = nil end
+		end
+		return v
+	end
+end
+local function memoize2(func, cache) --for strict two-arg functions
+	cache = cache or {}
+	return function(k1, k2)
+		local sk1 = k1 ~= k1 and NAN or k1 == nil and NIL or k1
+		local cache2 = cache[sk1]
+		if cache2 == nil then
+			cache2 = {}
+			cache[sk1] = cache2
+		end
+		local sk2 = k2 ~= k2 and NAN or k2 == nil and NIL or k2
+		local v = cache2[sk2]
+		if v == nil then
+			v = func(k1, k2)
+			cache2[sk2] = v == nil and NIL or v
+		else
+			if v == NIL then v = nil end
+		end
+		return v
+	end
+end
+local function memoize_vararg(func, ...) --for vararg functions
+	local tuple = require'tuple'.space(true, ...)
+	local cache = {}
+	return function(...)
+		local k = tuple(...)
+		local v = cache[k]
+		if not v then
+			v = func(k())
+			cache[k] = v
+		end
+		return v
+	end
+end
+local memoize = {[0] = memoize0, memoize1, memoize2}
+function glue.memoize(func, ...)
+	local info = debug.getinfo(func)
+	local memoize = info.isvararg and memoize_vararg or memoize[info.nparams]
+	glue.assert(memoize, 'no implementation for %d args. use `...`', info.nparams)
+	return memoize(func, ...)
 end
 
 --declare that certain keys of a module table are implemented in specific submodules.

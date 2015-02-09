@@ -1,14 +1,35 @@
 local glue = require'glue'
 require'unit'
 
-test(select(2,pcall(glue.assert,false,'bad %s','dog')), 'bad dog')
-test(select(2,pcall(glue.assert,false,'bad dog %s')), 'bad dog %s')
-test({pcall(glue.assert,1,2,3)}, {true,1,2,3})
+test(glue.clamp(3, 2, 5), 3)
+test(glue.clamp(1, 2, 5), 2)
+test(glue.clamp(6, 2, 5), 5)
+
+test(glue.count({[0] = 1, 2, 3, a = 4}), 4)
+test(glue.count{}, 0)
+
+test(glue.indexof('b', {'a', 'b', 'c'}), 2)
+test(glue.indexof('b', {'x', 'y', 'z'}), nil)
 
 test(glue.index{a=5,b=7,c=3}, {[5]='a',[7]='b',[3]='c'})
+
+test(glue.keys({a=5,b=7,c=3}, true), {'a','b','c'})
+test(glue.keys({'a','b','c'}, true), {1,2,3})
+
+local t1, t2 = {}, {}
+for k,v in glue.sortedpairs{c=5,b=7,a=3} do
+	table.insert(t1, k)
+	table.insert(t2, v)
+end
+test(t1, {'a','b','c'})
+test(t2, {3,7,5})
+
 test(glue.update({a=1,b=2,c=3}, {d='add',b='overwrite'}, {b='over2'}), {a=1,b='over2',c=3,d='add'})
+
 test(glue.merge({a=1,b=2,c=3}, {d='add',b='overwrite'}, {b='over2'}), {a=1,b=2,c=3,d='add'})
+
 test(glue.extend({5,6,8}, {1,2}, {'b','x'}), {5,6,8,1,2,'b','x'})
+
 test(glue.append({1,2,3}, 5,6), {1,2,3,5,6})
 
 local function insert(t,i,...)
@@ -64,8 +85,17 @@ test(glue.trim('  a  d '), 'a  d')
 test(glue.escape'^{(.-)}$', '%^{%(%.%-%)}%$')
 test(glue.escape'%\0%', '%%%z%%')
 
+test(glue.tohex(0xdeadbeef01), 'deadbeef01')
+test(glue.tohex(0xdeadbeef02, true), 'DEADBEEF02')
+test(glue.tohex'\xde\xad\xbe\xef\x01', 'deadbeef01')
+test(glue.tohex('\xde\xad\xbe\xef\x02', true), 'DEADBEEF02')
+test(glue.fromhex'deadbeef01', '\xde\xad\xbe\xef\x01')
+test(glue.fromhex'DEADBEEF02', '\xde\xad\xbe\xef\x02')
+
 test(glue.collect(('abc'):gmatch('.')), {'a','b','c'})
 test(glue.collect(2,ipairs{5,7,2}), {5,7,2})
+
+test(glue.pass(32), 32)
 
 local t0 = {a = 1, b = 2}
 local t1 = glue.inherit({}, t0)
@@ -77,20 +107,75 @@ assert(t2.b == 3)
 glue.inherit(t1)
 assert(not t2.a)
 
+local t = {k0 = {v0 = 1}}
+test(glue.attr(t, 'k0').v0, 1) --existing key
+glue.attr(t, 'k').v = 1
+test(t.k, {v = 1}) --created key
+glue.attr(t, 'k2', 'v2')
+test(t.k2, 'v2') --custom value
+
 local t = glue.autotable()
 t.a.b.c = 'x'
 assert(t.a.b.c == 'x')
 
-glue.luapath('foo')
-glue.cpath('bar')
-glue.luapath('baz', 'after')
-glue.cpath('zab', 'after')
-local so = package.cpath:match'%.dll' and 'dll' or 'so'
-local norm = function(s) return s:gsub('/', package.config:sub(1,1)) end
-assert(package.path:match('^'..glue.escape(norm'foo/?.lua;')))
-assert(package.cpath:match('^'..glue.escape(norm'bar/?.'..so..';')))
-assert(package.path:match(glue.escape(norm'baz/?.lua;baz/?/init.lua')..'$'))
-assert(package.cpath:match(glue.escape(norm'zab/?.'..so)..'$'))
+assert(glue.fileexists('glue.lua'))
+assert(glue.readfile(glue.bin..'/glue.lua'):match'glue', 'glue')
+assert(glue.readfile(glue.bin..'/glue.lua'):match'glue', 'glue')
+
+test(select(2,pcall(glue.assert,false,'bad %s','dog')), 'bad dog')
+test(select(2,pcall(glue.assert,false,'bad dog %s')), 'bad dog %s')
+test({pcall(glue.assert,1,2,3)}, {true,1,2,3})
+
+--TODO: assert, unprotect, pcall, fpcall, fcall
+
+local n = 0
+local f = glue.memoize(function() n = n + 1; return 6; end)
+test(f(), 6)
+test(f(), 6)
+test(n, 1)
+local n = 0
+local f = glue.memoize(function(x) n = n + 1; return x and 2*x; end)
+for i=1,100 do
+	test(f(2), 4)
+	test(f(3), 6)
+	test(f(0/0), 0/0)
+	test(f(), nil) --no distinction between 0 args and 1 nil arg!
+	test(f(nil), nil)
+end
+test(n, 4)
+local n = 0
+local f = glue.memoize(function(x, y) n = n + 1; return x and y and x + y; end)
+for i=1,100 do
+	test(f(3,2), 5)
+	test(f(2,3), 5)
+	test(f(nil,3), nil)
+	test(f(3,nil), nil)
+	test(f(nil,nil), nil)
+	test(f(), nil) --no distinction between missing args and nil args!
+	test(f(nil), nil)
+	test(f(0/0), nil)
+	test(f(nil, 0/0), nil)
+	test(f(0/0, 1), 0/0)
+	test(f(1, 0/0), 0/0)
+	test(f(0/0, 0/0), 0/0)
+end
+test(n, 10)
+local n = 0
+local f = glue.memoize(function(x, y, z, ...)
+	n = n + 1
+	return (x or 0) + (y or 0) + (z or 0)
+end)
+for i=1,100 do
+	test(f(1,1,1), 3) --3 args
+	test(f(), 0) --0 args
+	test(f(nil), 0) --1 arg
+	test(f(nil, nil), 0) --2 args
+	test(f(nil, nil, nil), 0) --3 args
+	test(f(0/0), 0/0)
+	test(f(0/0, nil), 0/0)
+	test(f(0/0, nil, nil), 0/0)
+end
+test(n, 8)
 
 local M = {}
 local x, y, z, p = 0, 0, 0, 0
@@ -102,6 +187,17 @@ assert(x == 1)
 assert(y == 1)
 assert(z == 1)
 assert(p == 1)
+
+glue.luapath('foo')
+glue.cpath('bar')
+glue.luapath('baz', 'after')
+glue.cpath('zab', 'after')
+local so = package.cpath:match'%.dll' and 'dll' or 'so'
+local norm = function(s) return s:gsub('/', package.config:sub(1,1)) end
+assert(package.path:match('^'..glue.escape(norm'foo/?.lua;')))
+assert(package.cpath:match('^'..glue.escape(norm'bar/?.'..so..';')))
+assert(package.path:match(glue.escape(norm'baz/?.lua;baz/?/init.lua')..'$'))
+assert(package.cpath:match(glue.escape(norm'zab/?.'..so)..'$'))
 
 if jit then
 	local ffi = require'ffi'
