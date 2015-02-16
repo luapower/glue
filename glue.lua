@@ -16,10 +16,17 @@ function glue.clamp(x, x0, x1)
 end
 
 --count the number of keys in table.
-function glue.count(t)
+function glue.count(t, maxn)
 	local n = 0
-	for _ in pairs(t) do
-		n = n + 1
+	if maxn then
+		for _ in pairs(t) do
+			n = n + 1
+			if n >= maxn then break end
+		end
+	else
+		for _ in pairs(t) do
+			n = n + 1
+		end
 	end
 	return n
 end
@@ -80,7 +87,7 @@ function glue.merge(dt,...)
 	return dt
 end
 
---scan array for value.
+--scan list for value.
 function glue.indexof(v, t)
 	for i=1,#t do
 		if t[i] == v then
@@ -145,6 +152,15 @@ function glue.shift(t, i, n)
 		insert(t, i, n)
 	elseif n < 0 then
 		remove(t, i, -n)
+	end
+	return t
+end
+
+--reverse elements of a list in place.
+function glue.reverse(t)
+	local len = #t+1
+	for i = 1, (len-1)/2 do
+		t[i], t[len-i] = t[len-i], t[i]
 	end
 	return t
 end
@@ -322,10 +338,16 @@ function glue.readpipe(cmd, mode, open)
 	return glue.readfile(cmd, mode, open or io.popen)
 end
 
---write a string to a file (in binary mode by default).
+--write a string, number, or table to a file (in binary mode by default).
 function glue.writefile(name, s, mode)
 	local f = assert(io.open(name, mode=='t' and 'w' or 'wb'))
-	f:write(s)
+	if type(s) == 'table' then
+		for i = 1, #s do
+			f:write(s[i])
+		end
+	else
+		f:write(s)
+	end
 	f:close()
 end
 

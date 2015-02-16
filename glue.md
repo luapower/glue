@@ -20,6 +20,7 @@ glue.indexof(t) -> dt                                             [scan array fo
 glue.extend(dt,t1,...) -> dt                                      [extend a list](#extend)
 glue.append(dt,v1,...) -> dt                                      [append non-nil values to a list](#append)
 glue.shift(t,i,n) -> t                                            [shift list elements](#shift)
+glue.reverse(t) -> t                                              [reverse list in place](#reverse)
 __strings__
 glue.gsplit(s,sep[, plain]) -> iterator<e[,captures...]>          [split a string by a pattern](#gsplit)
 glue.trim(s) -> s                                                 [remove padding](#trim)
@@ -253,6 +254,12 @@ When `n` is -1, the effect is the same as for `table.remove(t, i)`.
 Removing a portion of a list or making room for more elements inside the list.
 
 See also: [glue.extend](#extend).
+
+--------------------------------------------------------------------------------------------------------------------------
+
+## `glue.reverse(t) -> t` {#reverse}
+
+Reverse a list in-place and return the input arg.
 
 --------------------------------------------------------------------------------------------------------------------------
 
@@ -566,7 +573,7 @@ end, ...)
 Memoization for functions with 1 retval and 1 or 2 fixed args or N varargs.
 Supports nil and NaN args and retvals.
 
-For fixed arg functions, missing trailing args are filled with nils, so that
+For fixed arg functions, missing trailing args are filled with nils, such that
 no distinction can be made between a nil arg and no arg. That distinction
 is preserved for vararg functions.
 
