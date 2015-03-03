@@ -328,7 +328,8 @@ function glue.readfile(name, mode, open)
 	open = open or io.open
 	local f, err = open(name, mode=='t' and 'r' or 'rb')
 	if not f then return nil, err end
-	local s = f:read'*a'
+	local s, err = f:read'*a'
+	if s == nil then return nil, err end
 	f:close()
 	return s
 end
@@ -339,20 +340,39 @@ function glue.readpipe(cmd, mode, open)
 end
 
 --write a string, number, or table to a file (in binary mode by default).
-function glue.writefile(name, s, mode)
-	local f = assert(io.open(name, mode=='t' and 'w' or 'wb'))
+--if the write fails, the file is removed.
+function glue.writefile(filename, s, mode)
+	local f, err = io.open(filename, mode=='t' and 'w' or 'wb')
+	if not f then
+		error(err)
+	end
+	local function check(ret, err)
+		if ret ~= nil then return end
+		f:close()
+		local ret, err2 = os.remove(filename)
+		if ret == nil then
+			err = err .. '\n' .. err2
+		end
+		error(err, 2)
+	end
 	if type(s) == 'table' then
 		for i = 1, #s do
-			f:write(s[i])
+			check(f:write(s[i]))
+		end
+	elseif type(s) == 'function' then
+		while true do
+			local s1 = s()
+			if not s1 then break end
+			check(f:write(s1))
 		end
 	else
-		f:write(s)
+		check(f:write(s))
 	end
 	f:close()
 end
 
 --assert() with string formatting (this should be a Lua built-in).
-function glue.assert(v,err,...)
+function glue.assert(v, err, ...)
 	if v then return v,err,... end
 	err = err or 'assertion failed!'
 	if select('#',...) > 0 then err = format(err,...) end

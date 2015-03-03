@@ -5,6 +5,7 @@ tagline: everyday Lua functions
 
 ## `local glue = require'glue'`
 
+## API Summary
 ----------------------------------------------------------------- ----------------------------------------------------------------
 __math__
 glue.clamp(x, min, max)                                           [clamp x in range](#clamp)
@@ -491,11 +492,14 @@ The options are the same as for [glue.readfile](#readfile).
 
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.writefile(file,s[,format])` {#writefile}
+## `glue.writefile(file,s|t|read[,format])` {#writefile}
 
-Write the contents of a string to a file.
+Write the contents of a string, table or reader to a file.
 
-  * `format` can be `"t"` in which case the file will be written in text mode (default is binary mode).
+  * `format` can be `"t"` in which case the file will be written in text mode
+   (default is binary mode).
+  * `read` can be a function to draw strings or numbers from.
+  * if writing fails, the file is removed and an error is raised.
 
 See also: [glue.readfile](#readfile).
 
