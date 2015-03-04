@@ -498,8 +498,7 @@ end
 local memoize = {[0] = memoize0, memoize1, memoize2}
 function glue.memoize(func, ...)
 	local info = debug.getinfo(func)
-	local memoize = info.isvararg and memoize_vararg or memoize[info.nparams]
-	glue.assert(memoize, 'no implementation for %d args. use `...`', info.nparams)
+	local memoize = not info.isvararg and memoize[info.nparams] or memoize_vararg
 	return memoize(func, ...)
 end
 
