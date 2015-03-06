@@ -347,7 +347,7 @@ function glue.writefile(filename, s, mode)
 		error(err)
 	end
 	local function check(ret, err)
-		if ret ~= nil then return end
+		if ret ~= nil then return ret, err end
 		f:close()
 		local ret, err2 = os.remove(filename)
 		if ret == nil then
@@ -361,7 +361,7 @@ function glue.writefile(filename, s, mode)
 		end
 	elseif type(s) == 'function' then
 		while true do
-			local s1 = s()
+			local _, s1 = check(xpcall(s, debug.traceback))
 			if not s1 then break end
 			check(f:write(s1))
 		end
