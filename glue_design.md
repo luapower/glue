@@ -57,7 +57,7 @@ the required learning time from programmers by themselves.
 Don't add shortcut functions except when calling the shortcut function makes
 the code more readable than the equivalent Lua code.
 
-If something is an [tricks idiom], don't add a function for it, use it
+If something is an [idiom][lua-tricks], don't add a function for it, use it
 directly. Chances are its syntax will be more popular than its name. Eg. it's
 harder to recall and trust semantic equivalence of `isnan(x)` to the odd
 looking but mnemonic idiom `x ~= x`. That doesn't mean `a < b and a or b` is
