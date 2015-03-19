@@ -644,7 +644,7 @@ foo.baz(...) -- foo_extra was now loaded automatically
 
 ## `glue.bin` {#bin}
 
-Get the script's directory, based on [lua-find-bin] by David Manura. This allows finding files in the script's
+Get the script's directory. This allows finding files in the script's
 directory regardless of the directory that Lua is started in.
 
 ### Example
@@ -655,16 +655,9 @@ local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
 
 ### Caveats
 
-This only works if glue itself can already be found and required (chicken/egg catch22 and the rest).
-The path is relative to the current directory, it stops working if the current directory is changed.
-The assumption is that if you can do chdir() then you can also do getfullpath() or at least getcurrentdir(),
-and thus correct `glue.bin` in time with:
-
-	glue.bin = getfullpath(glue.bin)
-
-or
-
-	glue.bin = getcurrentdir() .. '/' .. glue.bin
+This only works if glue itself can already be found and required
+(chicken/egg problem). Also, the path is relative to the current directory,
+so this stops working if the current directory is changed.
 
 --------------------------------------------------------------------------------------------------------------------------
 
