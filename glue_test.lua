@@ -151,8 +151,8 @@ for i=1,100 do
 	test(f(nil,3), nil)
 	test(f(3,nil), nil)
 	test(f(nil,nil), nil)
-	test(f(), nil) --no distinction between missing args and nil args!
-	test(f(nil), nil)
+	test(f(), nil)     --no distinction between missing args and nil args!
+	test(f(nil), nil)  --same here, this doesn't increment the count!
 	test(f(0/0), nil)
 	test(f(nil, 0/0), nil)
 	test(f(0/0, 1), 0/0)
@@ -161,21 +161,22 @@ for i=1,100 do
 end
 test(n, 10)
 local n = 0
-local f = glue.memoize(function(x, y, z, ...)
+local f = glue.memoize(function(x, ...)
 	n = n + 1
-	return (x or 0) + (y or 0) + (z or 0)
+	local z = x or -10
+	for i=1,select('#',...) do
+		z = z + (select(i,...) or -1)
+	end
+	return z
 end)
 for i=1,100 do
-	test(f(1,1,1), 3) --3 args
-	test(f(), 0) --0 args
-	test(f(nil), 0) --1 arg
-	test(f(nil, nil), 0) --2 args
-	test(f(nil, nil, nil), 0) --3 args
-	test(f(0/0), 0/0)
-	test(f(0/0, nil), 0/0)
-	test(f(0/0, nil, nil), 0/0)
+	test(f(10, 1, 1), 12) --1+2 args
+	test(f(), -10) --1+0 args (no distinction between 0 args and 1 arg)
+	test(f(nil), -10) --same here, this doesn't increment the count!
+	test(f(nil, nil), -11) --but this does: 1+1 args
+	test(f(0/0), 0/0) --1+0 args with NaN
 end
-test(n, 8)
+test(n, 4)
 
 local M = {}
 local x, y, z, p = 0, 0, 0, 0

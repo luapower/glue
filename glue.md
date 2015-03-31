@@ -572,19 +572,20 @@ end, ...)
 ~~~
 --------------------------------------------------------------------------------------------------------------------------
 
-## `glue.memoize(f[,cache]) -> f` {#memoize}
+## `glue.memoize(f) -> f` {#memoize}
 
-Memoization for functions with 1 retval and 1 or 2 fixed args or N varargs.
+Memoization for functions with any number of arguments and one return value.
 Supports nil and NaN args and retvals.
 
-For fixed arg functions, missing trailing args are filled with nils, such that
-no distinction can be made between a nil arg and no arg. That distinction
-is preserved for vararg functions.
+Guarantees to only call the original function _once_ for the same combination
+of arguments, with special attention to the vararg part of the function,
+if any. For instance, for a function `f(x, y, ...)`, calling `f(1)` is
+considered equal to calling `f(1, nil)`, but calling `f(1, nil)` is not
+equal to calling `f(1, nil, nil)`.
 
-The optional `cache` arg is the table to be used as the value cache.
-Cache layouts differ for each type of memoization (see source code).
 
-> __NOTE__: Memoization of vararg functions require the [tuple] module.
+> __NOTE__: Memoization of vararg functions or functions with more than two
+arguments require the [tuple] module.
 
 --------------------------------------------------------------------------------------------------------------------------
 

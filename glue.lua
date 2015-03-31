@@ -482,11 +482,12 @@ local function memoize2(func, cache) --for strict two-arg functions
 		return v
 	end
 end
-local function memoize_vararg(func, ...) --for vararg functions
+local function memoize_vararg(func, narg, ...) --for vararg functions
 	local tuple = require'tuple'.space(true, ...)
 	local cache = {}
 	return function(...)
-		local k = tuple(...)
+		local n = max(narg, select('#', ...))
+		local k = tuple.narg(n, ...)
 		local v = cache[k]
 		if not v then
 			v = func(k())
@@ -495,15 +496,18 @@ local function memoize_vararg(func, ...) --for vararg functions
 		return v
 	end
 end
-local memoize = {[0] = memoize0, memoize1, memoize2}
+local memoize_narg = {[0] = memoize0, memoize1, memoize2}
 function glue.memoize(func, ...)
 	local info = debug.getinfo(func)
-	local memoize = not info.isvararg and memoize[info.nparams] or memoize_vararg
-	return memoize(func, ...)
+	local memoize_narg = memoize_narg[info.nparams]
+	if info.isvararg or not memoize_narg then
+		return memoize_vararg(func, info.nparams, ...)
+	else
+		return memoize_narg(func, ...)
+	end
 end
 
---declare that certain keys of a module table are implemented in specific submodules.
---eg. glue.autoload(foo, {bar = 'foo.bar'}); then accessing foo.bar triggers require'foo.bar'.
+--setup a module to load sub-modules when accessing specific keys.
 function glue.autoload(t, k, v)
 	local mt = getmetatable(t) or {}
 	if not mt.__autoload then
