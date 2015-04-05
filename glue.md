@@ -673,7 +673,9 @@ negative, to start counting from the end; can be the string 'after', which is
 the same as 0). The optional `ext` arg specifies the file extension to use
 (default is "lua").
 
-## `glue.cpath(path[, index])` {#cpath}
+--------------------------------------------------------------------------------------------------------------------------
+
+### `glue.cpath(path[, index])` {#cpath}
 
 Insert a Lua search pattern in `package.cpath` such that `require` will be
 able to load Lua/C modules from that path. The `index` arg has the same
