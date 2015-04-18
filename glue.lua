@@ -575,38 +575,49 @@ function glue.cpath(path, index)
 	package.cpath = table.concat(paths, tsep)
 end
 
-if jit then
+local ffi
 
-	local ffi = require'ffi'
+local function malloc(ctype, size)
+	if type(ctype) == 'number' then
+		ctype, size = 'char', ctype
+	end
+	ctype = ffi.typeof(ctype or 'char')
+	if size then
+		ctype = ffi.typeof('$(&)[$]', ctype, size)
+	else
+		ctype = ffi.typeof('$&', ctype)
+	end
+	local bytes = ffi.sizeof(ctype)
+	local data = ffi.C.malloc(bytes)
+	assert(data ~= nil, 'out of memory')
+	data = ffi.cast(ctype, data)
+	ffi.gc(data, glue.free)
+	return data
+end
 
+local function free(cdata)
+	ffi.gc(cdata, nil)
+	ffi.C.free(cdata)
+end
+
+local function init_ffi()
+	ffi = require'ffi'
 	ffi.cdef[[
-	void* malloc (size_t size);
-	void  free   (void*);
+		void* malloc (size_t size);
+		void  free   (void*);
 	]]
+	glue.malloc = malloc
+	glue.free = free
+end
 
-	function glue.malloc(ctype, size)
-		if type(ctype) == 'number' then
-			ctype, size = 'char', ctype
-		end
-		ctype = ffi.typeof(ctype or 'char')
-		if size then
-			ctype = ffi.typeof('$(&)[$]', ctype, size)
-		else
-			ctype = ffi.typeof('$&', ctype)
-		end
-		local bytes = ffi.sizeof(ctype)
-		local data = ffi.C.malloc(bytes)
-		assert(data ~= nil, 'out of memory')
-		data = ffi.cast(ctype, data)
-		ffi.gc(data, glue.free)
-		return data
-	end
+function glue.malloc(...)
+	init_ffi()
+	return glue.malloc(...)
+end
 
-	function glue.free(cdata)
-		ffi.gc(cdata, nil)
-		ffi.C.free(cdata)
-	end
-
+function glue.free(...)
+	init_ffi()
+	return glue.free(...)
 end
 
 if not ... then require'glue_test' end
