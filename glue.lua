@@ -537,8 +537,9 @@ function glue.autoload(t, k, v)
 	return t
 end
 
---portable way to get script's directory, based on arg[0], as long as
---pwd() doesn't change because the path in arg[0] is relative to pwd().
+--portable way to get script's directory, based on arg[0].
+--NOTE: the path is not absolute, but relative to the current directory!
+--NOTE: for bundled executables, this returns the executable's directory.
 local dir = rawget(_G, 'arg') and arg[0] and arg[0]:gsub('[/\\]?[^/\\]+$', '') or '' --remove file name
 glue.bin = dir == '' and '.' or dir
 

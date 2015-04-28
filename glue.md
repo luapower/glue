@@ -650,6 +650,8 @@ foo.baz(...) -- foo_extra was now loaded automatically
 Get the script's directory. This allows finding files in the script's
 directory regardless of the directory that Lua is started in.
 
+For executables created with [bundle], this is the executable's directory.
+
 #### Example
 
 ~~~{.lua}
