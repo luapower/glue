@@ -340,7 +340,7 @@ function glue.readpipe(cmd, mode, open)
 end
 
 --write a string, number, or table to a file (in binary mode by default).
---if the write fails, the file is removed.
+--if the write fails, the file is removed and an error is raised.
 function glue.writefile(filename, s, mode)
 	local f, err = io.open(filename, mode=='t' and 'w' or 'wb')
 	if not f then
