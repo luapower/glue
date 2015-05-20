@@ -58,6 +58,8 @@ __memory__
 glue.malloc([ctype, ]size) -> cdata                               [allocate an array using system's malloc](#malloc-array)
 glue.malloc(ctype) -> cdata                                       [allocate a C type using system's malloc](#malloc-ctype)
 glue.free(cdata)                                                  [free malloc'ed memory](#free)
+glue.addr(ptr) -> number | string                                 [store pointer address in Lua value](#addr)
+glue.ptr([ctype, ]number|string) -> ptr                           [convert address to pointer](#ptr)
 ----------------------------------------------------------------- ----------------------------------------------------------------
 
 ## Math
@@ -741,6 +743,20 @@ assert(ffi.sizeof(data) == ffi.sizeof'struct S')
 glue.free(data)
 
 ~~~
+
+### `glue.addr(ptr) -> number | string` {#addr}
+
+Convert the address of a pointer into a Lua number (or possibly string
+on 64bit platforms). This is useful for:
+
+  * hashing on pointer values (i.e. using pointers as table keys)
+  * moving pointers in and out of Lua states when using [luastate]
+
+### `glue.ptr([ctype, ]number|string) -> ptr` {#ptr}
+
+Convert an address value stored as a Lua number (or possibly string
+on 64bit platforms) to a cdata pointer, optionally specifying a ctype
+for the pointer (defaults to `void*`).
 
 --------------------------------------------------------------------------------------------------------------------------
 

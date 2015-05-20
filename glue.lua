@@ -576,6 +576,8 @@ function glue.cpath(path, index)
 	package.cpath = table.concat(paths, tsep)
 end
 
+--ffi extension
+
 local ffi
 
 local function malloc(ctype, size)
@@ -601,6 +603,43 @@ local function free(cdata)
 	ffi.C.free(cdata)
 end
 
+--x86: convert a pointer's address to a Lua number.
+local function addr32(p)
+	return tonumber(ffi.cast('intptr_t', p))
+end
+
+--x86: convert a number to a pointer, optionally specifying a ctype.
+local function ptr32(ctype, addr)
+	if not addr then
+		ctype, addr = 'void*', ctype
+	end
+	return ffi.cast(ctype, addr)
+end
+
+--x64: convert a pointer's address to a Lua number or possibly string.
+local function addr64(p)
+	local np = ffi.cast('intptr_t', p)
+   local n = tonumber(np)
+	if ffi.cast('intptr_t', n) ~= np then
+		--address too big (ASLR? tagged pointers?): convert to string.
+		return ffi.string(ffi.new('intptr_t[1]', np), 8)
+	end
+	return n
+end
+
+--x64: convert a number or string to a pointer, optionally specifying a ctype.
+local function ptr64(ctype, addr)
+	if not addr then
+		ctype, addr = 'void*', ctype
+	end
+	if type(addr) == 'string' then
+		return ffi.cast(ctype, ffi.cast('void*',
+			ffi.cast('const intptr_t*', addr)[0]))
+	else
+		return ffi.cast(ctype, addr)
+	end
+end
+
 local function init_ffi()
 	ffi = require'ffi'
 	ffi.cdef[[
@@ -609,6 +648,8 @@ local function init_ffi()
 	]]
 	glue.malloc = malloc
 	glue.free = free
+	glue.addr = ffi.abi'64bit' and addr64 or addr32
+	glue.ptr = ffi.abi'64bit' and ptr64 or ptr32
 end
 
 function glue.malloc(...)
@@ -619,6 +660,16 @@ end
 function glue.free(...)
 	init_ffi()
 	return glue.free(...)
+end
+
+function glue.addr(...)
+	init_ffi()
+	return glue.addr(...)
+end
+
+function glue.ptr(...)
+	init_ffi()
+	return glue.ptr(...)
 end
 
 if not ... then require'glue_test' end

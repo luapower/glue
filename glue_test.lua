@@ -202,6 +202,7 @@ assert(package.cpath:match(glue.escape(norm'zab/?.'..so)..'$'))
 
 if jit then
 	local ffi = require'ffi'
+
 	local function malloc(bytes, ctype, size)
 		local data = glue.malloc(ctype, size)
 		assert(ffi.sizeof(data) == bytes)
@@ -219,6 +220,19 @@ if jit then
 	malloc(1, 'S')
 	--malloc(1) --NOTE: doesn't work for primitive types
 	malloc(4, 'int32_t', 1)
+
+	assert(glue.addr(ffi.cast('void*', 0x55555555)) == 0x55555555)
+	assert(glue.ptr('int*', 0x55555555) == ffi.cast('void*', 0x55555555))
+
+	if ffi.abi'64bit' then
+		assert(glue.addr(ffi.cast('void*', 0x5555555555)) == 0x5555555555)
+		--going out of our way not to use the LL suffix so that Lua 5.1 can compile this.
+		local huge = ffi.new('union { struct { uint32_t lo; uint32_t hi; }; struct{} *p; }',
+			{lo = 0x12345678, hi = 0xdeadbeef})
+		local huges = '\x78\x56\x34\x12\xef\xbe\xad\xde'
+		assert(glue.addr(huge.p) == huges) --string comparison
+		assert(glue.ptr('union{}*', huges) == huge.p) --pointer comparison
+	end
 end
 
 --list the namespace
