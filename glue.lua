@@ -15,6 +15,14 @@ function glue.clamp(x, x0, x1)
 	return min(max(x, x0), x1)
 end
 
+function glue.pack(...)
+	return {n = select('#', ...), ...}
+end
+
+function glue.unpack(t, i, j)
+	return unpack(t, i or 1, j or t.n or #t)
+end
+
 --count the number of keys in table.
 function glue.count(t, maxn)
 	local n = 0
@@ -605,7 +613,7 @@ end
 
 --x86: convert a pointer's address to a Lua number.
 local function addr32(p)
-	return tonumber(ffi.cast('intptr_t', p))
+	return tonumber(ffi.cast('intptr_t', ffi.cast('void*', p)))
 end
 
 --x86: convert a number to a pointer, optionally specifying a ctype.
@@ -618,7 +626,7 @@ end
 
 --x64: convert a pointer's address to a Lua number or possibly string.
 local function addr64(p)
-	local np = ffi.cast('intptr_t', p)
+	local np = ffi.cast('intptr_t', ffi.cast('void*', p))
    local n = tonumber(np)
 	if ffi.cast('intptr_t', n) ~= np then
 		--address too big (ASLR? tagged pointers?): convert to string.
