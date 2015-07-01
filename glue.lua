@@ -2,6 +2,8 @@
 --glue: everyday Lua functions.
 --Written by Cosmin Apreutesei. Public domain.
 
+if not ... then require'glue_test'; return end
+
 local glue = {}
 
 local select, pairs, tonumber, tostring, unpack, xpcall, assert =
@@ -584,29 +586,29 @@ function glue.cpath(path, index)
 	package.cpath = table.concat(paths, tsep)
 end
 
---ffi extension
+if jit then
 
-local ffi
+local ffi = require'ffi'
 
-local function malloc(ctype, size)
+ffi.cdef[[
+	void* malloc (size_t size);
+	void  free   (void*);
+]]
+
+function glue.malloc(ctype, size)
 	if type(ctype) == 'number' then
 		ctype, size = 'char', ctype
 	end
-	ctype = ffi.typeof(ctype or 'char')
-	if size then
-		ctype = ffi.typeof('$(&)[$]', ctype, size)
-	else
-		ctype = ffi.typeof('$&', ctype)
-	end
+	local ctype = ffi.typeof(ctype or 'char')
+	local ctype = size and ffi.typeof('$(&)[$]', ctype, size) or ffi.typeof('$&', ctype)
 	local bytes = ffi.sizeof(ctype)
-	local data = ffi.C.malloc(bytes)
+	local data  = ffi.cast(ctype, ffi.C.malloc(bytes))
 	assert(data ~= nil, 'out of memory')
-	data = ffi.cast(ctype, data)
 	ffi.gc(data, glue.free)
 	return data
 end
 
-local function free(cdata)
+function glue.free(cdata)
 	ffi.gc(cdata, nil)
 	ffi.C.free(cdata)
 end
@@ -648,39 +650,10 @@ local function ptr64(ctype, addr)
 	end
 end
 
-local function init_ffi()
-	ffi = require'ffi'
-	ffi.cdef[[
-		void* malloc (size_t size);
-		void  free   (void*);
-	]]
-	glue.malloc = malloc
-	glue.free = free
-	glue.addr = ffi.abi'64bit' and addr64 or addr32
-	glue.ptr = ffi.abi'64bit' and ptr64 or ptr32
-end
+glue.addr = ffi.abi'64bit' and addr64 or addr32
+glue.ptr = ffi.abi'64bit' and ptr64 or ptr32
 
-function glue.malloc(...)
-	init_ffi()
-	return glue.malloc(...)
-end
-
-function glue.free(...)
-	init_ffi()
-	return glue.free(...)
-end
-
-function glue.addr(...)
-	init_ffi()
-	return glue.addr(...)
-end
-
-function glue.ptr(...)
-	init_ffi()
-	return glue.ptr(...)
-end
-
-if not ... then require'glue_test' end
+end --if jit
 
 return glue
 
