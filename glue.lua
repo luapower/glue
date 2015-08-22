@@ -2,8 +2,6 @@
 --glue: everyday Lua functions.
 --Written by Cosmin Apreutesei. Public domain.
 
-if not ... then require'glue_test'; return end
-
 local glue = {}
 
 local select, pairs, tonumber, tostring, unpack, xpcall, assert =
@@ -15,14 +13,6 @@ local sort, format, byte, char, min, max =
 
 function glue.clamp(x, x0, x1)
 	return min(max(x, x0), x1)
-end
-
-function glue.pack(...)
-	return {n = select('#', ...), ...}
-end
-
-function glue.unpack(t, i, j)
-	return unpack(t, i or 1, j or t.n or #t)
 end
 
 --count the number of keys in table.
@@ -586,29 +576,27 @@ function glue.cpath(path, index)
 	package.cpath = table.concat(paths, tsep)
 end
 
-if jit then
+local ffi
 
-local ffi = require'ffi'
-
-ffi.cdef[[
-	void* malloc (size_t size);
-	void  free   (void*);
-]]
-
-function glue.malloc(ctype, size)
+local function malloc(ctype, size)
 	if type(ctype) == 'number' then
 		ctype, size = 'char', ctype
 	end
-	local ctype = ffi.typeof(ctype or 'char')
-	local ctype = size and ffi.typeof('$(&)[$]', ctype, size) or ffi.typeof('$&', ctype)
+	ctype = ffi.typeof(ctype or 'char')
+	if size then
+		ctype = ffi.typeof('$(&)[$]', ctype, size)
+	else
+		ctype = ffi.typeof('$&', ctype)
+	end
 	local bytes = ffi.sizeof(ctype)
-	local data  = ffi.cast(ctype, ffi.C.malloc(bytes))
+	local data = ffi.C.malloc(bytes)
 	assert(data ~= nil, 'out of memory')
+	data = ffi.cast(ctype, data)
 	ffi.gc(data, glue.free)
 	return data
 end
 
-function glue.free(cdata)
+local function free(cdata)
 	ffi.gc(cdata, nil)
 	ffi.C.free(cdata)
 end
