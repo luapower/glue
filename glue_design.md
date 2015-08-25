@@ -1,6 +1,5 @@
 ---
 title:    design of glue
-project:  glue
 tagline:  how and why
 ---
 

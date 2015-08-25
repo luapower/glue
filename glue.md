@@ -1,5 +1,4 @@
 ---
-project: glue
 tagline: everyday Lua functions
 ---
 
