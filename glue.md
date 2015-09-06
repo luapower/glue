@@ -7,7 +7,7 @@ tagline: everyday Lua functions
 ## API Summary
 ----------------------------------------------------------------- ---------------------------------------------------------
 __math__
-glue.clamp(x, min, max)                                           [clamp x in range](#clamp)
+`glue.clamp(x, min, max)`                                         clamp x in range
 __varargs__
 glue.pack(...) -> t                                               [pack varargs](#pack)
 glue.unpack(t,[i][,j]) -> ...                                     [unpack varargs](#unpack)
@@ -66,7 +66,7 @@ glue.ptr([ctype,]number|string) -> ptr                            [convert addre
 
 ## Math
 
-### `glue.clamp(x, min, max)` {#clamp}
+### `glue.clamp(x, min, max)`
 
 Clamp a value in range. Implemented as `math.min(math.max(x, min), max)`.
 
