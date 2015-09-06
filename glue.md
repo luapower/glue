@@ -10,7 +10,7 @@ __math__
 `glue.clamp(x, min, max)`                                          clamp x in range
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
-`glue.unpack(t,[i][,j]) -> ...`                                    unpack varargs
+`glue.unpack(t,[i],[j]) -> ...`                                    unpack varargs
 __tables__
 `glue.count(t) -> n`                                               number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
@@ -74,11 +74,11 @@ Clamp a value in range. Implemented as `math.min(math.max(x, min), max)`.
 
 ## Varargs
 
-### `glue.pack(...) -> t` {#pack}
+### `glue.pack(...) -> t`
 
 Pack varargs. Implemented as `n = select('#', ...), ...}`.
 
-### `glue.unpack(t,[i],[j]) -> ...` {#unpack}
+### `glue.unpack(t,[i],[j]) -> ...`
 
 Unpack varargs. Implemented as `unpack(t, i or 1, j or t.n or #t)`.
 
@@ -86,13 +86,13 @@ Unpack varargs. Implemented as `unpack(t, i or 1, j or t.n or #t)`.
 
 ## Tables
 
-### `glue.count(t) -> n` {#count}
+### `glue.count(t) -> n`
 
 Count all the keys in a table.
 
 ------------------------------------------------------------------------------
 
-### `glue.index(t) -> dt` {#index}
+### `glue.index(t) -> dt`
 
 Switch table keys with values.
 
@@ -152,7 +152,7 @@ Output
 
 ------------------------------------------------------------------------------
 
-### `glue.keys(t[,sorted|cmp]) -> dt` {#keys}
+### `glue.keys(t[,sorted|cmp]) -> dt`
 
 Make a list of all the keys of `t`, optionally sorted.
 
@@ -166,7 +166,7 @@ See also: [glue.sortedpairs](#sortedpairs).
 
 ------------------------------------------------------------------------------
 
-### `glue.update(dt,t1,...) -> dt` {#update}
+### `glue.update(dt,t1,...) -> dt`
 
 Update a table with elements of other tables, overwriting any existing keys.
 
@@ -198,7 +198,7 @@ See also: [glue.extend](#extend), [glue.inherit](#inherit).
 
 ------------------------------------------------------------------------------
 
-### `glue.merge(dt,t1,...) -> dt` {#merge}
+### `glue.merge(dt,t1,...) -> dt`
 
 Update a table with elements of other tables skipping on any existing keys.
 
@@ -216,7 +216,7 @@ See also: [glue.update](#update).
 
 ------------------------------------------------------------------------------
 
-### `glue.sortedpairs(t[,cmp]) -> iterator<k,v>` {#sortedpairs}
+### `glue.sortedpairs(t[,cmp]) -> iterator<k,v>`
 
 Like pairs() but in key order.
 
@@ -226,7 +226,7 @@ See also: [glue.keys](#keys).
 
 ------------------------------------------------------------------------------
 
-### `glue.attr(t, k1)[k2] = v` {#attr}
+### `glue.attr(t, k1)[k2] = v`
 
 Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
 Useful for when an [autotable](#autotable) is not wanted.
@@ -235,13 +235,13 @@ Useful for when an [autotable](#autotable) is not wanted.
 
 ## Lists
 
-### `glue.indexof(v, t) -> i` {#indexof}
+### `glue.indexof(v, t) -> i`
 
 Scan an array (up to #t) for a value and if found, return the index.
 
 ------------------------------------------------------------------------------
 
-### `glue.extend(dt,t1,...) -> dt` {#extend}
+### `glue.extend(dt,t1,...) -> dt`
 
 Extend the list with the elements of other lists.
 
@@ -256,7 +256,7 @@ See also: [glue.append](#append), [glue.update](#update).
 
 ------------------------------------------------------------------------------
 
-### `glue.append(dt,v1,...) -> dt` {#append}
+### `glue.append(dt,v1,...) -> dt`
 
 Append non-nil arguments to a list.
 
@@ -268,7 +268,7 @@ See also: [glue.extend](#extend), [glue.update](#update).
 
 ------------------------------------------------------------------------------
 
-### `glue.shift(t,i,n) -> t` {#shift}
+### `glue.shift(t,i,n) -> t`
 
 Shift all the list elements starting at index `i`, `n` positions to the left or further to the right.
 
@@ -287,7 +287,7 @@ See also: [glue.extend](#extend).
 
 ------------------------------------------------------------------------------
 
-### `glue.reverse(t) -> t` {#reverse}
+### `glue.reverse(t) -> t`
 
 Reverse a list in-place and return the input arg.
 
@@ -295,7 +295,7 @@ Reverse a list in-place and return the input arg.
 
 ## Strings
 
-### `glue.gsplit(s,sep[,plain]) -> iterator<e[,captures...]>` {#gsplit}
+### `glue.gsplit(s,sep[,plain]) -> iterator<e[,captures...]>`
 
 Split a string by a separator pattern (or plain string) and iterate over the elements.
 
@@ -319,13 +319,13 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.trim(s) -> s` {#trim}
+### `glue.trim(s) -> s`
 
 Remove whitespace (defined as Lua pattern `"%s"`) from the beginning and end of a string.
 
 ------------------------------------------------------------------------------
 
-### `glue.escape(s[,mode]) -> pat` {#escape}
+### `glue.escape(s[,mode]) -> pat`
 
 Escape magic characters of the string `s` so that it can be used as a pattern to string matching functions.
 
@@ -340,7 +340,7 @@ Escape magic characters of the string `s` so that it can be used as a pattern to
 
 ------------------------------------------------------------------------------
 
-### `glue.tohex(s|n[,upper]) -> s` {#tohex}
+### `glue.tohex(s|n[,upper]) -> s`
 
 Convert a binary string or a Lua number to its hex representation.
 
@@ -352,7 +352,7 @@ See also: [glue.fromhex](#fromhex).
 
 ------------------------------------------------------------------------------
 
-### `glue.fromhex(s) -> s` {#fromhex}
+### `glue.fromhex(s) -> s`
 
 Convert a hex string to its binary representation.
 
@@ -362,7 +362,7 @@ See also: [glue.tohex](#tohex).
 
 ## Iterators
 
-### `glue.collect([i, ]iterator) -> t` {#collect}
+### `glue.collect([i, ]iterator) -> t`
 
 Iterate an iterator and collect its i'th return value of every step into a list.
 
@@ -393,7 +393,7 @@ for i=1,#t do print(t[i]) end
 
 ## Closures
 
-### `glue.pass(...) -> ...` {#pass}
+### `glue.pass(...) -> ...`
 
 The identity function. Does nothing, returns back all arguments.
 
@@ -412,7 +412,7 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.memoize(f) -> f` {#memoize}
+### `glue.memoize(f) -> f`
 
 Memoization for functions with any number of arguments and one return value.
 Supports nil and NaN args and retvals.
@@ -431,7 +431,7 @@ arguments require the [tuple] module.
 
 ## Metatables
 
-### `glue.inherit(t, parent) -> t` {#inherit}
+### `glue.inherit(t, parent) -> t`
 
 ### `glue.inherit(t, nil) -> t`
 
@@ -476,7 +476,7 @@ Hints:
 
 ------------------------------------------------------------------------------
 
-### `glue.autotable([t]) -> t` {#autotable}
+### `glue.autotable([t]) -> t`
 
 Set a table to create/return missing keys as autotables.
 
@@ -492,7 +492,7 @@ t.a.b.c.d = 'hello'
 
 ## I/O
 
-### `glue.fileexists(file) -> true | false` {#fileexists}
+### `glue.fileexists(file) -> true | false`
 
 Checks whether a file exists and it's available for reading.
 
@@ -500,7 +500,7 @@ See also: [glue.readfile](#readfile).
 
 ------------------------------------------------------------------------------
 
-### `glue.readfile(file[,format][,open]) -> s | nil, err` {#readfile}
+### `glue.readfile(file[,format][,open]) -> s | nil, err`
 
 Read the contents of a file into a string.
 
@@ -512,14 +512,14 @@ See also: [glue.writefile](#writefile), [glue.fileexists](#fileexists).
 
 ------------------------------------------------------------------------------
 
-### `glue.readpipe(cmd[,format][,open]) -> s | nil, err` {#readpipe}
+### `glue.readpipe(cmd[,format][,open]) -> s | nil, err`
 
 Read the output of a command into a string.
 The options are the same as for [glue.readfile](#readfile).
 
 ------------------------------------------------------------------------------
 
-### `glue.writefile(file,s|t|read[,format])` {#writefile}
+### `glue.writefile(file,s|t|read[,format])`
 
 Write the contents of a string, table or reader to a file.
 
@@ -534,7 +534,7 @@ See also: [glue.readfile](#readfile).
 
 ## Errors
 
-### `glue.assert(v[,message[,format_args...]])` {#assert}
+### `glue.assert(v[,message[,format_args...]])`
 
 Like `assert` but supports formatting of the error message using string.format.
 
@@ -549,7 +549,7 @@ glue.assert(depth <= maxdepth, 'maximum depth %d exceeded', maxdepth)
 
 ------------------------------------------------------------------------------
 
-### `glue.unprotect(ok,result,...) -> result,... | nil,result,...` {#unprotect}
+### `glue.unprotect(ok,result,...) -> result,... | nil,result,...`
 
 In Lua, API functions conventionally signal errors by returning nil and
 an error message instead of raising exceptions.
@@ -573,7 +573,7 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.pcall(f,...) -> true,... | false,error..'\n'..traceback` {#pcall}
+### `glue.pcall(f,...) -> true,... | false,error..'\n'..traceback`
 
 With Lua's pcall() you lose the stack trace, and with usual uses of pcall()
 you don't want that. This variant appends the traceback to the error message.
@@ -582,7 +582,7 @@ you don't want that. This variant appends the traceback to the error message.
 
 ------------------------------------------------------------------------------
 
-### `glue.fpcall(f,...) -> result | nil,error..'\n'..traceback` {#fpcall}
+### `glue.fpcall(f,...) -> result | nil,error..'\n'..traceback`
 
 ### `glue.fcall(f,...) -> result`
 
@@ -607,7 +607,7 @@ end, ...)
 
 ## Modules
 
-### `glue.autoload(t, submodules) -> t` {#autoload}
+### `glue.autoload(t, submodules) -> t`
 ### `glue.autoload(t, key, module|loader) -> t`
 
 Assign a metatable to `t` such that when a missing key is accessed, the module said to contain that key is require'd automatically.
@@ -661,7 +661,7 @@ foo.baz(...) -- foo_extra was now loaded automatically
 
 ------------------------------------------------------------------------------
 
-### `glue.bin` {#bin}
+### `glue.bin`
 
 Get the script's directory. This allows finding files in the script's
 directory regardless of the directory that Lua is started in.
@@ -682,7 +682,7 @@ so this stops working if the current directory is changed.
 
 ------------------------------------------------------------------------------
 
-### `glue.luapath(path[,index[,ext]])` {#luapath}
+### `glue.luapath(path[,index[,ext]])`
 
 Insert a Lua search pattern in `package.path` such that `require` will be able
 to load Lua modules from that path. The optional `index` arg specifies the
@@ -693,7 +693,7 @@ the same as 0). The optional `ext` arg specifies the file extension to use
 
 ------------------------------------------------------------------------------
 
-### `glue.cpath(path[,index])` {#cpath}
+### `glue.cpath(path[,index])`
 
 Insert a Lua search pattern in `package.cpath` such that `require` will be
 able to load Lua/C modules from that path. The `index` arg has the same
@@ -736,7 +736,7 @@ or glue.free() will not work!
 
 Allocate a `ctype` with system's malloc. The result has the type `ctype&`.
 
-### `glue.free(cdata)` {#free}
+### `glue.free(cdata)`
 
 Free malloc'ed memory.
 
@@ -758,7 +758,7 @@ glue.free(data)
 
 ~~~
 
-### `glue.addr(ptr) -> number | string` {#addr}
+### `glue.addr(ptr) -> number | string`
 
 Convert the address of a pointer into a Lua number (or possibly string
 on 64bit platforms). This is useful for:
@@ -766,7 +766,7 @@ on 64bit platforms). This is useful for:
   * hashing on pointer values (i.e. using pointers as table keys)
   * moving pointers in and out of Lua states when using [luastate]
 
-### `glue.ptr([ctype,]number|string) -> ptr` {#ptr}
+### `glue.ptr([ctype,]number|string) -> ptr`
 
 Convert an address value stored as a Lua number (or possibly string
 on 64bit platforms) to a cdata pointer, optionally specifying a ctype
