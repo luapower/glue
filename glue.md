@@ -5,64 +5,64 @@ tagline: everyday Lua functions
 ## `local glue = require'glue'`
 
 ## API Summary
------------------------------------------------------------------ ---------------------------------------------------------
+------------------------------------------------------------------ ---------------------------------------------------------
 __math__
-`glue.clamp(x, min, max)`                                         clamp x in range
+`glue.clamp(x, min, max)`                                          clamp x in range
 __varargs__
-glue.pack(...) -> t                                               [pack varargs](#pack)
-glue.unpack(t,[i][,j]) -> ...                                     [unpack varargs](#unpack)
+`glue.pack(...) -> t`                                              pack varargs
+`glue.unpack(t,[i][,j]) -> ...`                                    unpack varargs
 __tables__
-glue.count(t) -> n                                                [number of keys in table](#count)
-glue.index(t) -> dt                                               [switch keys with values](#index)
-glue.keys(t[,sorted|cmp]) -> dt                                   [make a list of all the keys](#keys)
-glue.update(dt,t1,...) -> dt                                      [merge tables - overwrites keys](#update)
-glue.merge(dt,t1,...) -> dt                                       [merge tables - no overwriting](#merge)
-glue.sortedpairs(t[,cmp])-> iterator<k,v>                         [like pairs() but in key order](#sortedpairs)
-glue.attr(t,k1[,v])[k2] = v                                       [autofield pattern](#attr)
+`glue.count(t) -> n`                                               number of keys in table
+`glue.index(t) -> dt`                                              switch keys with values
+`glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
+`glue.update(dt,t1,...) -> dt`                                     merge tables - overwrites keys
+`glue.merge(dt,t1,...) -> dt`                                      merge tables - no overwriting
+`glue.sortedpairs(t[,cmp])-> iterator() -> k,v`                    like pairs() but in key order
+`glue.attr(t,k1[,v])[k2] = v`                                      autofield pattern
 __lists__
-glue.indexof(t) -> dt                                             [scan array for value](#indexof)
-glue.extend(dt,t1,...) -> dt                                      [extend a list](#extend)
-glue.append(dt,v1,...) -> dt                                      [append non-nil values to a list](#append)
-glue.shift(t,i,n) -> t                                            [shift list elements](#shift)
-glue.reverse(t) -> t                                              [reverse list in place](#reverse)
+`glue.indexof(t) -> dt`                                            scan array for value
+`glue.extend(dt,t1,...) -> dt`                                     extend a list
+`glue.append(dt,v1,...) -> dt`                                     append non-nil values to a list
+`glue.shift(t,i,n) -> t`                                           shift list elements
+`glue.reverse(t) -> t`                                             reverse list in place
 __strings__
-glue.gsplit(s,sep[,plain]) -> iterator<e[,captures...]>           [split a string by a pattern](#gsplit)
-glue.trim(s) -> s                                                 [remove padding](#trim)
-glue.escape(s[,mode])-> s                                         [escape magic pattern characters](#escape)
-glue.tohex(s|n[,upper]) -> s                                      [string to hex](#tohex)
-glue.fromhex(s) -> s                                              [hex to string](#fromhex)
+`glue.gsplit(s,sep[,plain]) -> iterator() -> e[,captures...]       split a string by a pattern
+`glue.trim(s) -> s`                                                remove padding
+`glue.escape(s[,mode])-> s`                                        escape magic pattern characters
+`glue.tohex(s|n[,upper]) -> s`                                     string to hex
+`glue.fromhex(s) -> s`                                             hex to string
 __iterators__
-glue.collect([i,]iterator)-> t                                    [collect iterated values into a list](#collect)
+`glue.collect([i,]iterator)-> t`                                   collect iterated values into a list
 __closures__
-glue.pass(...) -> ...                                             [does nothing, returns back all arguments](#pass)
-glue.memoize(f[,cache]) -> f                                      [memoize pattern](#memoize)
+`glue.pass(...) -> ...`                                            does nothing, returns back all arguments
+`glue.memoize(f[,cache]) -> f`                                     memoize pattern
 __metatables__
-glue.inherit(t,parent) -> t                                       [set or clear inheritance](#inherit)
-glue.autotable([t]) -> t														              [autotable pattern](#autotable)
+`glue.inherit(t,parent) -> t`                                      set or clear inheritance
+`glue.autotable([t]) -> t`                                         autotable pattern
 __i/o__
-glue.fileexists(file) -> true | false                             [check if a file exists and it's readable](#fileexists)
-glue.readfile(file[,format][,open]) -> s | nil, err               [read the contents of a file into a string](#readfile)
-glue.readpipe(cmd[,format][,open]) -> s | nil, err                [read the output of a command into a string](#readpipe)
-glue.writefile(file,s[,format])                                   [write a string to a file](#writefile)
+`glue.fileexists(file) -> true | false`                            check if a file exists and it's readable
+`glue.readfile(file[,format][,open]) -> s | nil, err`              read the contents of a file into a string
+`glue.readpipe(cmd[,format][,open]) -> s | nil, err`               read the output of a command into a string
+`glue.writefile(file,s[,format])`                                  write a string to a file
 __errors__
-glue.assert(v,[message[,args...]]) -> args                        [assert with error message formatting](#assert)
-glue.unprotect(ok,result,...) -> result,... | nil,result,...      [unprotect a protected call](#unprotect)
-glue.pcall(f,...) -> true,... | false,traceback                   [pcall with traceback](#pcall) _(not for Lua 5.1)_
-glue.fpcall(f,...) -> result | nil,traceback                      [coding with finally and except](#fpcall)
-glue.fcall(f,...) -> result
+`glue.assert(v,[message[,args...]]) -> args`                       assert with error message formatting
+`glue.unprotect(ok,result,...) -> result,... | nil,result,...`     unprotect a protected call
+`glue.pcall(f,...) -> true,... | false,traceback`                  pcall with traceback
+`glue.fpcall(f,...) -> result | nil,traceback`                     coding with finally and except
+`glue.fcall(f,...) -> result`
 __modules__
-glue.autoload(t, submodule) -> t                                  [autoload table keys from submodules](#autoload)
-glue.autoload(t, key, module|loader) -> t                         [autoload table keys from submodules](#autoload)
-glue.bin                                                          [get the script's directory](#bin)
-glue.luapath(path[,index[,ext]])                                  [insert a path in package.path](#luapath)
-glue.cpath(path[,index])                                          [insert a path in package.cpath](#cpath)
+`glue.autoload(t, submodule) -> t`                                 autoload table keys from submodules
+`glue.autoload(t, key, module|loader) -> t`                        autoload table keys from submodules
+`glue.bin`                                                         get the script's directory
+`glue.luapath(path[,index[,ext]])`                                 insert a path in package.path
+`glue.cpath(path[,index])`                                         insert a path in package.cpath
 __ffi__
-glue.malloc([ctype,]size) -> cdata                                [allocate an array using system's malloc](#malloc-array)
-glue.malloc(ctype) -> cdata                                       [allocate a C type using system's malloc](#malloc-ctype)
-glue.free(cdata)                                                  [free malloc'ed memory](#free)
-glue.addr(ptr) -> number | string                                 [store pointer address in Lua value](#addr)
-glue.ptr([ctype,]number|string) -> ptr                            [convert address to pointer](#ptr)
------------------------------------------------------------------ ---------------------------------------------------------
+`glue.malloc([ctype,]size) -> cdata`                               allocate an array using system's malloc
+`glue.malloc(ctype) -> cdata`                                      allocate a C type using system's malloc
+`glue.free(cdata)`                                                 free malloc'ed memory
+`glue.addr(ptr) -> number | string`                                store pointer address in Lua value
+`glue.ptr([ctype,]number|string) -> ptr`                           convert address to pointer
+------------------------------------------------------------------ ---------------------------------------------------------
 
 ## Math
 
@@ -786,6 +786,7 @@ so you can use them as string methods:
 
 
 ## Keywords
+
 _for syntax highlighting_
 
 glue.clamp,
