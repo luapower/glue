@@ -17,18 +17,18 @@ __tables__
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
 `glue.update(dt,t1,...) -> dt`                                     merge tables - overwrites keys
 `glue.merge(dt,t1,...) -> dt`                                      merge tables - no overwriting
-`glue.sortedpairs(t[,cmp])-> iterator() -> k,v`                    like pairs() but in key order
+`glue.sortedpairs(t[,cmp]) -> iterator() -> k,v`                   like pairs() but in key order
 `glue.attr(t,k1[,v])[k2] = v`                                      autofield pattern
 __lists__
-`glue.indexof(t) -> dt`                                            scan array for value
+`glue.indexof(v, t) -> dt`                                         scan array for value
 `glue.extend(dt,t1,...) -> dt`                                     extend a list
 `glue.append(dt,v1,...) -> dt`                                     append non-nil values to a list
 `glue.shift(t,i,n) -> t`                                           shift list elements
 `glue.reverse(t) -> t`                                             reverse list in place
 __strings__
-`glue.gsplit(s,sep[,plain]) -> iterator() -> e[,captures...]       split a string by a pattern
+`glue.gsplit(s,sep[,plain]) -> iterator() -> e[,captures...]`      split a string by a pattern
 `glue.trim(s) -> s`                                                remove padding
-`glue.escape(s[,mode])-> s`                                        escape magic pattern characters
+`glue.escape(s[,mode]) -> pat`                                     escape magic pattern characters
 `glue.tohex(s|n[,upper]) -> s`                                     string to hex
 `glue.fromhex(s) -> s`                                             hex to string
 __iterators__
@@ -43,15 +43,15 @@ __i/o__
 `glue.fileexists(file) -> true | false`                            check if a file exists and it's readable
 `glue.readfile(file[,format][,open]) -> s | nil, err`              read the contents of a file into a string
 `glue.readpipe(cmd[,format][,open]) -> s | nil, err`               read the output of a command into a string
-`glue.writefile(file,s[,format])`                                  write a string to a file
+`glue.writefile(file,s|t|read[,format])                            write a string to a file
 __errors__
-`glue.assert(v[,message[,args...]]) -> args`                       assert with error message formatting
+`glue.assert(v[,message[,format_args...]]) -> args`                assert with error message formatting
 `glue.unprotect(ok,result,...) -> result,... | nil,result,...`     unprotect a protected call
 `glue.pcall(f,...) -> true,... | false,traceback`                  pcall with traceback
 `glue.fpcall(f,...) -> result | nil,traceback`                     coding with finally and except
 `glue.fcall(f,...) -> result`
 __modules__
-`glue.autoload(t, submodule) -> t`                                 autoload table keys from submodules
+`glue.autoload(t, submodules) -> t`                                autoload table keys from submodules
 `glue.autoload(t, key, module|loader) -> t`                        autoload table keys from submodules
 `glue.bin`                                                         get the script's directory
 `glue.luapath(path[,index[,ext]])`                                 insert a path in package.path
@@ -218,7 +218,7 @@ The implementation creates a temporary table to sort the keys in.
 
 ------------------------------------------------------------------------------
 
-### `glue.attr(t, k1)[k2] = v`
+### `glue.attr(t,k1[,v])[k2] = v`
 
 Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
 Useful for when an autotable is not wanted.
@@ -344,7 +344,7 @@ Convert a hex string to its binary representation.
 
 ## Iterators
 
-### `glue.collect([i, ]iterator) -> t`
+### `glue.collect([i,]iterator) -> t`
 
 Iterate an iterator and collect its i'th return value of every step into a list.
 
@@ -394,7 +394,7 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.memoize(f) -> f`
+### `glue.memoize(f[,cache]) -> f`
 
 Memoization for functions with any number of arguments and one return value.
 Supports nil and NaN args and retvals.
@@ -413,9 +413,7 @@ arguments require the [tuple] module.
 
 ## Metatables
 
-### `glue.inherit(t, parent) -> t`
-
-### `glue.inherit(t, nil) -> t`
+### `glue.inherit(t,parent) -> t` <br> `glue.inherit(t,nil) -> t`
 
 Set a table to inherit attributes from a parent table, or clear inheritance.
 
@@ -549,7 +547,7 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.pcall(f,...) -> true,... | false,error..'\n'..traceback`
+### `glue.pcall(f,...) -> true,... | false,traceback`
 
 With Lua's pcall() you lose the stack trace, and with usual uses of pcall()
 you don't want that. This variant appends the traceback to the error message.
@@ -558,7 +556,7 @@ you don't want that. This variant appends the traceback to the error message.
 
 ------------------------------------------------------------------------------
 
-### `glue.fpcall(f,...) -> result | nil,error..'\n'..traceback`
+### `glue.fpcall(f,...) -> result | nil,traceback`
 
 ### `glue.fcall(f,...) -> result`
 
@@ -583,8 +581,7 @@ end, ...)
 
 ## Modules
 
-### `glue.autoload(t, submodules) -> t`
-### `glue.autoload(t, key, module|loader) -> t`
+### `glue.autoload(t, submodules) -> t` <br> `glue.autoload(t, key, module|loader) -> t`
 
 Assign a metatable to `t` such that when a missing key is accessed, the module said to contain that key is require'd automatically.
 
