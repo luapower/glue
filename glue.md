@@ -10,14 +10,14 @@ __math__
 `glue.clamp(x, min, max)`                                          clamp x in range
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
-`glue.unpack(t,[i],[j]) -> ...`                                    unpack varargs
+`glue.unpack(t,[i][,j]) -> ...`                                    unpack varargs
 __tables__
 `glue.count(t) -> n`                                               number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
 `glue.update(dt,t1,...) -> dt`                                     merge tables - overwrites keys
 `glue.merge(dt,t1,...) -> dt`                                      merge tables - no overwriting
-`glue.sortedpairs(t,[cmp])-> iterator() -> k,v`                    like pairs() but in key order
+`glue.sortedpairs(t[,cmp])-> iterator() -> k,v`                    like pairs() but in key order
 `glue.attr(t,k1[,v])[k2] = v`                                      autofield pattern
 __lists__
 `glue.indexof(t) -> dt`                                            scan array for value
@@ -45,7 +45,7 @@ __i/o__
 `glue.readpipe(cmd[,format][,open]) -> s | nil, err`               read the output of a command into a string
 `glue.writefile(file,s[,format])`                                  write a string to a file
 __errors__
-`glue.assert(v,[message[,args...]]) -> args`                       assert with error message formatting
+`glue.assert(v[,message[,args...]]) -> args`                       assert with error message formatting
 `glue.unprotect(ok,result,...) -> result,... | nil,result,...`     unprotect a protected call
 `glue.pcall(f,...) -> true,... | false,traceback`                  pcall with traceback
 `glue.fpcall(f,...) -> result | nil,traceback`                     coding with finally and except
@@ -78,7 +78,7 @@ Clamp a value in range. Implemented as `math.min(math.max(x, min), max)`.
 
 Pack varargs. Implemented as `n = select('#', ...), ...}`.
 
-### `glue.unpack(t,[i],[j]) -> ...`
+### `glue.unpack(t,[i][,j]) -> ...`
 
 Unpack varargs. Implemented as `unpack(t, i or 1, j or t.n or #t)`.
 
@@ -210,7 +210,7 @@ glue.merge(t, defaults)
 
 ------------------------------------------------------------------------------
 
-### `glue.sortedpairs(t[,cmp]) -> iterator<k,v>`
+### `glue.sortedpairs(t[,cmp]) -> iterator() -> k,v`
 
 Like pairs() but in key order.
 
@@ -281,7 +281,7 @@ Reverse a list in-place and return the input arg.
 
 ## Strings
 
-### `glue.gsplit(s,sep[,plain]) -> iterator<e[,captures...]>`
+### `glue.gsplit(s,sep[,plain]) -> iterator() -> e[,captures...]`
 
 Split a string by a separator pattern (or plain string) and iterate over the elements.
 
