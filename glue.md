@@ -20,7 +20,7 @@ __tables__
 `glue.sortedpairs(t[,cmp]) -> iterator() -> k,v`                   like pairs() but in key order
 `glue.attr(t,k1[,v])[k2] = v`                                      autofield pattern
 __lists__
-`glue.indexof(v, t) -> dt`                                         scan array for value
+`glue.indexof(v, t) -> i`                                          scan array for value
 `glue.extend(dt,t1,...) -> dt`                                     extend a list
 `glue.append(dt,v1,...) -> dt`                                     append non-nil values to a list
 `glue.shift(t,i,n) -> t`                                           shift list elements
@@ -32,7 +32,7 @@ __strings__
 `glue.tohex(s|n[,upper]) -> s`                                     string to hex
 `glue.fromhex(s) -> s`                                             hex to string
 __iterators__
-`glue.collect([i,]iterator)-> t`                                   collect iterated values into a list
+`glue.collect([i,]iterator) -> t`                                  collect iterated values into a list
 __closures__
 `glue.pass(...) -> ...`                                            does nothing, returns back all arguments
 `glue.memoize(f[,cache]) -> f`                                     memoize pattern
@@ -43,9 +43,9 @@ __i/o__
 `glue.fileexists(file) -> true | false`                            check if a file exists and it's readable
 `glue.readfile(file[,format][,open]) -> s | nil, err`              read the contents of a file into a string
 `glue.readpipe(cmd[,format][,open]) -> s | nil, err`               read the output of a command into a string
-`glue.writefile(file,s|t|read[,format])                            write a string to a file
+`glue.writefile(file,s|t|read[,format])`                           write a string to a file
 __errors__
-`glue.assert(v[,message[,format_args...]]) -> args`                assert with error message formatting
+`glue.assert(v[,message[,format_args...]])`                        assert with error message formatting
 `glue.unprotect(ok,result,...) -> result,... | nil,result,...`     unprotect a protected call
 `glue.pcall(f,...) -> true,... | false,traceback`                  pcall with traceback
 `glue.fpcall(f,...) -> result | nil,traceback`                     coding with finally and except
