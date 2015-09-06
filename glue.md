@@ -17,7 +17,7 @@ __tables__
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
 `glue.update(dt,t1,...) -> dt`                                     merge tables - overwrites keys
 `glue.merge(dt,t1,...) -> dt`                                      merge tables - no overwriting
-`glue.sortedpairs(t[,cmp])-> iterator() -> k,v`                    like pairs() but in key order
+`glue.sortedpairs(t,[cmp])-> iterator() -> k,v`                    like pairs() but in key order
 `glue.attr(t,k1[,v])[k2] = v`                                      autofield pattern
 __lists__
 `glue.indexof(t) -> dt`                                            scan array for value
@@ -162,8 +162,6 @@ An API expects a list of things but you have them as keys in a table because you
 
 For instance, you have a table of the form `{socket = thread}` but `socket.select` wants a list of sockets.
 
-See also: [glue.sortedpairs](#sortedpairs).
-
 ------------------------------------------------------------------------------
 
 ### `glue.update(dt,t1,...) -> dt`
@@ -194,8 +192,6 @@ Static multiple inheritance:
 C = glue.update({}, A, B) --#TODO: find real-world example of multiple inheritance
 ~~~
 
-See also: [glue.extend](#extend), [glue.inherit](#inherit).
-
 ------------------------------------------------------------------------------
 
 ### `glue.merge(dt,t1,...) -> dt`
@@ -212,8 +208,6 @@ Normalize a data object with default values:
 glue.merge(t, defaults)
 ~~~
 
-See also: [glue.update](#update).
-
 ------------------------------------------------------------------------------
 
 ### `glue.sortedpairs(t[,cmp]) -> iterator<k,v>`
@@ -222,14 +216,12 @@ Like pairs() but in key order.
 
 The implementation creates a temporary table to sort the keys in.
 
-See also: [glue.keys](#keys).
-
 ------------------------------------------------------------------------------
 
 ### `glue.attr(t, k1)[k2] = v`
 
 Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
-Useful for when an [autotable](#autotable) is not wanted.
+Useful for when an autotable is not wanted.
 
 ------------------------------------------------------------------------------
 
@@ -252,8 +244,6 @@ Extend the list with the elements of other lists.
 
 Accumulating values from multiple list sources.
 
-See also: [glue.append](#append), [glue.update](#update).
-
 ------------------------------------------------------------------------------
 
 ### `glue.append(dt,v1,...) -> dt`
@@ -263,8 +253,6 @@ Append non-nil arguments to a list.
 #### Uses
 
 Appending an object to a flattened list of lists (eg. appending a path element to a 2d path).
-
-See also: [glue.extend](#extend), [glue.update](#update).
 
 ------------------------------------------------------------------------------
 
@@ -282,8 +270,6 @@ When `n` is -1, the effect is the same as for `table.remove(t, i)`.
 #### Uses
 
 Removing a portion of a list or making room for more elements inside the list.
-
-See also: [glue.extend](#extend).
 
 ------------------------------------------------------------------------------
 
@@ -348,15 +334,11 @@ Convert a binary string or a Lua number to its hex representation.
   * uppercase if the arg `upper` is truthy
   * numbers must be in the unsigned 32 bit integer range
 
-See also: [glue.fromhex](#fromhex).
-
 ------------------------------------------------------------------------------
 
 ### `glue.fromhex(s) -> s`
 
 Convert a hex string to its binary representation.
-
-See also: [glue.tohex](#tohex).
 
 ------------------------------------------------------------------------------
 
@@ -471,7 +453,7 @@ _ENV = glue.inherit({},_G)
 
 Hints:
 
-  * to get the effect of static (single or multiple) inheritance, use [glue.update](#update).
+  * to get the effect of static (single or multiple) inheritance, use `glue.update`.
   * when setting inheritance, you can pass in a function.
 
 ------------------------------------------------------------------------------
@@ -496,8 +478,6 @@ t.a.b.c.d = 'hello'
 
 Checks whether a file exists and it's available for reading.
 
-See also: [glue.readfile](#readfile).
-
 ------------------------------------------------------------------------------
 
 ### `glue.readfile(file[,format][,open]) -> s | nil, err`
@@ -508,14 +488,12 @@ Read the contents of a file into a string.
   (default is binary mode).
   * `open` is the file open function which defaults to `io.open`.
 
-See also: [glue.writefile](#writefile), [glue.fileexists](#fileexists).
-
 ------------------------------------------------------------------------------
 
 ### `glue.readpipe(cmd[,format][,open]) -> s | nil, err`
 
 Read the output of a command into a string.
-The options are the same as for [glue.readfile](#readfile).
+The options are the same as for `glue.readfile`.
 
 ------------------------------------------------------------------------------
 
@@ -527,8 +505,6 @@ Write the contents of a string, table or reader to a file.
    (default is binary mode).
   * `read` can be a function to draw strings or numbers from.
   * if writing fails, the file is removed and an error is raised.
-
-See also: [glue.readfile](#readfile).
 
 ------------------------------------------------------------------------------
 
