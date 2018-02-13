@@ -492,10 +492,10 @@ as its own metatable, setting `t.__index` to `super` and `t.__call` to
   * small memory footprint (3 table slots and no additional tables).
   * subclassing from instances is allowed (prototype-based inheritance).
   * a stub class/instance constructor looks like this:
-    * `function t:__call(o) return glue.object(o, self) end`.
+    * `function t:__call(o) return glue.object(self, o) end`.
   * a separate constructor to be used only for subclassing can be made with
   the same pattern:
-    * `function t:subclass(c) return glue.object(c, self) end`.
+    * `function t:subclass(c) return glue.object(self, c) end`.
   * when overriding, super's methods can be called easily with:
     * `self.__index.<method>(self, ...)`
   * composite objects which need to instantiate other objects can be made
