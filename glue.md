@@ -510,7 +510,7 @@ as its own metatable, setting `t.__index` to `super` and `t.__call` to
 
 There are also some limitations:
 
-  * when overriding, super's methods must be called with:
+  * when overriding, the super class must be referenced explicitly:
     * `<super_class>.<method>(self, ...)`.
 
 ------------------------------------------------------------------------------
