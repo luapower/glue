@@ -7,7 +7,7 @@ tagline: everyday Lua functions
 ## API Summary
 ------------------------------------------------------------------ ---------------------------------------------------------
 __math__
-`glue.round(x) -> y`                                               round x to nearest integer
+`glue.round(x) -> y`                                               round x to nearest integer (half up)
 `glue.clamp(x, min, max) -> y`                                     clamp x in range
 `glue.lerp(x, x0, x1, y0, y1) -> y`                                linear interpolation
 __varargs__
@@ -70,6 +70,18 @@ __ffi__
 ------------------------------------------------------------------ ---------------------------------------------------------
 
 ## Math
+
+### `glue.round(x) -> y`
+
+Round a number towards nearest integer (implemented as `math.floor(x + .5)`.
+Rounds half-up (i.e. it returns `-1` for `-1.5`). Works with numbers up to
+`+/-2^52`. It's not dead accurate as it returns eg. `1` instead of `0` for
+`0.49999999999999997` (the number right before `0.5`) which is < `0.5`.
+
+### `glue.snap(x, y) -> y`
+
+Snap a number to the nearest multiple of `y`. The rounding behavior is
+half-up (i.e. returns `-5` for `glue.snap(-7.5, 5)`).
 
 ### `glue.clamp(x, min, max)`
 
@@ -836,32 +848,14 @@ for the pointer (defaults to `void*`).
 
 ## Tips
 
-String functions are also in the `glue.string` table. You can extend the Lua `string` namespace:
+String functions are also in the `glue.string` table.
+You can extend the Lua `string` namespace:
 
-	glue.update(string, glue.string)
+	`glue.update(string, glue.string)`
 
 so you can use them as string methods:
 
-	s = s:trim()
-
-
-## Keywords
-
-_for syntax highlighting_
-
-glue.clamp,
-glue.pack, glue.unpack,
-glue.count, glue.index, glue.keys, glue.update, glue.merge, glue.sortedpairs, glue.attr,
-glue.indexof, glue.extend, glue.append, glue.shift, glue.reverse,
-glue.gsplit, glue.lines, glue.trim, glue.escape, glue.tohex, glue.fromhex,
-glue.collect,
-glue.pass, glue.memoize,
-glue.inherit, glue.object, glue.autotable,
-glue.canopen, glue.readfile, glue.readpipe, glue.writefile, glue.printer,
-glue.assert, glue.protect, glue.pcall, glue.fpcall, glue.fcall,
-glue.autoload, glue.bin, glue.luapath, glue.cpath,
-glue.malloc, glue.free, glue.addr, glue.ptr
-
+	`s = s:trim()`
 
 ## Design
 

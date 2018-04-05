@@ -1,6 +1,16 @@
 local glue = require'glue'
 require'unit'
 
+test(glue.round(1.2), 1)
+test(glue.round(-1.2), -1)
+test(glue.round(1.5), 2) --half-up
+test(glue.round(-1.5), -1) --half-up
+test(glue.round(2^52+.49), 2^52) --largest number that works
+
+test(glue.snap(7, 5), 5)
+test(glue.snap(7.5, 5), 10) --half-up
+test(glue.snap(-7.5, 5), -5) --half-up
+
 test(glue.clamp(3, 2, 5), 3)
 test(glue.clamp(1, 2, 5), 2)
 test(glue.clamp(6, 2, 5), 5)

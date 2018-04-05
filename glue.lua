@@ -18,6 +18,10 @@ function glue.round(x)
 	return floor(x + 0.5)
 end
 
+function glue.snap(x, y)
+	return math.floor(x / y + .5) * y
+end
+
 function glue.clamp(x, x0, x1)
 	return min(max(x, x0), x1)
 end
