@@ -133,6 +133,12 @@ test(glue.fromhex'DEADBEEF02', '\xde\xad\xbe\xef\x02')
 test(glue.fromhex'5', '\5')
 test(glue.fromhex'5ff', '\5\xff')
 
+test(glue.starts('abc', 'ab'), true)
+test(glue.starts('aabc', 'ab'), false)
+test(glue.starts('', ''), true)
+test(glue.starts('abc', ''), true)
+test(glue.starts('', 'a'), false)
+
 test(glue.collect(('abc'):gmatch('.')), {'a','b','c'})
 test(glue.collect(2,ipairs{5,7,2}), {5,7,2})
 

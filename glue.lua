@@ -278,6 +278,10 @@ function glue.string.fromhex(s)
 	end))
 end
 
+function glue.string.starts(s, p) --5x faster than s:find'^...' in LuaJIT 2.1
+	return s:sub(1, #p) == p
+end
+
 --publish the string submodule in the glue namespace.
 glue.update(glue, glue.string)
 

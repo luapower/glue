@@ -34,6 +34,7 @@ __strings__
 `glue.escape(s [,mode]) -> pat`                                    escape magic pattern characters
 `glue.tohex(s|n [,upper]) -> s`                                    string to hex
 `glue.fromhex(s) -> s`                                             hex to string
+`glue.starts(s, p) -> t|f`                                         find if string `s` starts with string `p`
 __iterators__
 `glue.collect([i,] iterator) -> t`                                 collect iterated values into a list
 __closures__
@@ -376,6 +377,14 @@ Convert a binary string or a Lua number to its hex representation.
 ### `glue.fromhex(s) -> s`
 
 Convert a hex string to its binary representation.
+
+------------------------------------------------------------------------------
+
+### `glue.starts(s, p) -> t|f`
+
+Find if string `s` starts with `p`. Implemented as `s:sub(1, #p) == p` which
+is 5x faster than `s:find'^...'` in LuaJIT 2.1 with JIT on (and about the
+same with jit off).
 
 ------------------------------------------------------------------------------
 
