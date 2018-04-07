@@ -29,7 +29,7 @@ __lists__
 `glue.reverse(t) -> t`                                             reverse list in place
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
-`glue.lines(s) -> iter() -> s`                                     iterate the lines of a string
+`glue.lines(s[, opt]) -> iter() -> s`                              iterate the lines of a string
 `glue.trim(s) -> s`                                                remove padding
 `glue.escape(s [,mode]) -> pat`                                    escape magic pattern characters
 `glue.tohex(s|n [,upper]) -> s`                                    string to hex
@@ -325,14 +325,15 @@ end
 
 ------------------------------------------------------------------------------
 
-### `glue.lines(s) -> iter() -> s`
+### `glue.lines(s[, opt]) -> iter() -> s`
 
 Iterate the lines of a string.
 
   * the lines are split at `\r\n`, `\r` and `\n` markers.
-  * the line ending markers are included in the iterated strings.
+  * the line ending markers are included or excluded depending on the second
+  arg, which can be `*L` (include line endings; default) or `*l` (exclude).
   * if the string is empty or doesn't contain a line ending marker, it is
-  is iterated once.
+  iterated once.
   * if the string ends with a line ending marker, one more empty string is
   iterated.
 
