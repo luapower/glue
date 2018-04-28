@@ -42,7 +42,7 @@ __closures__
 `glue.memoize(f) -> f`                                             memoize pattern
 __metatables__
 `glue.inherit(t, parent) -> t`                                     set or clear inheritance
-`glue.object([super][, t]) -> t`                                   create a class or object (see description)
+`glue.object([super][, t], ...) -> t`                              create a class or object (see description)
 `glue.autotable([t]) -> t`                                         autotable pattern
 __i/o__
 `glue.canopen(filename[, mode]) -> filename | nil`                 check if a file exists and can be opened
@@ -500,22 +500,22 @@ Hints:
 
 ------------------------------------------------------------------------------
 
-### `glue.object([super][, t]) -> t`
+### `glue.object([super][, t], ...) -> t`
 
 Create a class or object from `t` (which defaults to `{}`) by setting `t`
 as its own metatable, setting `t.__index` to `super` and `t.__call` to
-`super.__call`. This simple object model has the following qualities:
+`super.__call`. Extra args are passed to `glue.update(self, ...)`.
+This simple object model has the following qualities:
 
-  * the implementation is only 4 LOC (not a typo) and can thus be copy-pasted
-  into any module to avoid a dependency on the glue library.
+  * the implementation is only 4 LOC (14 LOC if extra args are used) and can
+  thus be copy-pasted into any module to avoid a dependency on the glue library.
   * procedural instantiation with `t(...)` which calls `t:__call(...)`.
   * small memory footprint (3 table slots and no additional tables).
   * subclassing from instances is allowed (prototype-based inheritance).
-  * a stub class/instance constructor looks like this:
-    * `function t:__call(o) return glue.object(self, o) end`.
+  * `glue.object` can serve as a stub class/instance constructor:
+  `t.__call = glue.object`.
   * a separate constructor to be used only for subclassing can be made with
-  the same pattern:
-    * `function t:subclass(c) return glue.object(self, c) end`.
+  the same pattern: `t.subclass = glue.object`.
   * virtual classes (i.e. nested inner classes whose fields and methods can
   be overridden by subclasses of the outer class): composite objects which
   need to instantiate other objects can be made extendable easily by exposing
