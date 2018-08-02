@@ -6,20 +6,23 @@ if not ... then require'glue_test'; return end
 
 local glue = {}
 
+local min, max, floor, select, unpack, pairs, rawget =
+	math.min, math.max, math.floor, select, unpack, pairs, rawget
+
 function glue.round(x, p)
 	p = p or 1
-	return math.floor(x / p + .5) * p
+	return floor(x / p + .5) * p
 end
 
 function glue.floor(x, p)
 	p = p or 1
-	return math.floor(x / p) * p
+	return floor(x / p) * p
 end
 
 glue.snap = glue.round
 
 function glue.clamp(x, x0, x1)
-	return math.min(math.max(x, x0), x1)
+	return min(max(x, x0), x1)
 end
 
 function glue.lerp(x, x0, x1, y0, y1)
@@ -143,7 +146,7 @@ end
 --remove n elements at i, shifting elements on the right of i (i inclusive)
 --to the left.
 local function remove(t, i, n)
-	n = math.min(n, #t-i+1)
+	n = min(n, #t-i+1)
 	if n == 1 then --shift 1
 		table.remove(t, i)
 		return
@@ -185,7 +188,7 @@ function glue.binsearch(v, t, cmp)
 	if n == 1 then return not cmp(t[1], v) and 1 or nil end
 	local lo, hi = 1, n
 	while lo < hi do
-		local mid = math.floor(lo + (hi - lo) / 2)
+		local mid = floor(lo + (hi - lo) / 2)
 		if cmp(t[mid], v) then
 			lo = mid + 1
 			if lo == n and cmp(t[lo], v) then
@@ -616,7 +619,6 @@ end
 local function memoize_vararg(fn, minarg, maxarg)
 	local cache = {}
 	local values = {}
-	local min, max, select = math.min, math.max, select
 	return function(...)
 		local key = cache
 		local narg = min(max(select('#',...), minarg), maxarg)
