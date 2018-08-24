@@ -32,8 +32,6 @@ __arrays__
 `glue.indexof(v, t, [i], [j]) -> i`                                scan array for value
 `glue.binsearch(v, t, [cmp], [i], [j]) -> i`                       binary search in sorted list
 `glue.reverse(t, [i], [j]) -> t`                                   reverse list in place
-`glue.find(v, t, [i], [j], [step]) -> ...`                         linear search
-`glue.find_reverse(v, t, [i], [j], [step]) -> ...`                 linear search from the list end
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
 `glue.lines(s[, opt]) -> iter() -> s`                              iterate the lines of a string
