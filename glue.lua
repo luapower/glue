@@ -840,7 +840,7 @@ local ffi = require'ffi'
 --static, auto-growing buffer allocation pattern.
 function glue.growbuffer(ctype, growth_factor)
 	local ctype = ffi.typeof(ctype or 'char[?]')
-	growth_factor = growth_factor or 1
+	growth_factor = growth_factor or 2
 	local buf, len = nil, -1
 	return function(newlen)
 		if not newlen then
