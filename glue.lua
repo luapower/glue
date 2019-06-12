@@ -846,7 +846,6 @@ function glue.growbuffer(ctype)
 			buf, len = nil, -1
 		elseif newlen > len then
 			len = glue.nextpow2(newlen)
-			print(newlen, len)
 			buf = ctype(len)
 		end
 		return buf, newlen
