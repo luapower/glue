@@ -35,7 +35,7 @@ function glue.lerp(x, x0, x1, y0, y1)
 end
 
 function glue.nextpow2(x)
-	return max(0, ceil(log(x) / log(2)))
+	return max(0, 2^(ceil(log(x) / log(2))))
 end
 
 function glue.pack(...)
@@ -846,6 +846,7 @@ function glue.growbuffer(ctype)
 			buf, len = nil, -1
 		elseif newlen > len then
 			len = glue.nextpow2(newlen)
+			print(newlen, len)
 			buf = ctype(len)
 		end
 		return buf, newlen
