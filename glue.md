@@ -47,8 +47,8 @@ __iterators__
 __closures__
 `glue.pass(...) -> ...`                                            does nothing, returns back all arguments
 `glue.noop(...)`                                                   does nothing, returns nothing
-`glue.memoize(f[, n]) -> f`                                        memoize pattern
-`glue.tuples([n]) -> f(...) -> t`                                  tuple pattern
+`glue.memoize(f[, narg]) -> f`                                     memoize pattern
+`glue.tuples([narg]) -> f(...) -> t`                               tuple pattern
 __metatables__
 `glue.inherit(t, parent) -> t`                                     set or clear inheritance
 `glue.object([super][, t], ...) -> t`                              create a class or object (see description)
@@ -517,7 +517,7 @@ Does nothing. Returns nothing.
 
 ------------------------------------------------------------------------------
 
-### `glue.memoize(f[, n]) -> f`
+### `glue.memoize(f[, narg]) -> f`
 
 Memoization for functions with any number of arguments and _one return value_.
 Supports `nil` and `NaN` args and retvals.
@@ -528,15 +528,15 @@ if any. For instance, for a function `f(x, y, ...)`, calling `f(1)` is
 considered the same as calling `f(1, nil)`, but calling `f(1, nil)` is not
 the same as calling `f(1, nil, nil)`.
 
-The optional `n` fixates the function to always take exactly `n` args.
+The optional `narg` fixates the function to always take exactly `narg` args.
 
-### `glue.tuples([n]) -> f(...) -> t`
+### `glue.tuples([narg]) -> f(...) -> t`
 
 Create a tuple space, which is a function that returns the same identity `t`
 for the same list of arguments. It is implemented as:
 
 ```lua
-function glue.tuple(narg)
+function glue.tuples(narg)
 	return glue.memoize(function(...) return glue.pack(...) end)
 end
 ```
