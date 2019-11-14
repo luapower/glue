@@ -73,11 +73,11 @@ __modules__
 __allocation__
 `glue.freelist([create], [destroy]) -> alloc, free`                freelist allocation pattern
 `glue.growbuffer([ctype],[keep_data]) -> alloc(len) -> buf,len`    static auto-growing buffer
-__ffi__
 `glue.malloc([ctype, ]size) -> cdata`                              allocate an array using system's malloc
 `glue.malloc(ctype) -> cdata`                                      allocate a C type using system's malloc
 `glue.gcmalloc(...) -> cdata`                                      garbage collected malloc
 `glue.free(cdata)`                                                 free malloc'ed memory
+__ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
 `glue.getbit(val, mask) -> true|false`                             get the value of a single bit from an integer
@@ -893,24 +893,16 @@ internal buffer (alloc can still be used afterwards).
 
 > __NOTE__: LuaJIT only.
 
-------------------------------------------------------------------------------
-
-## FFI
-
 ### `glue.malloc([ctype,]size) -> cdata` {#malloc-array}
 
 Allocate a `ctype[size]` array with system's malloc. Useful for allocating
-larger chunks of memory without hitting the default allocator's 2 GB limit.
+memory without hitting the default allocator's 2 GB limit.
 
   * the returned cdata has the type `ctype(&)[size]` so ffi.sizeof(cdata)
   returns the correct size (the downside is that size cannot exceed 2 GB).
   * `ctype` defaults to `char`.
   * failure to allocate results in error.
-  * the memory is freed when the cdata gets collected or with `glue.free()`.
-
-__REMEMBER!__ Just like with `ffi.new`, casting the result cdata further will
-get you _weak references_ to the allocated memory. To transfer ownership
-of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
+  * the memory must be freed manually by calling `glue.free()`.
 
 > __NOTE__: LuaJIT only.
 
@@ -924,6 +916,10 @@ or glue.free() will not work!
 ### `glue.gcmalloc([ctype,]size) -> cdata` {#gcmalloc}
 
 Calls `ffi.gc(glue.malloc(), glue.free)`.
+
+__REMEMBER!__ Just like with `ffi.new`, casting the result cdata further will
+get you _weak references_ to the allocated memory. To transfer ownership
+of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
 
 ### `glue.free(cdata)`
 
@@ -945,6 +941,10 @@ assert(ffi.sizeof(data) == ffi.sizeof'struct S')
 glue.free(data)
 
 ~~~
+
+------------------------------------------------------------------------------
+
+## FFI
 
 ### `glue.addr(ptr) -> number | string`
 
