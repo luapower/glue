@@ -76,8 +76,8 @@ __modules__
 `glue.cpath(path [,index])`                                        insert a path in package.cpath
 __allocation__
 `glue.freelist([create], [destroy]) -> alloc, free`                freelist allocation pattern
-`glue.buffer([ctype]) -> alloc(len) -> buf,len`                    static auto-growing buffer
-`glue.dynarray([ctype]) -> alloc(len) -> buf,len`                  static auto-growing cdata array
+`glue.buffer([ctype]) -> alloc(minlen) -> buf,capacity`            auto-growing buffer
+`glue.dynarray([ctype]) -> alloc(len) -> buf,len`                  dynamic cdata array
 `glue.malloc([ctype, ]size) -> cdata`                              allocate an array using system's malloc
 `glue.malloc(ctype) -> cdata`                                      allocate a C type using system's malloc
 `glue.gcmalloc(...) -> cdata`                                      garbage collected malloc
@@ -972,13 +972,30 @@ Lua objects. The allocator returns the last freed object or calls `create()`
 to create a new one if the freelist is empty. `create` defaults to
 `function() return {} end`; `destroy` defaults to `glue.noop`.
 
-### `glue.growbuffer([ctype], [keep_data]) -> alloc(len|false) -> buf, len`
+### `glue.buffer([ctype]) -> alloc(minlen|false) -> buf, capacity`
 
-Return an allocation function that reuses or reallocates (optionally
-preserving the contents of) an internal static buffer. Good for allocating
-small but otherwise var-sized temporary buffers without stressing the garbage
-collector or fragmenting the memory much. Calling `alloc(false)` frees the
-internal buffer (alloc can still be used afterwards).
+Return an allocation function that reuses or reallocates an internal buffer
+based on the `len` argument. The returned pointer is garbage collected.
+`ctype` is the type of one element and it defaults to `char`.
+
+The buffer only grows, it never shrinks and it only grows in powers of two steps.
+
+The contents of the buffer _are not preserved_ between allocations.
+
+The allocation function returns the buffer's current capacity which can be
+equal or greater than the requested length.
+
+### `glue.dynarray([ctype]) -> alloc(len|false) -> buf, len`
+
+Return an allocation function that reuses or reallocates an internal buffer
+based on the `len` argument. The returned pointer is garbage collected.
+`ctype` is the type of one element and it defaults to `char`.
+
+The internal buffer grows and shrinks in powers of two steps.
+
+The contents of the buffer are preserved between allocations.
+
+The allocation function always returns the buffer's requested length.
 
 > __NOTE__: LuaJIT only.
 
