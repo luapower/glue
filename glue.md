@@ -975,27 +975,28 @@ to create a new one if the freelist is empty. `create` defaults to
 ### `glue.buffer([ctype]) -> alloc(minlen|false) -> buf, capacity`
 
 Return an allocation function that reuses or reallocates an internal buffer
-based on the `len` argument. The returned pointer is garbage collected.
-`ctype` is the type of one element and it defaults to `char`.
+based on the `len` argument.
 
-The buffer only grows, it never shrinks and it only grows in powers of two steps.
-
-The contents of the buffer _are not preserved_ between allocations.
-
-The allocation function returns the buffer's current capacity which can be
-equal or greater than the requested length.
+  * `ctype` is the type of one element and it defaults to `char`.
+  * the buffer only grows, it never shrinks and it only grows in
+    powers of two steps.
+  * the contents of the buffer _are not preserved_ between allocations.
+  * the allocation function returns the buffer's current capacity which
+    can be equal or greater than the requested length.
+  * the returned pointer is garbage collected: for faster deallocation
+    use `glue.free()` and don't use the allocation function afterwards.
 
 ### `glue.dynarray([ctype]) -> alloc(len|false) -> buf, len`
 
 Return an allocation function that reuses or reallocates an internal buffer
-based on the `len` argument. The returned pointer is garbage collected.
-`ctype` is the type of one element and it defaults to `char`.
+based on the `len` argument.
 
-The internal buffer grows and shrinks in powers of two steps.
-
-The contents of the buffer are preserved between allocations.
-
-The allocation function always returns the buffer's requested length.
+  * `ctype` is the type of one element and it defaults to `char`.
+  * the internal buffer grows and shrinks in powers of two steps.
+  * the contents of the buffer are preserved between allocations.
+  * the allocation function always returns the buffer's requested length.
+  * the returned pointer is garbage collected: for faster deallocation
+    use `glue.free()` and don't use the allocation function afterwards.
 
 > __NOTE__: LuaJIT only.
 
@@ -1023,13 +1024,14 @@ or glue.free() will not work!
 
 Calls `ffi.gc(glue.malloc(), glue.free)`.
 
-__REMEMBER!__ Just like with `ffi.new`, casting the result cdata further will
-get you _weak references_ to the allocated memory. To transfer ownership
+__REMEMBER!__ Just like with `ffi.new`, casting the result cdata further
+will get you _weak references_ to the allocated memory. To transfer ownership
 of the memory, use `ffi.gc(original, nil); ffi.gc(pointer, glue.free)`.
 
 ### `glue.free(cdata)`
 
-Free malloc'ed memory.
+Free malloc'ed memory. Also works on buffer and dynarray pointers for
+deterministic deallocation.
 
 #### Example
 
