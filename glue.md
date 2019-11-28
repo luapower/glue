@@ -915,6 +915,9 @@ local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
 This only works if glue itself can already be found and required
 (chicken/egg problem). Also, the path is relative to the current directory,
 so this stops working as soon as the current directory is changed.
+Also, depending on how the process was started, this information might be
+missing or wrong since it's set by the parent process. Better use
+[fs].exedir which has none of these problems.
 
 ------------------------------------------------------------------------------
 
