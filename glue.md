@@ -732,7 +732,7 @@ The options are the same as for `glue.readfile`.
 
 ------------------------------------------------------------------------------
 
-### `glue.movefile(oldpath, newpath)`
+### `glue.replacefile(oldpath, newpath)`
 
 Move or rename a file. If `newpath` exists and it's a file, it is replaced
 by the old file atomically. The operation can still fail under many
