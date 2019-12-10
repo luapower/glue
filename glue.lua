@@ -645,7 +645,7 @@ if jit then
 
 		local MOVEFILE_REPLACE_EXISTING = 1
 
-		function glue.replacefile(oldfile, newfile)
+		function glue.movefile(oldfile, newfile)
 			local ret = ffi.C.MoveFileExA(oldfile, newfile,
 				MOVEFILE_REPLACE_EXISTING)
 			if ret == 0 then
@@ -658,7 +658,7 @@ if jit then
 
 	else
 
-		function glue.replacefile(oldfile, newfile)
+		function glue.movefile(oldfile, newfile)
 			return os.rename(oldfile, newfile)
 		end
 
@@ -673,7 +673,7 @@ function glue.writefile(filename, s, mode, tmpfile)
 		if not ok then
 			return nil, err
 		end
-		local ok, err = glue.replacefile(tmpfile, filename)
+		local ok, err = glue.movefile(tmpfile, filename)
 		if not ok then
 			os.remove(tmpfile)
 			return nil, err
