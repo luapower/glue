@@ -873,9 +873,9 @@ end, ...)
 
 ## Modules
 
-### `glue.module([name, ][parent]) -> M, P
+### `glue.module([name, ][parent]) -> M, P`
 
-### `glue.module([parent, ][name]) -> M, P
+### `glue.module([parent, ][name]) -> M, P`
 
 Create a module with a public and private namespace and set the environment
 of the calling function (not the global one!) to the module's private
