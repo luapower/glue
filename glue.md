@@ -888,7 +888,7 @@ another module, in which case `M` inherits `parent` and `P` inherits
 `parent._P`, or it can be a string in which case the module to inherit is
 first required. `parent` defaults to `_M` so that calling `glue.module()`
 creates a submodule of the current module. If there's no `_M` in the current
-environment then `P` inherits `_G`.
+environment then `P` inherits `_G` and `M` inherits nothing.
 
 Specifying a `name` for the module either returns `package.loaded[name]`
 if it is set or creates a module, sets `package.loaded[name]` to it and
