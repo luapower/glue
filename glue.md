@@ -898,8 +898,8 @@ without having to make a Lua file and require that.
 Naming the module also sets `P[name] = M` so that public symbols can be
 declared in `foo.bar` style instead of `_M.bar`.
 
-Setting `foo.module = glue.module` enables the creation of submodules with
-`foo:module'bar'` or with `require'foo':module'bar'.
+Setting `foo.module = glue.module` makes module `foo` directly extensible
+by calling `foo:module'bar'` or `require'foo':module'bar'`.
 
 ### `glue.autoload(t, submodules) -> t` <br> `glue.autoload(t, key, module|loader) -> t`
 
