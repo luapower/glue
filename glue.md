@@ -18,7 +18,7 @@ __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
 __tables__
-`glue.count(t) -> n`                                               number of keys in table
+`glue.count(t[, maxn]) -> n`                                       number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
 `glue.sortedpairs(t [,cmp]) -> iter() -> k, v`                     like pairs() but in key order
@@ -139,9 +139,9 @@ Unpack varargs. Implemented as `unpack(t, i or 1, j or t.n or #t)`.
 
 ## Tables
 
-### `glue.count(t) -> n`
+### `glue.count(t[, maxn]) -> n`
 
-Count all the keys in a table.
+Count the keys in a table, optionally up to `maxn`.
 
 ------------------------------------------------------------------------------
 
