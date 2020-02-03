@@ -18,7 +18,7 @@ __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
 __tables__
-`glue.count(t) -> n`                                               number of keys in table
+`glue.count(t[, maxn]) -> n`                                       number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
 `glue.sortedpairs(t [,cmp]) -> iter() -> k, v`                     like pairs() but in key order
@@ -64,7 +64,12 @@ __i/o__
 `glue.writefile(filename, s|t|read, [format], [tmpfile])`          write data to file safely
 `glue.printer(out[, format]) -> f`                                 virtualize the print() function
 __time__
-`glue.time([t, [utc]]) -> timestamp`                               like `os.time()` but can do UTC
+`glue.time([utc, ][t]) -> ts`                                      like `os.time()` but with UTC and optional date args
+`glue.time([utc, ][y, [m], [d], [h], [min], [s], [isdst]]) -> ts`  like `os.time()` but with UTC and optional date args
+`glue.utc_diff() -> seconds`                                       seconds to UTC
+`glue.day([utc, ][ts], [plus_days]) -> ts`                         timestamp at day's beginning from `ts`
+`glue.month([utc, ][ts], [plus_months]) -> ts`                     timestamp at month's beginning from `ts`
+`glue.year([utc, ][ts], [plus_years]) -> ts`                       timestamp at year's beginning from `ts`
 __errors__
 `glue.assert(v [,message [,format_args...]]) -> v`                 assert with error message formatting
 `glue.protect(func) -> protected_func`                             wrap an error-raising function
@@ -140,9 +145,9 @@ Unpack varargs. Implemented as `unpack(t, i or 1, j or t.n or #t)`.
 
 ## Tables
 
-### `glue.count(t) -> n`
+### `glue.count(t[, maxn]) -> n`
 
-Count all the keys in a table.
+Count the keys in a table, optionally up to `maxn`.
 
 ------------------------------------------------------------------------------
 
@@ -786,10 +791,43 @@ the standard `print()` function.
 
 ------------------------------------------------------------------------------
 
-`glue.time([t, [utc]]) -> timestamp`
+### `glue.time([utc, ][t]) -> ts` <br> `glue.time([utc, ][year, [month], [day], [hour], [min], [sec], [isdst]]) -> ts`
 
 Like `os.time()` but considers the time to be in UTC if either `utc`
 or `t.utc` is `true`.
+
+__NOTE:__ You should only use `os.date()` and `os.time()` and therefore
+`glue.time()` for current dates and use something else for historical dates
+because these functions don't work with negative timestamps because
+apparently time didn't exist before UNIX. At least they don't suffer from
+Y2038 so that's that.
+
+__NOTE:__ `os.time()` has second accuracy (so those timestamps are integers).
+For sub-second accuracy use the [time] module.
+
+------------------------------------------------------------------------------
+
+### `glue.utc_diff() -> seconds`
+
+Difference between local time and UTC in seconds.
+
+------------------------------------------------------------------------------
+
+### `glue.day([utc, ][ts], [plus_days]) -> ts`
+
+Timestamp at day's beginning from `ts`, plus/minus some days.
+
+------------------------------------------------------------------------------
+
+### `glue.month([utc, ][ts], [plus_months]) -> ts`
+
+Timestamp at month's beginning from `ts`, plus/minus some months.
+
+------------------------------------------------------------------------------
+
+### `glue.year([utc, ][ts], [plus_years]) -> ts`
+
+Timestamp at year's beginning from `ts`, plus/minus some years.
 
 ------------------------------------------------------------------------------
 

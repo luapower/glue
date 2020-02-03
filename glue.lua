@@ -748,27 +748,62 @@ function glue.printer(out, format)
 	end
 end
 
---time -----------------------------------------------------------------------
+--dates & timestamps ---------------------------------------------------------
 
 --compute timestamp diff. to UTC because os.time() has no option for UTC.
-local function utc_diff()
+function glue.utc_diff(t)
    local d1 = os.date( '*t', 3600 * 24 * 10)
    local d2 = os.date('!*t', 3600 * 24 * 10)
 	d1.isdst = false
 	return os.difftime(os.time(d1), os.time(d2))
 end
 
-function glue.time(t, utc)
-	if not (utc or t.utc) then
-		return os.time(t)
+--overloading os.time to support UTC and get the date components as separate args.
+function glue.time(utc, y, m, d, h, M, s, isdst)
+	if type(utc) ~= 'boolean' then --shift arg#1
+		utc, y, m, d, h, M, s, isdst = nil, utc, y, m, d, h, M, s
 	end
-	if t then
-		t = glue.update({}, t)
-		t.sec = t.sec + utc_diff()
-		return os.time(t)
+	if type(y) == 'table' then
+		local t = y
+		if utc == nil then utc = t.utc end
+		y, m, d, h, M, s, isdst = t.year, t.month, t.day, t.hour, t.min, t.sec, t.isdst
+	end
+	local utc_diff = utc and glue.utc_diff() or 0
+	if not y then
+		return os.time() + utc_diff
 	else
-		return os.time() + utc_diff()
+		s = s or 0
+		local t = os.time{year = y, month = m or 1, day = d or 1, hour = h or 0,
+			min = M or 0, sec = s, isdst = isdst}
+		return t and t + s - floor(s) + utc_diff
 	end
+end
+
+--get the time at the start of the day of a given time, plus/minus a number of days.
+function glue.day(utc, t, offset)
+	if type(utc) ~= 'boolean' then --shift arg#1
+		utc, y, offset = false, utc, t
+	end
+	local d = os.date(utc and '!*t' or '*t', t)
+	return glue.time(false, d.year, d.month, d.day + (offset or 0))
+end
+
+--get the time at the start of the month of a given time, plus/minus a number of months.
+function glue.month(t, offset, utc)
+	if type(utc) ~= 'boolean' then --shift arg#1
+		utc, y, offset = false, utc, t
+	end
+	local d = os.date(utc and '!*t' or '*t', t)
+	return glue.time(false, d.year, d.month + (offset or 0))
+end
+
+--get the time at the start of the year of a given time, plus/minus a number of years.
+function glue.year(t, offset, utc)
+	if type(utc) ~= 'boolean' then --shift arg#1
+		utc, y, offset = false, utc, t
+	end
+	local d = os.date(utc and '!*t' or '*t', t)
+	return glue.time(false, d.year + (offset or 0))
 end
 
 --error handling -------------------------------------------------------------
