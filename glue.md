@@ -81,6 +81,7 @@ __modules__
 __allocation__
 `glue.freelist([create], [destroy]) -> alloc, free`                freelist allocation pattern
 `glue.buffer(ctype) -> alloc(minlen) -> buf,capacity`              auto-growing buffer
+`glue.dynarray(ctype) -> alloc(minlen|false) -> buf, minlen`       auto-growing buffer that preserves data
 __ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
@@ -1019,6 +1020,8 @@ Lua objects. The allocator returns the last freed object or calls `create()`
 to create a new one if the freelist is empty. `create` defaults to
 `function() return {} end`; `destroy` defaults to `glue.noop`.
 
+------------------------------------------------------------------------------
+
 ### `glue.buffer(ctype) -> alloc(minlen|false) -> buf, capacity`
 
 (LuaJIT only) Return an allocation function that reuses or reallocates
@@ -1035,6 +1038,13 @@ an internal buffer based on the `len` argument.
   * the contents of the buffer _are not preserved_ between allocations
     but you _are allowed_ to access both buffers between two consecutive
     allocations in order to do that yourself.
+
+------------------------------------------------------------------------------
+
+### `glue.dynarray(ctype) -> alloc(minlen|false) -> buf, minlen`
+
+Like `glue.buffer()` but preserves data between reallocations, and always
+returns `minlen` instead of capacity.
 
 ------------------------------------------------------------------------------
 

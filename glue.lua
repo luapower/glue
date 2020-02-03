@@ -1009,6 +1009,22 @@ function glue.buffer(ctype)
 	end
 end
 
+--like glue.buffer() but preserves data on reallocations
+--also returns minlen instead of capacity.
+function glue.dynarray(ctype)
+	local buffer = glue.buffer(ctype)
+	local elem_size = ffi.sizeof(ctype, 1)
+	local buf0, minlen0
+	return function(minlen)
+		local buf, len = buffer(minlen)
+		if buf ~= buf0 and buf ~= nil and buf0 ~= nil then
+			ffi.copy(buf, buf0, minlen0 * elem_size)
+		end
+		buf0, minlen0 = buf, minlen
+		return buf, minlen
+	end
+end
+
 local intptr_ct = ffi.typeof'intptr_t'
 local intptrptr_ct = ffi.typeof'const intptr_t*'
 local intptr1_ct = ffi.typeof'intptr_t[1]'
