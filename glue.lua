@@ -1121,6 +1121,35 @@ if bit then
 		return bor(yes and mask or 0, band(over, bnot(mask)))
 	end
 
+	local function bor_bit(bits, k, mask, strict)
+		local b = bits[k]
+		if b then
+			return bit.bor(mask, b)
+		elseif strict then
+			error(string.format('invalid bit %s', k))
+		else
+			return mask
+		end
+	end
+	function glue.bor(flags, bits, strict)
+		local mask = 0
+		if type(flags) == 'number' then
+			return flags --passthrough
+		elseif type(flags) == 'string' then
+			for k in flags:gmatch'[^%s]+' do
+				mask = bor_bit(bits, k, mask, strict)
+			end
+		elseif type(flags) == 'table' then
+			for k,v in pairs(flags) do
+				k = type(k) == 'number' and v or k
+				mask = bor_bit(bits, k, mask, strict)
+			end
+		else
+			error'flags expected'
+		end
+		return mask
+	end
+
 end
 
 return glue
