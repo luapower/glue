@@ -615,6 +615,22 @@ function glue.override(self, method_name, hook)
 	install(self, override, method_name, hook)
 end
 
+--return a metatable that supports virtual properties.
+--can be used with setmetatable() and ffi.metatype().
+function glue.gettersandsetters(getters, setters, super)
+	local get = getters and function(t, k)
+		local get = getters[k]
+		if get then return get(t) end
+		return super and super[k]
+	end
+	local set = setters and function(t, k, v)
+		local set = setters[k]
+		if set then set(t, v); return end
+		rawset(t, k, v)
+	end
+	return {__index = get, __newindex = set}
+end
+
 --i/o ------------------------------------------------------------------------
 
 --check if a file exists and can be opened for reading or writing.
