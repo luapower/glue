@@ -732,7 +732,7 @@ end)
 ```
 ------------------------------------------------------------------------------
 
-`glue.gettersandsetters([getters], [setters], [super]) -> mt`
+### `glue.gettersandsetters([getters], [setters], [super]) -> mt`
 
 Return a metatable that supports virtual properties with getters and setters.
 Can be used with setmetatable() and ffi.metatype(). `super` is for preserving
@@ -1127,7 +1127,7 @@ Set the value of a single bit from an integer.
 ### `glue.bor(flags, bits, [strict]) -> mask`
 
 `bit.bor()` that takes its arguments as a string of form `'opt1 opt2 ...'`,
-a list of form `{'opt1', 'opt2', ...} or a map of form `{opt->true}`
+a list of form `{'opt1', 'opt2', ...}` or a map of form `{opt->true}`
 and performs `bit.bor()` on the numeric values of those arguments where
 the numeric values are given as the `bits` table of form `{opt->bitvalue}`.
 
