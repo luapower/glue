@@ -43,6 +43,7 @@ __strings__
 `glue.fromhex(s) -> s`                                             hex to string
 `glue.starts(s, prefix) -> t|f`                                    find if string `s` starts with string `prefix`
 `glue.ends(s, suffix) -> t|f`                                      find if string `s` ends with string `suffix`
+`glue.subst(s, t) -> s`                                            string interpolation of `{foo}` occurences
 __iterators__
 `glue.collect([i,] iterator) -> t`                                 collect iterated values into a list
 __closures__
@@ -481,6 +482,12 @@ the same with jit off).
 ### `glue.ends(s, suffix) -> t|f`
 
 Find if string `s` ends with `suffix`.
+
+------------------------------------------------------------------------------
+
+### `glue.subst(s, t) -> s`
+
+Replace all `{foo}` occurences within `s` with `t.foo`.
 
 ------------------------------------------------------------------------------
 
@@ -939,6 +946,8 @@ declared in `foo.bar` style instead of `_M.bar`.
 
 Setting `foo.module = glue.module` makes module `foo` directly extensible
 by calling `foo:module'bar'` or `require'foo':module'bar'`.
+
+_This function is 27 LOC._
 
 ### `glue.autoload(t, submodules) -> t` <br> `glue.autoload(t, key, module|loader) -> t`
 

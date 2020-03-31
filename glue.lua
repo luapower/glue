@@ -400,6 +400,10 @@ function glue.string.ends(s, p)
 	return p == '' or s:sub(-#p) == p
 end
 
+function glue.string.subst(s, t) --subst('{foo} {bar}', {foo=1, bar=2}) -> '1 2'
+	return s:gsub('{([_%w]+)}', t)
+end
+
 --publish the string submodule in the glue namespace.
 glue.update(glue, glue.string)
 
@@ -1169,4 +1173,3 @@ if bit then
 end
 
 return glue
-
