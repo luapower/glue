@@ -58,6 +58,7 @@ __objects__
 `glue.before(class, method_name, f)`                               call f at the beginning of a method
 `glue.after(class, method_name, f)`                                call f at the end of a method
 `glue.override(class, method_name, f)`                             override a method
+`glue.gettersandsetters([getters], [setters], [super]) -> mt`      create a metatable that supports virtual properties
 __i/o__
 `glue.canopen(filename[, mode]) -> filename | nil`                 check if a file exists and can be opened
 `glue.readfile(filename[, format][, open]) -> s | nil, err`        read the contents of a file into a string
@@ -92,7 +93,8 @@ __ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
 `glue.getbit(val, mask) -> true|false`                             get the value of a single bit from an integer
-`glue.setbit(val, mask, bitval)`                                   set the value of a single bit from an integer
+`glue.setbit(val, mask, bitval) -> val`                            set the value of a single bit from an integer
+`glue.bor(flags, bits, [strict]) -> mask`                          `bit.bor()` that takes a string or table
 ------------------------------------------------------------------ ---------------------------------------------------------
 
 ## Math
@@ -661,6 +663,8 @@ This simple object model has the following qualities:
   explicitly when overriding can be incorporated into the base class with
   `base.override = glue.override`.
 
+------------------------------------------------------------------------------
+
 ### `glue.before(class, method_name, f)`
 
 Modify a method such that it calls `f` at the beginning. `f` receives all
@@ -682,6 +686,7 @@ foo:before('bar', function(self, ...)
   ...
 end)
 ```
+------------------------------------------------------------------------------
 
 ### `glue.after(class, method_name, f)`
 
@@ -704,6 +709,7 @@ foo:after('bar', function(self, ...)
   ...
 end)
 ```
+------------------------------------------------------------------------------
 
 ### `glue.override(class, method_name, f)`
 
@@ -731,6 +737,13 @@ foo:override('bar', function(inherited, self, ...)
   ...
 end)
 ```
+------------------------------------------------------------------------------
+
+### `glue.gettersandsetters([getters], [setters], [super]) -> mt`
+
+Return a metatable that supports virtual properties with getters and setters.
+Can be used with setmetatable() and ffi.metatype(). `super` is for preserving
+the functionality of `__index` while `__index` is being used for getters.
 
 ------------------------------------------------------------------------------
 
@@ -1109,6 +1122,27 @@ on 64bit platforms). This is useful for:
 
 Convert an address value stored as a Lua number or string to a cdata pointer,
 optionally specifying a ctype for the pointer (defaults to `void*`).
+
+------------------------------------------------------------------------------
+
+### `glue.getbit(val, mask) -> true|false`
+
+Get the value of a single bit from an integer.
+
+### `glue.setbit(val, mask, bitval) -> val`
+
+Set the value of a single bit from an integer.
+
+### `glue.bor(flags, bits, [strict]) -> mask`
+
+`bit.bor()` that takes its arguments as a string of form `'opt1 opt2 ...'`,
+a list of form `{'opt1', 'opt2', ...}` or a map of form `{opt->true}`
+and performs `bit.bor()` on the numeric values of those arguments where
+the numeric values are given as the `bits` table of form `{opt->bitvalue}`.
+
+Useful for Luaizing C functions that take bitmask flags.
+
+Example: `glue.bor('a c', {a=1, b=2, c=4}) -> 5`.
 
 ------------------------------------------------------------------------------
 
