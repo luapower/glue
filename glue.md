@@ -45,9 +45,10 @@ __strings__
 `glue.subst(s, t) -> s`                                            string interpolation of `{foo}` occurences
 __iterators__
 `glue.collect([i,] iterator) -> t`                                 collect iterated values into an array
-__closures__
+__stubs__
 `glue.pass(...) -> ...`                                            does nothing, returns back all arguments
 `glue.noop(...)`                                                   does nothing, returns nothing
+__caching__
 `glue.memoize(f[, narg]) -> f`                                     memoize pattern
 `glue.memoize_multiret(f[, narg]) -> f`                            memoize for multiple-return-value functions
 `glue.tuples([narg]) -> f(...) -> t`                               tuple pattern
@@ -521,7 +522,7 @@ for i=1,#t do print(t[i]) end
 
 ------------------------------------------------------------------------------
 
-## Closures
+## Stubs
 
 ### `glue.pass(...) -> ...`
 
@@ -545,6 +546,8 @@ end
 Does nothing. Returns nothing.
 
 ------------------------------------------------------------------------------
+
+## Caching
 
 ### `glue.memoize(f[, narg]) -> f`
 
