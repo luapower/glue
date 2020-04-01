@@ -25,15 +25,14 @@ __tables__
 `glue.update(dt, t1, ...) -> dt`                                   merge tables - overwrites keys
 `glue.merge(dt, t1, ...) -> dt`                                    merge tables - no overwriting
 `glue.attr(t, k1 [,v])[k2] = v`                                    autofield pattern
-__lists__
-`glue.extend(dt, t1, ...) -> dt`                                   extend a list
-`glue.append(dt, v1, ...) -> dt`                                   append non-nil values to a list
-`glue.shift(t, i, n) -> t`                                         shift list elements
-`glue.map(t, field|f,...) -> t`                                    map f over t or select a column from a list of records
 __arrays__
+`glue.extend(dt, t1, ...) -> dt`                                   extend an array
+`glue.append(dt, v1, ...) -> dt`                                   append non-nil values to an array
+`glue.shift(t, i, n) -> t`                                         shift array elements
+`glue.map(t, field|f,...) -> t`                                    map f over t or select a column from an array of records
 `glue.indexof(v, t, [i], [j]) -> i`                                scan array for value
-`glue.binsearch(v, t, [cmp], [i], [j]) -> i`                       binary search in sorted list
-`glue.reverse(t, [i], [j]) -> t`                                   reverse list in place
+`glue.binsearch(v, t, [cmp], [i], [j]) -> i`                       binary search in sorted array
+`glue.reverse(t, [i], [j]) -> t`                                   reverse array in place
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
 `glue.lines(s[, opt]) -> iter() -> s`                              iterate the lines of a string
@@ -45,7 +44,7 @@ __strings__
 `glue.ends(s, suffix) -> t|f`                                      find if string `s` ends with string `suffix`
 `glue.subst(s, t) -> s`                                            string interpolation of `{foo}` occurences
 __iterators__
-`glue.collect([i,] iterator) -> t`                                 collect iterated values into a list
+`glue.collect([i,] iterator) -> t`                                 collect iterated values into an array
 __closures__
 `glue.pass(...) -> ...`                                            does nothing, returns back all arguments
 `glue.noop(...)`                                                   does nothing, returns nothing
@@ -66,8 +65,8 @@ __i/o__
 `glue.writefile(filename, s|t|read, [format], [tmpfile])`          write data to file safely
 `glue.printer(out[, format]) -> f`                                 virtualize the print() function
 __time__
-`glue.time([utc, ][t]) -> ts`                                      like `os.time()` but with UTC and optional date args
-`glue.time([utc, ][y, [m], [d], [h], [min], [s], [isdst]]) -> ts`  like `os.time()` but with UTC and optional date args
+`glue.time([utc, ][t]) -> ts`                                      like `os.time()` with optional UTC and date args
+`glue.time([utc, ][y, [m], [d], [h], [min], [s], [isdst]]) -> ts`  like `os.time()` with optional UTC and date args
 `glue.utc_diff() -> seconds`                                       seconds to UTC
 `glue.day([utc, ][ts], [plus_days]) -> ts`                         timestamp at day's beginning from `ts`
 `glue.month([utc, ][ts], [plus_months]) -> ts`                     timestamp at month's beginning from `ts`
@@ -217,16 +216,16 @@ Output
 
 ### `glue.keys(t[,sorted|cmp]) -> dt`
 
-Make a list of all the keys of `t`, optionally sorted. The second arg
+Make an array of all the keys of `t`, optionally sorted. The second arg
 can be `true`, `'asc'`, `'desc'` or a comparison function.
 
 #### Examples
 
-An API expects a list of things but you have them as keys in a table because
+An API expects an array of things but you have them as keys in a table because
 you are indexing something on them.
 
 For instance, you have a table of the form `{socket = thread}` but
-`socket.select` wants a list of sockets.
+`socket.select` wants an array of sockets.
 
 ------------------------------------------------------------------------------
 
@@ -291,35 +290,35 @@ Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
 
 ------------------------------------------------------------------------------
 
-## Lists
+## Arrays
 
 ### `glue.extend(dt,t1,...) -> dt`
 
-Extend the list with the elements of other lists.
+Extend an array with the elements of other arrays.
 
   * falsey arguments are skipped.
-  * list elements are the ones from 1 to `#dt`.
+  * array elements are the ones from 1 to `#dt`.
 
 #### Uses
 
-Accumulating values from multiple list sources.
+Accumulating values from multiple array sources.
 
 ------------------------------------------------------------------------------
 
 ### `glue.append(dt,v1,...) -> dt`
 
-Append non-nil arguments to a list.
+Append non-nil arguments to an array.
 
 #### Uses
 
-Appending an object to a flattened list of lists (eg. appending a path element
-to a 2d path).
+Appending an object to a flattened array of arrays (eg. appending a path
+element to a 2d path).
 
 ------------------------------------------------------------------------------
 
 ### `glue.shift(t,i,n) -> t`
 
-Shift all the list elements starting at index `i`, `n` positions to the left
+Shift all the array elements starting at index `i`, `n` positions to the left
 or further to the right.
 
 For a positive `n`, shift the elements further to the right, effectively
@@ -333,7 +332,7 @@ For a negative `n`, shift the elements to the left, effectively removing
 
 #### Uses
 
-Removing a portion of a list or making room for more elements inside the list.
+Removing a portion of an array or making room for more elements inside the array.
 
 ------------------------------------------------------------------------------
 
@@ -345,12 +344,10 @@ part is empty, map `f(k, v, ...) -> v1` over the pairs of `t`.
 If `f` is not a function, then the values of `t` must be themselves tables,
 in which case `f` is a key to pluck from those tables. Plucked functions
 are called as methods and their result is selected instead (this allows eg.
-calling a method for each element in a list or map of objects and collecting
-the results in a list/map).
+calling a method for each element in an array or map of objects and collecting
+the results in an array/map).
 
 ------------------------------------------------------------------------------
-
-## Arrays
 
 ### `glue.indexof(v, t, [i], [j]) -> i`
 
@@ -362,7 +359,7 @@ __NOTE:__ Works on ffi arrays too if `i` and `j` are provided.
 
 ### `glue.binsearch(v, t, [cmp], [i], [j]) -> i`
 
-Return the smallest index whereby inserting the value `v` in sorted list `t`
+Return the smallest index whereby inserting the value `v` in sorted array `t`
 will keep `t` sorted i.e. `t[i-1] < v` and `t[i] >= v`. Return `nil` if `v`
 is larger than the largest value or if `t` is empty.
 
@@ -371,7 +368,7 @@ The comparison function `cmp` is called as `cmp(t, i, v)` and must return
 one of `'<'`, `'>'`, `'<='`, `'>='`.
 
 __TIP:__ Use a `cmp` that returns `true` when `t[i] > v` to search in a
-reverse-sorted list (i.e. use `'>'`).
+reverse-sorted array (i.e. use `'>'`).
 
 __TIP:__ Use a `cmp` that returns `true` when `t[i] <= v` to get the *largest*
 index (as opposed to the *smallest* index) that will keep `t` sorted when
@@ -383,7 +380,7 @@ __NOTE:__ Works on ffi arrays too if `i` and `j` are provided.
 
 ### `glue.reverse(t, [i], [j]) -> t`
 
-Reverse a list in-place and return the input arg.
+Reverse an array in-place and return the input arg.
 
 __NOTE:__ Works on ffi arrays too if `i` and `j` are provided.
 
@@ -497,7 +494,7 @@ Replace all `{foo}` occurences within `s` with `t.foo`.
 
 ### `glue.collect([i,]iterator) -> t`
 
-Iterate an iterator and collect its i'th return value of every step into a list.
+Iterate an iterator and collect its i'th return value of every step into an array.
 
   * i defaults to 1
 
