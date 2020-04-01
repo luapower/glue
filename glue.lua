@@ -802,25 +802,25 @@ end
 --get the time at the start of the day of a given time, plus/minus a number of days.
 function glue.day(utc, t, offset)
 	if type(utc) ~= 'boolean' then --shift arg#1
-		utc, y, offset = false, utc, t
+		utc, t, offset = false, utc, t
 	end
 	local d = os.date(utc and '!*t' or '*t', t)
 	return glue.time(false, d.year, d.month, d.day + (offset or 0))
 end
 
 --get the time at the start of the month of a given time, plus/minus a number of months.
-function glue.month(t, offset, utc)
+function glue.month(utc, t, offset)
 	if type(utc) ~= 'boolean' then --shift arg#1
-		utc, y, offset = false, utc, t
+		utc, t, offset = false, utc, t
 	end
 	local d = os.date(utc and '!*t' or '*t', t)
 	return glue.time(false, d.year, d.month + (offset or 0))
 end
 
 --get the time at the start of the year of a given time, plus/minus a number of years.
-function glue.year(t, offset, utc)
+function glue.year(utc, t, offset)
 	if type(utc) ~= 'boolean' then --shift arg#1
-		utc, y, offset = false, utc, t
+		utc, t, offset = false, utc, t
 	end
 	local d = os.date(utc and '!*t' or '*t', t)
 	return glue.time(false, d.year + (offset or 0))
