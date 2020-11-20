@@ -32,6 +32,7 @@ __arrays__
 `glue.map(t, field|f,...) -> t`                                    map f over t or select a column from an array of records
 `glue.indexof(v, t, [i], [j]) -> i`                                scan array for value
 `glue.binsearch(v, t, [cmp], [i], [j]) -> i`                       binary search in sorted array
+`glue.sortedarray([sa]) -> sa`                                     stay-sorted array with insertion and removal in O(log n)
 `glue.reverse(t, [i], [j]) -> t`                                   reverse array in place
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
@@ -88,7 +89,7 @@ __modules__
 __allocation__
 `glue.freelist([create], [destroy]) -> alloc, free`                freelist allocation pattern
 `glue.buffer(ctype) -> alloc(minlen) -> buf,capacity`              auto-growing buffer
-`glue.dynarray(ctype) -> alloc(minlen|false) -> buf, minlen`       auto-growing buffer that preserves data
+`glue.dynarray(ctype[,cap]) -> alloc(minlen|false) -> buf, minlen` auto-growing buffer that preserves data
 __ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
@@ -376,6 +377,19 @@ index (as opposed to the *smallest* index) that will keep `t` sorted when
 inserting `v`, i.e. `t[i-1] <= v` and `t[i] > v`.
 
 __NOTE:__ Works on ffi arrays too if `i` and `j` are provided.
+
+------------------------------------------------------------------------------
+
+### `glue.sortedarray([sa]) -> sa`
+
+Creates an array that stays sorted with insertion, searching and removal
+in O(log n) leveraging binary search.
+
+  * if given an existing `sa` to be wrapped, it must be already sorted.
+  * `sa.cmp` is used for `cmp` in `binarysearch()`.
+  * use `sa:push(v)` to add values.
+  * use `sa:find(v) -> i|nil` to look up values.
+  * use `sa:remove_value(v) -> v|nil` to find and remove a value.
 
 ------------------------------------------------------------------------------
 
@@ -1101,7 +1115,7 @@ an internal buffer based on the `len` argument.
 
 ------------------------------------------------------------------------------
 
-### `glue.dynarray(ctype) -> alloc(minlen|false) -> buf, minlen`
+### `glue.dynarray(ctype[, min_capacity]) -> alloc(minlen|false) -> buf, minlen`
 
 Like `glue.buffer()` but preserves data between reallocations, and always
 returns `minlen` instead of capacity.

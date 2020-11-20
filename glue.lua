@@ -299,6 +299,23 @@ function glue.binsearch(v, t, cmp, lo, hi)
 	return lo
 end
 
+--sortedarray ----------------------------------------------------------------
+
+do --array that stays sorted with insertion, searching and removal in O(log n).
+	local sa = {}
+	local push, pop = table.insert, table.remove
+	function sa:find(v) return glue.binsearch(v, self, self.cmp) end
+	function sa:push(v) push(self, self:find(v) or #self+1, v) end
+	function sa:remove_value(v)
+		local i = self:find(v)
+		if not i then return nil end
+		return pop(self, i)
+	end
+	function glue.sortedarray(t)
+		return glue.object(sa, t)
+	end
+end
+
 --strings --------------------------------------------------------------------
 
 --string submodule. has its own namespace which can be merged with _G.string.
@@ -1075,12 +1092,12 @@ end
 
 --like glue.buffer() but preserves data on reallocations
 --also returns minlen instead of capacity.
-function glue.dynarray(ctype)
+function glue.dynarray(ctype, min_capacity)
 	local buffer = glue.buffer(ctype)
 	local elem_size = ffi.sizeof(ctype, 1)
 	local buf0, minlen0
 	return function(minlen)
-		local buf, len = buffer(minlen)
+		local buf, len = buffer(max(min_capacity or 0, minlen))
 		if buf ~= buf0 and buf ~= nil and buf0 ~= nil then
 			ffi.copy(buf, buf0, minlen0 * elem_size)
 		end
