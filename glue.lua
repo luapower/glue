@@ -1051,7 +1051,7 @@ end
 function glue.freelist(create, destroy)
 	create = create or create_table
 	destroy = destroy or glue.noop
-	local t = {}
+	local t = {} --{freed_index -> e}
 	local n = 0
 	local function alloc()
 		local e = t[n]
