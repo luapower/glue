@@ -226,6 +226,10 @@ os.remove('glue_test.tmp')
 
 --TODO: time, utc_diff, year, month, day
 
+--no way to adjust TZ so these are commented out.
+--assert(glue.utc_diff(glue.time(2000, 7, 1)) == 10800)
+--assert(glue.utc_diff(glue.time(2000, 1, 1)) == 7200)
+
 --errors ---------------------------------------------------------------------
 
 --TODO: assert, protect, pcall, fpcall, fcall

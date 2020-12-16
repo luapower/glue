@@ -789,10 +789,13 @@ end
 
 --compute timestamp diff. to UTC because os.time() has no option for UTC.
 function glue.utc_diff(t)
-   local d1 = os.date( '*t', 3600 * 24 * 10)
-   local d2 = os.date('!*t', 3600 * 24 * 10)
-	d1.isdst = false
-	return os.difftime(os.time(d1), os.time(d2))
+	t = t or os.time()
+   local ld = os.date('*t', t)
+	ld.isdst = false --adjust for DST.
+	local ud = os.date('!*t', t)
+	local lt = os.time(ld)
+	local ut = os.time(ud)
+	return lt and ut and os.difftime(lt, ut)
 end
 
 --overloading os.time to support UTC and get the date components as separate args.
@@ -805,14 +808,20 @@ function glue.time(utc, y, m, d, h, M, s, isdst)
 		if utc == nil then utc = t.utc end
 		y, m, d, h, M, s, isdst = t.year, t.month, t.day, t.hour, t.min, t.sec, t.isdst
 	end
-	local utc_diff = utc and glue.utc_diff() or 0
 	if not y then
-		return os.time() + utc_diff
+		return os.time()
 	else
 		s = s or 0
 		local t = os.time{year = y, month = m or 1, day = d or 1, hour = h or 0,
 			min = M or 0, sec = s, isdst = isdst}
-		return t and t + s - floor(s) + utc_diff
+		if not t then return nil end
+		t = t + s - floor(s)
+		local d = 0
+		if utc then
+			d = glue.utc_diff(t)
+			if not d then return nil end
+		end
+		return t + s - floor(s) + d
 	end
 end
 

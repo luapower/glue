@@ -69,7 +69,7 @@ __i/o__
 __time__
 `glue.time([utc, ][t]) -> ts`                                      like `os.time()` with optional UTC and date args
 `glue.time([utc, ][y, [m], [d], [h], [min], [s], [isdst]]) -> ts`  like `os.time()` with optional UTC and date args
-`glue.utc_diff() -> seconds`                                       seconds to UTC
+`glue.utc_diff([t]) -> seconds`                                    seconds to UTC
 `glue.day([utc, ][ts], [plus_days]) -> ts`                         timestamp at day's beginning from `ts`
 `glue.month([utc, ][ts], [plus_months]) -> ts`                     timestamp at month's beginning from `ts`
 `glue.year([utc, ][ts], [plus_years]) -> ts`                       timestamp at year's beginning from `ts`
@@ -827,7 +827,7 @@ the standard `print()` function.
 
 ### `glue.time([utc, ][t]) -> ts` <br> `glue.time([utc, ][year, [month], [day], [hour], [min], [sec], [isdst]]) -> ts`
 
-Like `os.time()` but considers the time to be in UTC if either `utc`
+Like `os.time()` but considers the arguments to be in UTC if either `utc`
 or `t.utc` is `true`.
 
 __NOTE:__ You should only use `os.date()` and `os.time()` and therefore
@@ -841,7 +841,7 @@ For sub-second accuracy use the [time] module.
 
 ------------------------------------------------------------------------------
 
-### `glue.utc_diff() -> seconds`
+### `glue.utc_diff([t]) -> seconds`
 
 Difference between local time and UTC in seconds.
 
