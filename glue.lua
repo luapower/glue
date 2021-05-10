@@ -58,6 +58,11 @@ end
 
 --tables ---------------------------------------------------------------------
 
+glue.empty = setmetatable({}, {
+	__newindex = false, --read-only
+	__metatable = false,
+})
+
 --count the keys in a table with an optional upper limit.
 function glue.count(t, maxn)
 	local maxn = maxn or 1/0

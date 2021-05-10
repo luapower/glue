@@ -18,6 +18,7 @@ __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
 __tables__
+`glue.empty`                                                       empty r/o table
 `glue.count(t[, maxn]) -> n`                                       number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
