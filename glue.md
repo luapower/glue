@@ -41,7 +41,7 @@ __strings__
 `glue.trim(s) -> s`                                                remove padding
 `glue.esc(s [,mode]) -> pat`                                       escape magic pattern characters
 `glue.tohex(s|n [,upper]) -> s`                                    string to hex
-`glue.fromhex(s) -> s`                                             hex to string
+`glue.fromhex(s[, isvalid]) -> s`                                  hex to string
 `glue.starts(s, prefix) -> t|f`                                    find if string `s` starts with string `prefix`
 `glue.ends(s, suffix) -> t|f`                                      find if string `s` ends with string `suffix`
 `glue.subst(s, t) -> s`                                            string interpolation of `{foo}` occurences
@@ -480,9 +480,10 @@ Convert a binary string or a Lua number to its hex representation.
 
 ------------------------------------------------------------------------------
 
-### `glue.fromhex(s) -> s`
+### `glue.fromhex(s[, isvalid]) -> s`
 
-Convert a hex string to its binary representation.
+Convert a hex string to its binary representation. Returns `nil` on invalid
+input unless `isvalid` is `true` which makes it raise on invalid input.
 
 ------------------------------------------------------------------------------
 

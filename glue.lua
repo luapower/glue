@@ -405,12 +405,17 @@ function glue.string.tohex(s, upper)
 end
 
 --hex to binary string.
-function glue.string.fromhex(s)
+function glue.string.fromhex(s, isvalid)
+	if not isvalid then
+		if s:find'[^0-9a-fA-F]' then
+			return nil
+		end
+	end
 	if #s % 2 == 1 then
 		return glue.string.fromhex('0'..s)
 	end
 	return (s:gsub('..', function(cc)
-	  return string.char(tonumber(cc, 16))
+		return string.char(assert(tonumber(cc, 16)))
 	end))
 end
 
