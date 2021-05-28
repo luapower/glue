@@ -356,19 +356,35 @@ function glue.string.gsplit(s, sep, start, plain)
 end
 
 --split a string into lines, optionally including the line terminator.
-function glue.lines(s, opt)
+function glue.lines(s, opt, i)
 	local term = opt == '*L'
-	local patt = term and '([^\r\n]*()\r?\n?())' or '([^\r\n]*)()\r?\n?()'
-	local next_match = s:gmatch(patt)
-	local empty = s == ''
-	local ended --string ended with no line ending
+	local patt = term and '(()[^\r\n]*()\r?\n?())' or '()([^\r\n]*)()\r?\n?()'
+	i = i or 1
+	local ended
 	return function()
-		local s, i1, i2 = next_match()
-		if s == nil then return end
-		if s == '' and not empty and ended then s = nil end
+		if ended then return end
+		local s, i0, i1, i2 = s:match(patt, i)
 		ended = i1 == i2
-		return s
+		i = i2
+		return s, i0, i1, i2
 	end
+end
+
+--outdent lines based on the indent of the first line.
+function glue.outdent(s)
+	local indent = s:match'^[\t ]+'
+	if not indent then
+		return s, ''
+	end
+	local t = {}
+	for s in glue.lines(s) do
+		local indent1 = s:sub(1, #indent)
+		if indent1 ~= indent then
+			return s, indent1 --line less indented than the first line: bail out.
+		end
+		table.insert(t, s:sub(#indent + 1))
+	end
+	return table.concat(t, '\n'), indent1
 end
 
 --string trim12 from lua wiki.
