@@ -358,12 +358,12 @@ end
 --split a string into lines, optionally including the line terminator.
 function glue.lines(s, opt, i)
 	local term = opt == '*L'
-	local patt = term and '(()[^\r\n]*()\r?\n?())' or '()([^\r\n]*)()\r?\n?()'
+	local patt = term and '()([^\r\n]*()\r?\n?())' or '()([^\r\n]*)()\r?\n?()'
 	i = i or 1
 	local ended
 	return function()
 		if ended then return end
-		local s, i0, i1, i2 = s:match(patt, i)
+		local i0, s, i1, i2 = s:match(patt, i)
 		ended = i1 == i2
 		i = i2
 		return s, i0, i1, i2
@@ -371,18 +371,23 @@ function glue.lines(s, opt, i)
 end
 
 --outdent lines based on the indent of the first line.
-function glue.outdent(s)
+function glue.outdent(s, newindent)
 	local indent = s:match'^[\t ]+'
 	if not indent then
 		return s, ''
 	end
 	local t = {}
-	for s in glue.lines(s) do
+	local s0 = s
+	for s, i1, i2, i3 in glue.lines(s) do
 		local indent1 = s:sub(1, #indent)
 		if indent1 ~= indent then
 			return s, indent1 --line less indented than the first line: bail out.
 		end
-		table.insert(t, s:sub(#indent + 1))
+		local s = s:sub(#indent + 1)
+		if newindent then
+			s = newindent..s
+		end
+		table.insert(t, s)
 	end
 	return table.concat(t, '\n'), indent1
 end
