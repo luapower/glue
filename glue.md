@@ -1,5 +1,6 @@
 ---
 tagline: assorted lengths of wire
+read this at: http://luapower.com/glue
 ---
 
 ## `local glue = require'glue'`
