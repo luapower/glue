@@ -758,8 +758,14 @@ end
 --write a string, number, table or the results of a read function to a file.
 --uses binary mode by default.
 function glue.writefile(filename, s, mode, tmpfile)
+	if tmpfile == nil then
+		tmpfile = true --enabled by default.
+	end
 	if tmpfile then
-		local ok, err = glue.writefile(tmpfile, s, mode)
+		if tmpfile == true then
+			tmpfile = filename..'.tmp'
+		end
+		local ok, err = glue.writefile(tmpfile, s, mode, false)
 		if not ok then
 			return nil, err
 		end

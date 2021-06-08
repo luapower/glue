@@ -823,10 +823,12 @@ Write the contents of a string, table or iterator to a file.
   that returns a string or `nil` to signal end-of-stream.
   * `format` can be `"t"` in which case the file will be written in text mode
    (default is binary mode).
-  * if writing fails and `tmpfile` is not given, the file is removed; if
-  `tmpfile` is given then the data is written to that file first which is
-  then renamed to `filename` and if writing or renaming fails the temp file
-  is removed and `filename` is not touched.
+  * `tmpfile` enables atomic saving via a temporary file (enabled by default)
+  which is then renamed to `filename` and if writing or renaming fails the
+  temp file is removed and `filename` is not touched (and if the program is
+  killed while writing, you get a stale temp file but no data corruption).
+  If `tmpfile` is false and writing fails then `filename` is removed (and if
+  the program is killed while writing, you get a partially written file).
 
 ------------------------------------------------------------------------------
 
