@@ -380,10 +380,10 @@ function glue.outdent(s, newindent)
 	local s0 = s
 	for s, i1, i2, i3 in glue.lines(s) do
 		local indent1 = s:sub(1, #indent)
-		if indent1 ~= indent then
-			return s, indent1 --line less indented than the first line: bail out.
-		end
 		local s = s:sub(#indent + 1)
+		if indent1 ~= indent and s:find'[^%s]' then
+			return s0, indent1 --line less indented than the first line: bail out.
+		end
 		if newindent then
 			s = newindent..s
 		end
