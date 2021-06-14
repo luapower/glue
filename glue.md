@@ -40,6 +40,7 @@ __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
 `glue.lines(s, [opt], [init]) -> iter() -> s, i, j, k`             iterate the lines of a string
 `glue.outdent(s, [indent]) -> s, indent`                           outdent/reindent text based on first line's indentation
+`glue.textpos(s, i) -> line, col`                                  return text position from byte position
 `glue.trim(s) -> s`                                                remove padding
 `glue.esc(s [,mode]) -> pat`                                       escape magic pattern characters
 `glue.tohex(s|n [,upper]) -> s`                                    string to hex
@@ -455,6 +456,13 @@ the content-start, content-end and the next-content-start indices.
 Remove spaces/tabs indentation of multi-line text based on the indentation
 of the first line. If a subsequent line is less indented than the first line,
 returns the original string. If `indent` given, it is prepended to each line.
+
+------------------------------------------------------------------------------
+
+### `glue.textpos(s, i) -> line, col`
+
+Given a byte position in a text, return the text position. If a `i` is not
+given, returns a function `f(i)` that is faster on repeat calls.
 
 ------------------------------------------------------------------------------
 

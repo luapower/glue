@@ -392,6 +392,40 @@ function glue.outdent(s, newindent)
 	return table.concat(t, '\n'), indent1
 end
 
+--for a string, return a function that given a byte index in the string
+--returns the line and column numbers corresponding to that index.
+function glue.textpos(s, i)
+	--collect char indices of all the lines in s, incl. the index at #s + 1
+	local t = {}
+	for i in s:gmatch'()[^\r\n]*\r?\n?' do
+		t[#t+1] = i
+	end
+	assert(#t >= 2)
+	local function textpos(i)
+		--do a binary search in t to find the line.
+		--TODO: replace this with glue.binsearch().
+		assert(i > 0 and i <= #s + 1)
+		local min, max = 1, #t
+		while true do
+			local k = math.floor(min + (max - min) / 2)
+			if i >= t[k] then
+				if k == #t or i < t[k+1] then --found it
+					return k, i - t[k] + 1
+				else --look forward
+					min = k
+				end
+			else --look backward
+				max = k
+			end
+		end
+	end
+	if i then
+		return textpos(i)
+	else
+		return textpos
+	end
+end
+
 --string trim12 from lua wiki.
 function glue.string.trim(s)
 	local from = s:match('^%s*()')
