@@ -583,7 +583,9 @@ local function memoize_vararg(fn, weak, minarg, maxarg)
 end
 local memoize_narg = {[0] = memoize0, memoize1, memoize2}
 local function choose_memoize_func(func, narg, weak)
-	if narg then
+	if type(narg) == 'function' then
+		return choose_memoize_func(narg, nil, weak)
+	elseif narg then
 		local memoize_narg = (not (narg == 0 and weak)) and memoize_narg[narg]
 		if memoize_narg then
 			return memoize_narg
