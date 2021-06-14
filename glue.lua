@@ -370,9 +370,9 @@ function glue.lines(s, opt, i)
 	end
 end
 
---outdent lines based on the indent of the first line.
+--outdent lines based on the indent of the first non-empty line.
 function glue.outdent(s, newindent)
-	local indent = s:match'^[\t ]+'
+	local indent = s:match'^([\t ]+)[^%s]' or s:match'\r?\n([\t ]+)[^%s]'
 	if not indent then
 		return s, ''
 	end
@@ -490,6 +490,10 @@ function glue.pass(...) return ... end
 function glue.noop() return end
 
 --memoize for 0, 1, 2-arg and vararg and 1 retval functions.
+local weakvals_meta = {__mode = 'v'}
+local function weakvals(weak)
+	return weak and setmetatable({}, weakvals_meta) or {}
+end
 local function memoize0(fn) --for strict no-arg functions
 	local v, stored
 	return function()
@@ -501,26 +505,28 @@ local function memoize0(fn) --for strict no-arg functions
 end
 local nilkey = {}
 local nankey = {}
-local function memoize1(fn) --for strict single-arg functions
-	local cache = {}
+local function memoize1(fn, weak) --for strict single-arg functions
+	local cache = weakvals(weak)
 	return function(arg)
 		local k = arg == nil and nilkey or arg ~= arg and nankey or arg
 		local v = cache[k]
 		if v == nil then
-			v = fn(arg); cache[k] = v == nil and nilkey or v
+			v = fn(arg)
+			cache[k] = v == nil and nilkey or v
 		else
 			if v == nilkey then v = nil end
 		end
 		return v
 	end
 end
-local function memoize2(fn) --for strict two-arg functions
-	local cache = {}
+local function memoize2(fn, weak) --for strict two-arg functions
+	local cache = weakvals(weak)
+	local pins = weak and weakvals(weak)
 	return function(a1, a2)
 		local k1 = a1 ~= a1 and nankey or a1 == nil and nilkey or a1
 		local cache2 = cache[k1]
 		if cache2 == nil then
-			cache2 = {}
+			cache2 = weakvals(weak)
 			cache[k1] = cache2
 		end
 		local k2 = a2 ~= a2 and nankey or a2 == nil and nilkey or a2
@@ -528,15 +534,21 @@ local function memoize2(fn) --for strict two-arg functions
 		if v == nil then
 			v = fn(a1, a2)
 			cache2[k2] = v == nil and nilkey or v
+			if weak then --pin weak chained table to the return value.
+				assert(type(v) == 'table')
+				pins[cache2] = v
+			end
 		else
 			if v == nilkey then v = nil end
 		end
 		return v
 	end
 end
-local function memoize_vararg(fn, minarg, maxarg)
-	local cache = {}
-	local values = {}
+local pinstack = {}
+local function memoize_vararg(fn, weak, minarg, maxarg)
+	local cache = weakvals(weak)
+	local values = weakvals(weak)
+	local pins = weak and weakvals(weak)
 	return function(...)
 		local key = cache
 		local narg = min(max(select('#',...), minarg), maxarg)
@@ -545,22 +557,34 @@ local function memoize_vararg(fn, minarg, maxarg)
 			local k = a ~= a and nankey or a == nil and nilkey or a
 			local t = key[k]
 			if not t then
-				t = {}; key[k] = t
+				t = weakvals(weak)
+				key[k] = t
+			end
+			if weak and i < narg then --collect to-be-pinned weak chained tables.
+				pinstack[i] = t
 			end
 			key = t
 		end
 		local v = values[key]
 		if v == nil then
-			v = fn(...); values[key] = v == nil and nilkey or v
+			v = fn(...)
+			values[key] = v == nil and nilkey or v
+			if weak then --pin weak chained tables to the return value.
+				for i = narg-1, 1, -1 do
+					assert(type(v) == 'table')
+					pins[pinstack[i]] = v
+					pinstack[i] = nil
+				end
+			end
 		end
 		if v == nilkey then v = nil end
 		return v
 	end
 end
 local memoize_narg = {[0] = memoize0, memoize1, memoize2}
-local function choose_memoize_func(func, narg)
+local function choose_memoize_func(func, narg, weak)
 	if narg then
-		local memoize_narg = memoize_narg[narg]
+		local memoize_narg = (not (narg == 0 and weak)) and memoize_narg[narg]
 		if memoize_narg then
 			return memoize_narg
 		else
@@ -571,22 +595,22 @@ local function choose_memoize_func(func, narg)
 		if info.isvararg then
 			return memoize_vararg, info.nparams, 1/0
 		else
-			return choose_memoize_func(func, info.nparams)
+			return choose_memoize_func(func, info.nparams, weak)
 		end
 	end
 end
-function glue.memoize(func, narg)
-	local memoize, minarg, maxarg = choose_memoize_func(func, narg)
-	return memoize(func, minarg, maxarg)
+function glue.memoize(func, narg, weak)
+	local memoize, minarg, maxarg = choose_memoize_func(func, narg, weak)
+	return memoize(func, weak, minarg, maxarg)
 end
 
 --memoize a function with multiple return values.
-function glue.memoize_multiret(func, narg)
-	local memoize, minarg, maxarg = choose_memoize_func(func, narg)
+function glue.memoize_multiret(func, narg, weak)
+	local memoize, minarg, maxarg = choose_memoize_func(func, narg, weak)
 	local function wrapper(...)
 		return glue.pack(func(...))
 	end
-	local func = memoize(wrapper, minarg, maxarg)
+	local func = memoize(wrapper, weak, minarg, maxarg)
 	return function(...)
 		return glue.unpack(func(...))
 	end
@@ -600,10 +624,18 @@ function tuple_mt:__tostring()
 	end
 	return string.format('(%s)', table.concat(t, ', '))
 end
-function glue.tuples(narg)
+function glue.tuples(...)
 	return glue.memoize(function(...)
 		return setmetatable(glue.pack(...), tuple_mt)
-	end)
+	end, ...)
+end
+function glue.weaktuples(narg)
+	return glue.tuples(narg, true)
+end
+local tspace
+function glue.tuple(...)
+	tspace = tspace or glue.weaktuples()
+	return tspace(...)
 end
 
 --objects --------------------------------------------------------------------

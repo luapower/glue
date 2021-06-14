@@ -53,9 +53,11 @@ __stubs__
 `glue.pass(...) -> ...`                                            does nothing, returns back all arguments
 `glue.noop(...)`                                                   does nothing, returns nothing
 __caching__
-`glue.memoize(f[, narg]) -> f`                                     memoize pattern
-`glue.memoize_multiret(f[, narg]) -> f`                            memoize for multiple-return-value functions
-`glue.tuples([narg]) -> f(...) -> t`                               tuple pattern
+`glue.memoize(f, [narg], [weak]) -> f`                             memoize pattern
+`glue.memoize_multiret(f, [narg], [weak]) -> f`                    memoize for multiple-return-value functions
+`glue.tuples([narg], [weak]) -> f(...) -> t`                       create a tuple space
+`glue.weaktuples([narg]) -> f(...) -> t`                           create a weak tuple space
+`glue.tuple(...) -> t`                                             create a tuple in a global weak tuple space
 __objects__
 `glue.inherit(t, parent) -> t`                                     set or clear inheritance
 `glue.object([super][, t], ...) -> t`                              create a class or object (see description)
@@ -577,9 +579,9 @@ Does nothing. Returns nothing.
 
 ## Caching
 
-### `glue.memoize(f[, narg]) -> f`
+### `glue.memoize(f, [narg], [weak]) -> f`
 
-### `glue.memoize_multiret(f[, narg]) -> f`
+### `glue.memoize_multiret(f, [narg], [weak]) -> f`
 
 Memoization for functions with any number of arguments. `memoize()` supports
 functions with _one return value_. `memoize_multiret()` supports any function.
@@ -593,24 +595,47 @@ instance, for a function `f(x, y, ...)`, calling `f(1)` is considered to be
 the same as calling `f(1, nil)`, but calling `f(1, nil)` is not the same as
 calling `f(1, nil, nil)`.
 
-The optional `narg` fixates the function to always take exactly `narg` args
-regardless of how the function was defined.
+The optional `narg` argument fixates the function to always take exactly
+`narg` args regardless of how the function was defined.
 
-### `glue.tuples([narg]) -> f(...) -> t`
+The optional `weak` argument makes the cache of returned values weak and is
+useful for caching objects that are pinned elsewere without leaking memory.
+Using this flag requires that the function to be memoized returns heap
+objects only and always!
+
+### `glue.tuples([narg], [weak]) -> f(...) -> t`
+
+### `glue.weaktuples([narg]) -> f(...) -> t`
 
 Create a tuple space, which is a function that returns the same identity `t`
 for the same list of arguments. It is implemented as:
 
 ```lua
 local tuple_mt = {__call = glue.unpack}
-function glue.tuples(narg)
+function glue.tuples(...)
 	return glue.memoize(function(...)
 		return setmetatable(glue.pack(...), tuple_mt)
-	end)
+	end, ...)
 end
 ```
+Tuples are immutable lists that can be used as table keys because they have
+value semantics since the tuple constructor returns the same identity for
+the exact same list of identities.
 
 The result tuple can be expanded back by calling it: `t() -> args...`.
+
+> __NOTE:__ Tuple elements are indexed internally with a hash tree.
+Creating a tuple thus takes N hash lookups and M table creations, where N+M
+is the number of elements in the tuple. Lookup time depends on how dense the
+tree is on the search path, which depends on how many existing tuples share
+a first sequence of elements with the tuple being created. In particular,
+creating tuples out of all permutations of a certain set of values hits the
+worst case for lookup time, but creates the minimum amount of tables relative
+to the number of tuples.
+
+### `glue.tuple([narg]) -> t`
+
+Create a tuple in a default global weak tuple space.
 
 ------------------------------------------------------------------------------
 
