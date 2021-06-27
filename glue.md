@@ -38,6 +38,7 @@ __arrays__
 `glue.reverse(t, [i], [j]) -> t`                                   reverse array in place
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
+`glue.split(s,sep[,start[,plain]]) -> {s1,...}`                    split a string by a pattern
 `glue.lines(s, [opt], [init]) -> iter() -> s, i, j, k`             iterate the lines of a string
 `glue.outdent(s, [indent]) -> s, indent`                           outdent/reindent text based on first line's indentation
 `glue.textpos(s, i) -> line, col`                                  return text position from byte position
@@ -410,6 +411,8 @@ __NOTE:__ Works on ffi arrays too if `i` and `j` are provided.
 ## Strings
 
 ### `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`
+
+### `glue.split(s,sep[,start[,plain]]) -> {s1,...}`
 
 Split a string by a separator pattern (or plain string) and iterate over
 the elements.

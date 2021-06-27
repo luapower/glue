@@ -355,6 +355,10 @@ function glue.string.gsplit(s, sep, start, plain)
 	end
 end
 
+function glue.string.split(s, sep, start, plain)
+	return glue.collect(glue.gsplit(s, sep, start, plain))
+end
+
 --split a string into lines, optionally including the line terminator.
 function glue.lines(s, opt, i)
 	local term = opt == '*L'
