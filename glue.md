@@ -43,6 +43,9 @@ __strings__
 `glue.outdent(s, [indent]) -> s, indent`                           outdent/reindent text based on first line's indentation
 `glue.textpos(s, i) -> line, col`                                  return text position from byte position
 `glue.trim(s) -> s`                                                remove padding
+`glue.pad(s, n, [c], dir) -> s`                                    pad string
+`glue.lpad(s, n, [c]) -> s`                                        left-pad string
+`glue.rpad(s, n, [c]) -> s`                                        right-pad string
 `glue.esc(s [,mode]) -> pat`                                       escape magic pattern characters
 `glue.tohex(s|n [,upper]) -> s`                                    string to hex
 `glue.fromhex(s[, isvalid]) -> s`                                  hex to string
@@ -472,6 +475,13 @@ given, returns a function `f(i)` that is faster on repeat calls.
 ### `glue.trim(s) -> s`
 
 Remove whitespace (defined as Lua pattern `"%s"`) from the beginning and end of a string.
+
+------------------------------------------------------------------------------
+
+### `glue.pad(s, n, [c], dir) -> s` <br> `glue.lpad(s, n, [c]) -> s` <br> `glue.rpad(s, n, [c]) -> s`
+
+Pad a string `s` to length `n` using char `c` (which defaults to `' '`)
+on its right (dir = 'r') or left (dir = 'l').
 
 ------------------------------------------------------------------------------
 

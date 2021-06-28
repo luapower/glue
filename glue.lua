@@ -436,6 +436,13 @@ function glue.string.trim(s)
 	return from > #s and '' or s:match('.*%S', from)
 end
 
+function glue.pad(s, n, c, dir)
+	local pad = (c or ' '):rep(n - #s)
+	return dir == 'l' and pad..s or dir == 'r' and s..pad or error'dir arg required'
+end
+function glue.lpad(s, n, c) return glue.pad(s, n, c, 'l') end
+function glue.rpad(s, n, c) return glue.pad(s, n, c, 'r') end
+
 --escape a string so that it can be matched literally inside a pattern.
 local function format_ci_pat(c)
 	return ('[%s%s]'):format(c:lower(), c:upper())
