@@ -6,7 +6,7 @@ if not ... then require'glue_test'; return end
 
 local glue = {}
 
-local min, max, floor, ceil, log =
+local min, max, floor, ceil, ln =
 	math.min, math.max, math.floor, math.ceil, math.log
 local select, unpack, pairs, rawget = select, unpack, pairs, rawget
 
@@ -38,7 +38,15 @@ function glue.lerp(x, x0, x1, y0, y1)
 end
 
 function glue.nextpow2(x)
-	return max(0, 2^(ceil(log(x) / log(2))))
+	return max(0, 2^(ceil(ln(x) / ln(2))))
+end
+
+function glue.sign(x)
+	return x > 0 and 1 or x == 0 and 0 or -1
+end
+
+function glue.strict_sign(x)
+	return x >= 0 and 1 or -1
 end
 
 --varargs --------------------------------------------------------------------

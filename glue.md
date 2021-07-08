@@ -14,6 +14,8 @@ __math__
 `glue.ceil(x[, p]) -> y`                                           round x up to nearest integer or multiple of `p`
 `glue.clamp(x, min, max) -> y`                                     clamp x in range
 `glue.lerp(x, x0, x1, y0, y1) -> y`                                linear interpolation
+`glue.sign(x) -> 1|0|-1`                                           sign
+`glue.strict_sign(x) -> 1|-1`                                      strict sign
 `glue.nextpow2(x) -> y`                                            next power-of-2 number
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
@@ -139,6 +141,14 @@ so if `max < min`, the result is `max`.
 
 Linear interpolation, i.e. linearly project `x` in `x0..x1` range to
 the `y0..y1` range.
+
+### `glue.sign(x) -> 1|0|-1`
+
+Return sign of `x`.
+
+### `glue.strict_sign(x) -> 1|-1`
+
+Return strict sign of `x`.
 
 ### `glue.nextpow2(x) -> y`
 
