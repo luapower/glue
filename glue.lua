@@ -497,6 +497,38 @@ function glue.string.subst(s, t) --subst('{foo} {bar}', {foo=1, bar=2}) -> '1 2'
 	return s:gsub('{([_%w]+)}', t)
 end
 
+function glue.string.catargs(sep, ...)
+	local n = select('#', ...)
+	if n == 0 then
+		return ''
+	elseif n == 1 then
+		local v = ...
+		return v ~= nil and tostring(v) or ''
+	elseif n == 2 then
+		local v1, v2 = ...
+		if v1 ~= nil then
+			if v2 ~= nil then
+				return v1 .. sep .. v2
+			else
+				return tostring(v1)
+			end
+		elseif v2 ~= nil then
+			return tostring(v2)
+		else
+			return ''
+		end
+	else
+		local t = {}
+		for i = 1, n do
+			local s = select(i, ...)
+			if s ~= nil then
+				t[#t+1] = tostring(s)
+			end
+		end
+		return table.concat(t, sep)
+	end
+end
+
 --publish the string submodule in the glue namespace.
 glue.update(glue, glue.string)
 

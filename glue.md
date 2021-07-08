@@ -52,6 +52,7 @@ __strings__
 `glue.starts(s, prefix) -> t|f`                                    find if string `s` starts with string `prefix`
 `glue.ends(s, suffix) -> t|f`                                      find if string `s` ends with string `suffix`
 `glue.subst(s, t) -> s`                                            string interpolation of `{foo}` occurences
+`glue.catargs(sep, ...) -> s`                                      concat non-nil args
 __iterators__
 `glue.collect([i,] iterator) -> t`                                 collect iterated values into an array
 __stubs__
@@ -539,6 +540,12 @@ Find if string `s` ends with `suffix`.
 ### `glue.subst(s, t) -> s`
 
 Replace all `{foo}` occurences within `s` with `t.foo`.
+
+------------------------------------------------------------------------------
+
+### `glue.catargs(sep, ...) -> s`
+
+Concat args, skipping `nil` ones.
 
 ------------------------------------------------------------------------------
 
