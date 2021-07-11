@@ -41,9 +41,10 @@ __arrays__
 __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
 `glue.split(s,sep[,start[,plain]]) -> {s1,...}`                    split a string by a pattern
+`glue.names('name1 ...') -> {'name1', ...}`                        split a string by whitespace
 `glue.lines(s, [opt], [init]) -> iter() -> s, i, j, k`             iterate the lines of a string
 `glue.outdent(s, [indent]) -> s, indent`                           outdent/reindent text based on first line's indentation
-`glue.textpos(s, i) -> line, col`                                  return text position from byte position
+`glue.lineinfo(s, [i]) -> line, col`                               return text position from byte position
 `glue.trim(s) -> s`                                                remove padding
 `glue.pad(s, n, [c], dir) -> s`                                    pad string
 `glue.lpad(s, n, [c]) -> s`                                        left-pad string
@@ -452,6 +453,13 @@ end
 
 ------------------------------------------------------------------------------
 
+### `glue.names('name1 ...') -> {'name1', ...}`
+
+Split a string by whitespace. Unlike `glue.split(s, '%s+')`, it ignores
+resulting empty elements. Also, non-string args pass through.
+
+------------------------------------------------------------------------------
+
 ### `glue.lines(s, [opt], [init]) -> iter() -> s, i, j, k`
 
 Iterate the lines of a string. For each line it returns the line contents,
@@ -476,9 +484,9 @@ returns the original string. If `indent` given, it is prepended to each line.
 
 ------------------------------------------------------------------------------
 
-### `glue.textpos(s, i) -> line, col`
+### `glue.lineinfo(s, [i]) -> line, col`
 
-Given a byte position in a text, return the text position. If a `i` is not
+Given a byte position in a text, return the text position. If `i` is not
 given, returns a function `f(i)` that is faster on repeat calls.
 
 ------------------------------------------------------------------------------

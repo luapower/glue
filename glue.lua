@@ -9,6 +9,7 @@ local glue = {}
 local min, max, floor, ceil, ln =
 	math.min, math.max, math.floor, math.ceil, math.log
 local select, unpack, pairs, rawget = select, unpack, pairs, rawget
+local concat = table.concat
 
 --math -----------------------------------------------------------------------
 
@@ -367,6 +368,17 @@ function glue.string.split(s, sep, start, plain)
 	return glue.collect(glue.gsplit(s, sep, start, plain))
 end
 
+function glue.string.names(s)
+	if type(s) ~= 'string' then
+		return s
+	end
+	local t = {}
+	for s in s:gmatch'[^%s]+' do
+		t[#t+1] = s
+	end
+	return t
+end
+
 --split a string into lines, optionally including the line terminator.
 function glue.lines(s, opt, i)
 	local term = opt == '*L'
@@ -401,19 +413,19 @@ function glue.outdent(s, newindent)
 		end
 		table.insert(t, s)
 	end
-	return table.concat(t, '\n'), indent1
+	return concat(t, '\n'), indent1
 end
 
 --for a string, return a function that given a byte index in the string
 --returns the line and column numbers corresponding to that index.
-function glue.textpos(s, i)
+function glue.lineinfo(s, i)
 	--collect char indices of all the lines in s, incl. the index at #s + 1
 	local t = {}
 	for i in s:gmatch'()[^\r\n]*\r?\n?' do
 		t[#t+1] = i
 	end
 	assert(#t >= 2)
-	local function textpos(i)
+	local function lineinfo(i)
 		--do a binary search in t to find the line.
 		--TODO: replace this with glue.binsearch().
 		assert(i > 0 and i <= #s + 1)
@@ -432,9 +444,9 @@ function glue.textpos(s, i)
 		end
 	end
 	if i then
-		return textpos(i)
+		return lineinfo(i)
 	else
-		return textpos
+		return lineinfo
 	end
 end
 
@@ -533,7 +545,7 @@ function glue.string.catargs(sep, ...)
 				t[#t+1] = tostring(s)
 			end
 		end
-		return table.concat(t, sep)
+		return concat(t, sep)
 	end
 end
 
@@ -709,7 +721,7 @@ function tuple_mt:__tostring()
 	for i=1,self.n do
 		t[i] = tostring(self[i])
 	end
-	return string.format('(%s)', table.concat(t, ', '))
+	return string.format('(%s)', concat(t, ', '))
 end
 function glue.tuples(...)
 	return glue.memoize(function(...)
@@ -1187,7 +1199,7 @@ function glue.luapath(path, index, ext)
 	if index < 1 then index = #paths + 1 + index end
 	table.insert(paths, index,  path .. psep .. wild .. psep .. 'init.' .. ext)
 	table.insert(paths, index,  path .. psep .. wild .. '.' .. ext)
-	package.path = table.concat(paths, tsep)
+	package.path = concat(paths, tsep)
 end
 
 --portable way to add more paths to package.cpath, at any place in the list.
@@ -1204,7 +1216,7 @@ function glue.cpath(path, index)
 	if index == 'after' then index = 0 end
 	if index < 1 then index = #paths + 1 + index end
 	table.insert(paths, index,  path .. psep .. wild .. '.' .. ext)
-	package.cpath = table.concat(paths, tsep)
+	package.cpath = concat(paths, tsep)
 end
 
 --allocation -----------------------------------------------------------------
