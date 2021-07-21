@@ -107,6 +107,10 @@ function glue.keys(t, cmp)
 	return dt
 end
 
+function glue.sortedkeys(t, cmp)
+	return glue.keys(t, cmp or true)
+end
+
 --stateless pairs() that iterate elements in key order.
 function glue.sortedpairs(t, cmp)
 	local kt = glue.keys(t, cmp or true)

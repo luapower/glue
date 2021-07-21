@@ -25,6 +25,7 @@ __tables__
 `glue.count(t[, maxn]) -> n`                                       number of keys in table
 `glue.index(t) -> dt`                                              switch keys with values
 `glue.keys(t[,sorted|cmp]) -> dt`                                  make a list of all the keys
+`glue.sortedkeys(t[,cmp]) -> dt`                                   make a sorted list of all keys
 `glue.sortedpairs(t [,cmp]) -> iter() -> k, v`                     like pairs() but in key order
 `glue.update(dt, t1, ...) -> dt`                                   merge tables - overwrites keys
 `glue.merge(dt, t1, ...) -> dt`                                    merge tables - no overwriting
@@ -238,7 +239,7 @@ Output
 
 ------------------------------------------------------------------------------
 
-### `glue.keys(t[,sorted|cmp]) -> dt`
+### `glue.keys(t[,sorted|cmp]) -> dt` <br> `glue.sortedkeys(t[,cmp]) -> dt`
 
 Make an array of all the keys of `t`, optionally sorted. The second arg
 can be `true`, `'asc'`, `'desc'` or a comparison function.
