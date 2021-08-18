@@ -50,6 +50,10 @@ function glue.strict_sign(x)
 	return x >= 0 and 1 or -1
 end
 
+function glue.repl(x, v, r)
+	if x == v then return r else return x end
+end
+
 --varargs --------------------------------------------------------------------
 
 if table.pack then
@@ -645,12 +649,15 @@ local function memoize2(fn, weak) --for strict two-arg functions
 		return v
 	end
 end
-local pinstack = {}
 local function memoize_vararg(fn, weak, minarg, maxarg)
 	local cache = weakvals(weak)
 	local values = weakvals(weak)
 	local pins = weak and weakvals(weak)
+	local pinstack = {}
+	local inside
 	return function(...)
+		assert(not inside) --recursion not supported because of the pinstack.
+		local inside = true
 		local key = cache
 		local narg = min(max(select('#',...), minarg), maxarg)
 		for i = 1, narg do
@@ -679,6 +686,7 @@ local function memoize_vararg(fn, weak, minarg, maxarg)
 			end
 		end
 		if v == nilkey then v = nil end
+		inside = false
 		return v
 	end
 end

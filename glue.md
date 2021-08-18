@@ -17,6 +17,7 @@ __math__
 `glue.sign(x) -> 1|0|-1`                                           sign
 `glue.strict_sign(x) -> 1|-1`                                      strict sign
 `glue.nextpow2(x) -> y`                                            next power-of-2 number
+`glue.repl(x, v, r) -> x`                                          replace v with r in x
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
@@ -155,6 +156,10 @@ Return strict sign of `x`.
 ### `glue.nextpow2(x) -> y`
 
 Find the smallest `n` for which `x <= 2^n`.
+
+### `glue.repl(x, v, r) -> x`
+
+If x == v, return r, otherwise return x.
 
 ------------------------------------------------------------------------------
 
@@ -1062,7 +1067,8 @@ declared in `foo.bar` style instead of `_M.bar`.
 Setting `foo.module = glue.module` makes module `foo` directly extensible
 by calling `foo:module'bar'` or `require'foo':module'bar'`.
 
-_This function is 27 LOC._
+NOTE: All that functionality is done in just 27 LOC, less than it takes
+to explain it, so read the code to get to another level of clarity.
 
 ### `glue.autoload(t, submodules) -> t` <br> `glue.autoload(t, key, module|loader) -> t`
 
