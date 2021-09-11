@@ -387,8 +387,13 @@ function glue.string.names(s)
 	return t
 end
 
+local function cap(a, b) return a:upper()..b end
+function glue.string.capitalize(s)
+	return s:gsub('(%l)(%w*)', cap)
+end
+
 --split a string into lines, optionally including the line terminator.
-function glue.lines(s, opt, i)
+function glue.string.lines(s, opt, i)
 	local term = opt == '*L'
 	local patt = term and '()([^\r\n]*()\r?\n?())' or '()([^\r\n]*)()\r?\n?()'
 	i = i or 1

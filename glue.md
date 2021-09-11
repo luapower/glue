@@ -44,6 +44,7 @@ __strings__
 `glue.gsplit(s,sep[,start[,plain]]) -> iter() -> e[,captures...]`  split a string by a pattern
 `glue.split(s,sep[,start[,plain]]) -> {s1,...}`                    split a string by a pattern
 `glue.names('name1 ...') -> {'name1', ...}`                        split a string by whitespace
+`glue.capitalize(s) -> s`                                          capitalize the first letter of every word in string
 `glue.lines(s, [opt], [init]) -> iter() -> s, i, j, k`             iterate the lines of a string
 `glue.outdent(s, [indent]) -> s, indent`                           outdent/reindent text based on first line's indentation
 `glue.lineinfo(s, [i]) -> line, col`                               return text position from byte position
@@ -463,6 +464,12 @@ end
 
 Split a string by whitespace. Unlike `glue.split(s, '%s+')`, it ignores
 resulting empty elements. Also, non-string args pass through.
+
+------------------------------------------------------------------------------
+
+### `glue.capitalize(s) -> s`
+
+Capitalize the first letter of every word in string.
 
 ------------------------------------------------------------------------------
 
