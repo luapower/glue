@@ -1349,47 +1349,105 @@ end --if jit
 
 if bit then
 
-	local band, bor, bnot = bit.band, bit.bor, bit.bnot
+local band, bor, bnot = bit.band, bit.bor, bit.bnot
 
-	--extract the bool value of a bitmask from a value.
-	function glue.getbit(from, mask)
-		return band(from, mask) == mask
-	end
+--extract the bool value of a bitmask from a value.
+function glue.getbit(from, mask)
+	return band(from, mask) == mask
+end
 
-	--set a single bit of a value without affecting other bits.
-	function glue.setbit(over, mask, yes)
-		return bor(yes and mask or 0, band(over, bnot(mask)))
-	end
+--set a single bit of a value without affecting other bits.
+function glue.setbit(over, mask, yes)
+	return bor(yes and mask or 0, band(over, bnot(mask)))
+end
 
-	local function bor_bit(bits, k, mask, strict)
-		local b = bits[k]
-		if b then
-			return bit.bor(mask, b)
-		elseif strict then
-			error(string.format('invalid bit %s', k))
-		else
-			return mask
-		end
-	end
-	function glue.bor(flags, bits, strict)
-		local mask = 0
-		if type(flags) == 'number' then
-			return flags --passthrough
-		elseif type(flags) == 'string' then
-			for k in flags:gmatch'[^%s]+' do
-				mask = bor_bit(bits, k, mask, strict)
-			end
-		elseif type(flags) == 'table' then
-			for k,v in pairs(flags) do
-				k = type(k) == 'number' and v or k
-				mask = bor_bit(bits, k, mask, strict)
-			end
-		else
-			error'flags expected'
-		end
+local function bor_bit(bits, k, mask, strict)
+	local b = bits[k]
+	if b then
+		return bit.bor(mask, b)
+	elseif strict then
+		error(string.format('invalid bit %s', k))
+	else
 		return mask
 	end
-
 end
+function glue.bor(flags, bits, strict)
+	local mask = 0
+	if type(flags) == 'number' then
+		return flags --passthrough
+	elseif type(flags) == 'string' then
+		for k in flags:gmatch'[^%s]+' do
+			mask = bor_bit(bits, k, mask, strict)
+		end
+	elseif type(flags) == 'table' then
+		for k,v in pairs(flags) do
+			k = type(k) == 'number' and v or k
+			mask = bor_bit(bits, k, mask, strict)
+		end
+	else
+		error'flags expected'
+	end
+	return mask
+end
+
+end --if bit
+
+--buffered I/O ---------------------------------------------------------------
+
+if jit then
+
+local ffi = require'ffi'
+local pchar_t = ffi.typeof'char[?]'
+
+--make a `write(buf, sz)` that appends data to a dynarray accumulator.
+function glue.dynarray_pump(dynarr)
+	dynarr = dynarr or glue.dynarray(pchar_t)
+	local i = 0
+	local function write(src, len)
+		local dst = dynarr(i + len)
+		ffi.copy(dst + i, src, len or #src)
+		i = i + len
+		return len
+	end
+	local function collect()
+		return dynarr(0)
+	end
+	return write, collect
+end
+
+--unlike a pump which copies the user's buffer, a loader provides a buffer
+--for the user to fill up and mark (a portion of it) as filled.
+function glue.dynarray_loader(dynarr)
+	dynarr = dynarr or glue.dynarray(pchar_t)
+	local i = 0
+	local function get(sz)
+		return dynarr(i + sz) + i, sz
+	end
+	local function put(len)
+		i = i + len
+	end
+	local function collect()
+		return dynarr(0)
+	end
+	return get, put, collect
+end
+
+--load up a dynarray with repeated reads given a `read(self, buf, sz, expires)` method.
+function glue.readall(read, self, expires)
+	local get, put, collect = glue.dynarray_loader()
+	while true do
+		local buf, sz = get(4096)
+		local len, err, errcode = read(self, buf, sz, expires)
+		if not len then --short read
+			return nil, err, errcode, collect()
+		elseif len == 0 then --eof
+			return collect()
+		else
+			put(len)
+		end
+	end
+end
+
+end --if jit
 
 return glue
