@@ -1410,7 +1410,7 @@ function glue.dynarray_pump(dynarr)
 		return len
 	end
 	local function collect()
-		return dynarr(0)
+		return dynarr(i)
 	end
 	return write, collect
 end
@@ -1427,7 +1427,7 @@ function glue.dynarray_loader(dynarr)
 		i = i + len
 	end
 	local function collect()
-		return dynarr(0)
+		return dynarr(i)
 	end
 	return get, put, collect
 end
@@ -1437,9 +1437,9 @@ function glue.readall(read, self, expires)
 	local get, put, collect = glue.dynarray_loader()
 	while true do
 		local buf, sz = get(4096)
-		local len, err, errcode = read(self, buf, sz, expires)
+		local len, err = read(self, buf, sz, expires)
 		if not len then --short read
-			return nil, err, errcode, collect()
+			return nil, err, collect()
 		elseif len == 0 then --eof
 			return collect()
 		else
