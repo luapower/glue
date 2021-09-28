@@ -408,7 +408,7 @@ function glue.string.lines(s, opt, i)
 end
 
 --outdent lines based on the indent of the first non-empty line.
-function glue.outdent(s, newindent)
+function glue.string.outdent(s, newindent)
 	local indent = s:match'^([\t ]+)[^%s]' or s:match'\r?\n([\t ]+)[^%s]'
 	if not indent then
 		return s, ''
@@ -431,7 +431,7 @@ end
 
 --for a string, return a function that given a byte index in the string
 --returns the line and column numbers corresponding to that index.
-function glue.lineinfo(s, i)
+function glue.string.lineinfo(s, i)
 	--collect char indices of all the lines in s, incl. the index at #s + 1
 	local t = {}
 	for i in s:gmatch'()[^\r\n]*\r?\n?' do
@@ -469,12 +469,13 @@ function glue.string.trim(s)
 	return from > #s and '' or s:match('.*%S', from)
 end
 
-function glue.pad(s, n, c, dir)
+local function pad(s, n, c, dir)
 	local pad = (c or ' '):rep(n - #s)
 	return dir == 'l' and pad..s or dir == 'r' and s..pad or error'dir arg required'
 end
-function glue.lpad(s, n, c) return glue.pad(s, n, c, 'l') end
-function glue.rpad(s, n, c) return glue.pad(s, n, c, 'r') end
+glue.string.pad = pad
+function glue.string.lpad(s, n, c) return pad(s, n, c, 'l') end
+function glue.string.rpad(s, n, c) return pad(s, n, c, 'r') end
 
 --escape a string so that it can be matched literally inside a pattern.
 local function format_ci_pat(c)
@@ -530,7 +531,7 @@ function glue.string.subst(s, t) --subst('{foo} {bar}', {foo=1, bar=2}) -> '1 2'
 	return s:gsub('{([_%w]+)}', t)
 end
 
-function glue.string.catargs(sep, ...)
+function glue.catargs(sep, ...)
 	local n = select('#', ...)
 	if n == 0 then
 		return ''
@@ -1269,9 +1270,14 @@ if jit then
 
 local ffi = require'ffi'
 
+glue.i8p = ffi.typeof'int8_t*'
+glue.i8a = ffi.typeof'int8_t[?]'
+glue.u8p = ffi.typeof'uint8_t*'
+glue.u8a = ffi.typeof'uint8_t[?]'
+
 --static, auto-growing buffer allocation pattern (ctype must be vla).
 function glue.buffer(ctype)
-	local vla = ffi.typeof(ctype)
+	local vla = ffi.typeof(ctype or u8a)
 	local buf, len = nil, -1
 	return function(minlen)
 		if minlen == false then
@@ -1287,6 +1293,7 @@ end
 --like glue.buffer() but preserves data on reallocations
 --also returns minlen instead of capacity.
 function glue.dynarray(ctype, min_capacity)
+	ctype = ctype or u8a
 	local buffer = glue.buffer(ctype)
 	local elem_size = ffi.sizeof(ctype, 1)
 	local buf0, minlen0
@@ -1343,7 +1350,7 @@ local function ptr64(ctype, addr)
 end
 
 glue.addr = ffi.abi'64bit' and addr64 or addr32
-glue.ptr = ffi.abi'64bit' and ptr64 or ptr32
+glue.ptr  = ffi.abi'64bit' and ptr64  or ptr32
 
 end --if jit
 
@@ -1397,11 +1404,10 @@ end --if bit
 if jit then
 
 local ffi = require'ffi'
-local pchar_t = ffi.typeof'char[?]'
 
 --make a `write(buf, sz)` that appends data to a dynarray accumulator.
 function glue.dynarray_pump(dynarr)
-	dynarr = dynarr or glue.dynarray(pchar_t)
+	dynarr = dynarr or glue.dynarray()
 	local i = 0
 	local function write(src, len)
 		local dst = dynarr(i + len)
@@ -1418,7 +1424,7 @@ end
 --unlike a pump which copies the user's buffer, a loader provides a buffer
 --for the user to fill up and mark (a portion of it) as filled.
 function glue.dynarray_loader(dynarr)
-	dynarr = dynarr or glue.dynarray(pchar_t)
+	dynarr = dynarr or glue.dynarray()
 	local i = 0
 	local function get(sz)
 		return dynarr(i + sz) + i, sz
