@@ -409,8 +409,8 @@ end
 
 --outdent lines based on the indent of the first non-empty line.
 function glue.string.outdent(s, newindent)
-	local indent = s:match'^([\t ]+)[^%s]' or s:match'\r?\n([\t ]+)[^%s]'
-	if not indent then
+	local indent = s:match'^([\t ]*)[^%s]' or s:match'\r?\n([\t ]*)[^%s]'
+	if indent == '' and not newindent then
 		return s, ''
 	end
 	local t = {}
