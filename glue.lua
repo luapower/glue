@@ -1277,7 +1277,7 @@ glue.u8a = ffi.typeof'uint8_t[?]'
 
 --static, auto-growing buffer allocation pattern (ctype must be vla).
 function glue.buffer(ctype)
-	local vla = ffi.typeof(ctype or u8a)
+	local vla = ffi.typeof(ctype or glue.u8a)
 	local buf, len = nil, -1
 	return function(minlen)
 		if minlen == false then
@@ -1293,7 +1293,7 @@ end
 --like glue.buffer() but preserves data on reallocations
 --also returns minlen instead of capacity.
 function glue.dynarray(ctype, min_capacity)
-	ctype = ctype or u8a
+	ctype = ctype or glue.u8a
 	local buffer = glue.buffer(ctype)
 	local elem_size = ffi.sizeof(ctype, 1)
 	local buf0, minlen0
