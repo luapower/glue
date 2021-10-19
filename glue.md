@@ -35,7 +35,8 @@ __arrays__
 `glue.extend(dt, t1, ...) -> dt`                                   extend an array
 `glue.append(dt, v1, ...) -> dt`                                   append non-nil values to an array
 `glue.shift(t, i, n) -> t`                                         shift array elements
-`glue.map(t, field|f,...) -> t`                                    map f over t or select a column from an array of records
+`glue.map(t, field|f,...) -> t`                                    map f over pairs of t or select a column from an array of records
+`glue.imap(t, field|f,...) -> t`                                   map f over ipairs of t or select a column from an array of records
 `glue.indexof(v, t, [i], [j]) -> i`                                scan array for value
 `glue.binsearch(v, t, [cmp], [i], [j]) -> i`                       binary search in sorted array
 `glue.sortedarray([sa]) -> sa`                                     stay-sorted array with insertion and removal in O(log n)
@@ -369,14 +370,26 @@ Removing a portion of an array or making room for more elements inside the array
 
 ### `glue.map(t, field|f,...) -> t`
 
-Map function `f(v, ...) -> v1` over the array elements of `t` or, if the array
-part is empty, map `f(k, v, ...) -> v1` over the pairs of `t`.
+Map function `f(k, v, ...) -> v1` over the key-value pairs of `t` or.
 
 If `f` is not a function, then the values of `t` must be themselves tables,
 in which case `f` is a key to pluck from those tables. Plucked functions
-are called as methods and their result is selected instead (this allows eg.
-calling a method for each element in an array or map of objects and collecting
-the results in an array/map).
+are called as methods and their result is selected instead. This allows eg.
+calling a method for each element in a table of objects and collecting
+the results in a table.
+
+------------------------------------------------------------------------------
+
+### `glue.imap(t, field|f,...) -> t`
+
+Map function `f(v, ...) -> v1` over the array elements of `t` taken to be
+from `1` up to `t.n or #t`.
+
+If `f` is not a function, then the values of `t` must be themselves tables,
+in which case `f` is a key to pluck from those tables. Plucked functions
+are called as methods and their result is selected instead. This allows eg.
+calling a method for each element in an array of objects and collecting
+the results in an array.
 
 ------------------------------------------------------------------------------
 

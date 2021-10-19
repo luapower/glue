@@ -228,34 +228,38 @@ end
 --map f over t or extract a column from a list of records.
 function glue.map(t, f, ...)
 	local dt = {}
-	if #t == 0 then --treat as hashmap
-		if type(f) == 'function' then
-			for k,v in pairs(t) do
-				dt[k] = f(k, v, ...)
-			end
-		else
-			for k,v in pairs(t) do
-				local sel = v[f]
-				if type(sel) == 'function' then --method to apply
-					dt[k] = sel(v, ...)
-				else --field to pluck
-					dt[k] = sel
-				end
+	if type(f) == 'function' then
+		for k,v in pairs(t) do
+			dt[k] = f(k, v, ...)
+		end
+	else
+		for k,v in pairs(t) do
+			local sel = v[f]
+			if type(sel) == 'function' then --method to apply
+				dt[k] = sel(v, ...)
+			else --field to pluck
+				dt[k] = sel
 			end
 		end
-	else --treat as array
-		if type(f) == 'function' then
-			for i,v in ipairs(t) do
-				dt[i] = f(v, ...)
-			end
-		else
-			for i,v in ipairs(t) do
-				local sel = v[f]
-				if type(sel) == 'function' then --method to apply
-					dt[i] = sel(v, ...)
-				else --field to pluck
-					dt[i] = sel
-				end
+	end
+	return dt
+end
+
+--map f over t or extract a column from a list of records.
+function glue.imap(t, f, ...)
+	local dt = {}
+	if type(f) == 'function' then
+		for i,v in ipairs(t) do
+			dt[i] = f(v, ...)
+		end
+	else
+		local n = t.n or #t
+		for i=1,n do
+			local sel = v[f]
+			if type(sel) == 'function' then --method to apply
+				dt[i] = sel(v, ...)
+			else --field to pluck
+				dt[i] = sel
 			end
 		end
 	end
