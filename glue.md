@@ -919,7 +919,7 @@ Write the contents of a string, table or iterator to a file.
   * the contents can be given as a string, an array of strings, or a function
   that returns a string or `nil` to signal end-of-stream.
   * `format` can be `"t"` in which case the file will be written in text mode
-   (default is binary mode).
+   (default is binary mode). It can also be `"a"` or `"at"` for appending.
   * `tmpfile` enables atomic saving via a temporary file (enabled by default)
   which is then renamed to `filename` and if writing or renaming fails the
   temp file is removed and `filename` is not touched (and if the program is

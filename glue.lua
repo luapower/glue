@@ -911,7 +911,8 @@ end
 --write a string, number, table or the results of a read function to a file.
 --uses binary mode by default.
 function glue.writefile(filename, s, mode, tmpfile)
-	if tmpfile == nil then
+	local append = mode == 'a' or mode == 'at'
+	if tmpfile == nil and not append then
 		tmpfile = true --enabled by default.
 	end
 	if tmpfile then
@@ -930,7 +931,8 @@ function glue.writefile(filename, s, mode, tmpfile)
 			return true
 		end
 	end
-	local f, err = io.open(filename, mode=='t' and 'w' or 'wb')
+	local m = append and (mode=='at' and 'a' or 'ab') or (mode=='t' and 'w' or 'wb')
+	local f, err = io.open(filename, m)
 	if not f then
 		return nil, err
 	end
@@ -953,7 +955,9 @@ function glue.writefile(filename, s, mode, tmpfile)
 	end
 	f:close()
 	if not ok then
-		os.remove(filename)
+		if not append then
+			os.remove(filename)
+		end
 		return nil, err
 	else
 		return true
