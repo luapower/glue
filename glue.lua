@@ -1066,8 +1066,10 @@ local function rel_time(s)
 		return ('%d hours'):format(math.floor(s / 3600))
 	elseif s > 2 * 60 then
 		return ('%d minutes'):format(math.floor(s / 60))
+	elseif s > 60 then
+		return '1 minute'
 	else
-		return 'a minute'
+		return 'seconds'
 	end
 end
 
