@@ -937,7 +937,7 @@ function glue.writefile(filename, s, mode, tmpfile)
 	if not f then
 		return nil, err
 	end
-	local ok, err
+	local ok, err = true
 	if type(s) == 'table' then
 		for i = 1, #s do
 			ok, err = f:write(s[i])
