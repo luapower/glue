@@ -247,14 +247,15 @@ end
 
 --map f over t or extract a column from a list of records.
 function glue.imap(t, f, ...)
-	local dt = {}
+	local dt = {n = t.n}
+	local n = t.n or #t
 	if type(f) == 'function' then
-		for i,v in ipairs(t) do
-			dt[i] = f(v, ...)
+		for i=1,n do
+			dt[i] = f(t[i], ...)
 		end
 	else
-		local n = t.n or #t
 		for i=1,n do
+			local v = t[i]
 			local sel = v[f]
 			if type(sel) == 'function' then --method to apply
 				dt[i] = sel(v, ...)
