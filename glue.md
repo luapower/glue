@@ -91,6 +91,7 @@ __time__
 `glue.day([utc, ][ts], [plus_days]) -> ts`                         timestamp at day's beginning from `ts`
 `glue.month([utc, ][ts], [plus_months]) -> ts`                     timestamp at month's beginning from `ts`
 `glue.year([utc, ][ts], [plus_years]) -> ts`                       timestamp at year's beginning from `ts`
+`glue.timeago(ts[, from_ts]) -> s`                                 format relative time
 __errors__
 `glue.assert(v [,message [,format_args...]]) -> v`                 assert with error message formatting
 `glue.protect(func) -> protected_func`                             wrap an error-raising function
@@ -975,6 +976,12 @@ Timestamp at month's beginning from `ts`, plus/minus some months.
 ### `glue.year([utc, ][ts], [plus_years]) -> ts`
 
 Timestamp at year's beginning from `ts`, plus/minus some years.
+
+------------------------------------------------------------------------------
+
+### `glue.timeago(ts[, from_ts]) -> s`
+
+Format relative time, eg. `3 hours ago` or `in 2 weeks`.
 
 ------------------------------------------------------------------------------
 

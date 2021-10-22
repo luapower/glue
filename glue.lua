@@ -1055,6 +1055,27 @@ function glue.year(utc, t, offset)
 	return glue.time(false, d.year + (offset or 0))
 end
 
+local function rel_time(s)
+	if s > 2 * 365 * 24 * 3600 then
+		return ('%d years'):format(math.floor(s / (365 * 24 * 3600)))
+	elseif s > 2 * 30.5 * 24 * 3600 then
+		return ('%d months'):format(math.floor(s / (30.5 * 24 * 3600)))
+	elseif s > 1.5 * 24 * 3600 then
+		return ('%d days'):format(math.floor(s / (24 * 3600)))
+	elseif s > 2 * 3600 then
+		return ('%d hours'):format(math.floor(s / 3600))
+	elseif s > 2 * 60 then
+		return ('%d minutes'):format(math.floor(s / 60))
+	else
+		return 'a minute'
+	end
+end
+
+function glue.timeago(time, from_time)
+	local s = os.difftime(from_time or os.time(), time)
+	return string.format(s > 0 and '%s ago' or 'in %s', rel_time(math.abs(s)))
+end
+
 --error handling -------------------------------------------------------------
 
 --allocation-free assert() with string formatting.
