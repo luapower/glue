@@ -414,24 +414,41 @@ end
 
 --outdent lines based on the indent of the first non-empty line.
 function glue.string.outdent(s, newindent)
-	local indent = s:match'^([\t ]+)[^%s]' or s:match'\r?\n([\t ]+)[^%s]' or ''
-	if indent == '' and not newindent then
-		return s, ''
-	end
+	newindent = newindent or ''
+	local indent
 	local t = {}
-	local s0 = s
-	for s, i1, i2, i3 in glue.lines(s) do
-		local indent1 = s:sub(1, #indent)
-		local s = s:sub(#indent + 1)
-		if indent1 ~= indent and s:find'[^%s]' then
-			return s0, indent1 --line less indented than the first line: bail out.
+	for s in glue.lines(s) do
+		local indent1 = s:match'^([\t ]*)[^%s]'
+		if not indent then
+			indent = indent1
+		elseif indent1 then
+			if indent ~= indent1 then
+				if #indent1 > #indent then --more indented
+					if not glue.starts(indent1, indent) then
+						indent = ''
+						break
+					end
+				elseif #indent > #indent1 then --less indented
+					if not glue.starts(indent, indent1) then
+						indent = ''
+						break
+					end
+					indent = indent1
+				else --same length, diff contents.
+					indent = ''
+					break
+				end
+			end
 		end
-		if newindent then
-			s = newindent..s
-		end
-		table.insert(t, s)
+		t[#t+1] = s
 	end
-	return concat(t, '\n'), indent1
+	if indent == '' and newindent == '' then
+		return s
+	end
+	for i=1,#t do
+		t[i] = newindent .. t[i]:sub(#indent + 1)
+	end
+	return concat(t, '\n'), indent
 end
 
 --for a string, return a function that given a byte index in the string
