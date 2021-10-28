@@ -485,9 +485,9 @@ function glue.string.lineinfo(s, i)
 	end
 end
 
---string trim12 from lua wiki.
+--string trim12 from Lua wiki.
 function glue.string.trim(s)
-	local from = s:match('^%s*()')
+	local from = s:match'^%s*()'
 	return from > #s and '' or s:match('.*%S', from)
 end
 
