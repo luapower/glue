@@ -72,7 +72,7 @@ end
 --tables ---------------------------------------------------------------------
 
 glue.empty = setmetatable({}, {
-	__newindex = false, --read-only
+	__newindex = function() error'trying to set a field in glue.empty' end, --read-only
 	__metatable = false,
 })
 
