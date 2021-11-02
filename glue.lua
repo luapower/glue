@@ -54,6 +54,26 @@ function glue.repl(x, v, r)
 	if x == v then return r else return x end
 end
 
+if jit then
+	local random, str = math.random, require'ffi'.string
+	function glue.random_string(n)
+		local buf = glue.u32a(n/4+1)
+		for i=0,n/4 do
+			buf[i] = random(0, 2^32-1)
+		end
+		return str(buf, n)
+	end
+else
+	local char, unpack, random = string.char, unpack, math.random
+	function glue.random_string(n)
+		local t = {}
+		for i=1,n do
+			t[i] = random(0, 255)
+		end
+		return char(unpack(t))
+	end
+end
+
 --varargs --------------------------------------------------------------------
 
 if table.pack then
@@ -1323,6 +1343,11 @@ glue.i8p = ffi.typeof'int8_t*'
 glue.i8a = ffi.typeof'int8_t[?]'
 glue.u8p = ffi.typeof'uint8_t*'
 glue.u8a = ffi.typeof'uint8_t[?]'
+
+glue.i32p = ffi.typeof'int32_t*'
+glue.i32a = ffi.typeof'int32_t[?]'
+glue.u32p = ffi.typeof'uint32_t*'
+glue.u32a = ffi.typeof'uint32_t[?]'
 
 --static, auto-growing buffer allocation pattern (ctype must be vla).
 function glue.buffer(ctype)

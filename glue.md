@@ -18,6 +18,7 @@ __math__
 `glue.strict_sign(x) -> 1|-1`                                      strict sign
 `glue.nextpow2(x) -> y`                                            next power-of-2 number
 `glue.repl(x, v, r) -> x`                                          replace v with r in x
+`glue.random_string(n) -> s`                                       generate random string of length `n`
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
@@ -163,6 +164,10 @@ Find the smallest `n` for which `x <= 2^n`.
 ### `glue.repl(x, v, r) -> x`
 
 If x == v, return r, otherwise return x.
+
+### `glue.random_string(n) -> s`
+
+Generate random string of length `n`. If you're not on LuaJIT, `n` is arg-stack-bound.
 
 ------------------------------------------------------------------------------
 

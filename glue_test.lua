@@ -17,6 +17,9 @@ test(glue.clamp(3, 2, 5), 3)
 test(glue.clamp(1, 2, 5), 2)
 test(glue.clamp(6, 2, 5), 5)
 
+test(#glue.random_string(1), 1)
+test(#glue.random_string(200), 200)
+
 --tables ---------------------------------------------------------------------
 
 test(glue.count({[0] = 1, 2, 3, a = 4}), 4)
