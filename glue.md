@@ -80,7 +80,7 @@ __objects__
 `glue.override(class, method_name, f)`                             override a method
 `glue.gettersandsetters([getters], [setters], [super]) -> mt`      create a metatable that supports virtual properties
 __os__
-`glue.win`                                                         platform is Windows
+`glue.win`                                                         true if platform is Windows
 __i/o__
 `glue.canopen(filename[, mode]) -> filename | nil`                 check if a file exists and can be opened
 `glue.readfile(filename[, format][, open]) -> s | nil, err`        read the contents of a file into a string
