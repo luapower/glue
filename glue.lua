@@ -874,11 +874,15 @@ function glue.gettersandsetters(getters, setters, super)
 	return {__index = get, __newindex = set}
 end
 
+--os -------------------------------------------------------------------------
+
+glue.win = package.config:sub(1,1) == '\\'
+
 --i/o ------------------------------------------------------------------------
 
 --check if a file exists and can be opened for reading or writing.
 function glue.canopen(name, mode)
-	local f = io.open(name, mode or 'rb')
+	local f = io.open(name, mode or (glue.win and 'rb' or 'r'))
 	if f then f:close() end
 	return f ~= nil and name or nil
 end
@@ -886,7 +890,7 @@ end
 --read a file into a string (in binary mode by default).
 function glue.readfile(name, mode, open)
 	open = open or io.open
-	local f, err = open(name, mode=='t' and 'r' or 'rb')
+	local f, err = open(name, mode=='t' and 'r' or (glue.win and 'rb' or 'r'))
 	if not f then return nil, err end
 	local s, err = f:read'*a'
 	if s == nil then return nil, err end
