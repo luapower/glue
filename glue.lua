@@ -569,8 +569,20 @@ function glue.string.ends(s, p)
 	return p == '' or s:sub(-#p) == p
 end
 
-function glue.string.subst(s, t) --subst('{foo} {bar}', {foo=1, bar=2}) -> '1 2'
-	return s:gsub('{([_%w]+)}', t)
+function glue.string.subst(s, t, get_missing) --subst('{foo} {bar}', {foo=1, bar=2}) -> '1 2'
+	if get_missing then
+		local missing
+		return s:gsub('{([_%w]+)}', function(s)
+			if t[s] ~= nil then
+				return t[s]
+			else
+				if not missing then missing = {} end
+				missing[#missing + 1] = s
+			end
+		end), missing
+	else
+		return s:gsub('{([_%w]+)}', t)
+	end
 end
 
 function glue.catargs(sep, ...)
