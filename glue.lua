@@ -15,7 +15,7 @@ local concat = table.concat
 
 function glue.round(x, p)
 	p = p or 1
-	return floor(x / p + .5) * p
+	return floor(x + .5) * p
 end
 
 function glue.floor(x, p)
@@ -588,10 +588,10 @@ end
 function glue.catargs(sep, ...)
 	local n = select('#', ...)
 	if n == 0 then
-		return ''
+		return nil
 	elseif n == 1 then
 		local v = ...
-		return v ~= nil and tostring(v) or ''
+		return v ~= nil and tostring(v) or nil
 	elseif n == 2 then
 		local v1, v2 = ...
 		if v1 ~= nil then
@@ -603,7 +603,7 @@ function glue.catargs(sep, ...)
 		elseif v2 ~= nil then
 			return tostring(v2)
 		else
-			return ''
+			return nil
 		end
 	else
 		local t = {}
@@ -613,7 +613,7 @@ function glue.catargs(sep, ...)
 				t[#t+1] = tostring(s)
 			end
 		end
-		return concat(t, sep)
+		return #t > 0 and concat(t, sep) or nil
 	end
 end
 

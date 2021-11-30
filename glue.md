@@ -597,7 +597,7 @@ Replace all `{foo}` occurences within `s` with `t.foo`.
 
 ### `glue.catargs(sep, ...) -> s`
 
-Concat args, skipping `nil` ones.
+Concat args, skipping `nil` ones. Returns `nil` on zero non-nil args.
 
 ------------------------------------------------------------------------------
 
