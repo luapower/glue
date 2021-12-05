@@ -15,7 +15,7 @@ local concat = table.concat
 
 function glue.round(x, p)
 	p = p or 1
-	return floor(x + .5) * p
+	return floor(x / p + .5) * p
 end
 
 function glue.floor(x, p)
@@ -486,7 +486,7 @@ function glue.string.lineinfo(s, i)
 		assert(i > 0 and i <= #s + 1)
 		local min, max = 1, #t
 		while true do
-			local k = math.floor(min + (max - min) / 2)
+			local k = floor(min + (max - min) / 2)
 			if i >= t[k] then
 				if k == #t or i < t[k+1] then --found it
 					return k, i - t[k] + 1
@@ -1111,15 +1111,15 @@ end
 
 local function rel_time(s)
 	if s > 2 * 365 * 24 * 3600 then
-		return ('%d years'):format(math.floor(s / (365 * 24 * 3600)))
+		return ('%d years'):format(floor(s / (365 * 24 * 3600)))
 	elseif s > 2 * 30.5 * 24 * 3600 then
-		return ('%d months'):format(math.floor(s / (30.5 * 24 * 3600)))
+		return ('%d months'):format(floor(s / (30.5 * 24 * 3600)))
 	elseif s > 1.5 * 24 * 3600 then
-		return ('%d days'):format(math.floor(s / (24 * 3600)))
+		return ('%d days'):format(floor(s / (24 * 3600)))
 	elseif s > 2 * 3600 then
-		return ('%d hours'):format(math.floor(s / 3600))
+		return ('%d hours'):format(floor(s / 3600))
 	elseif s > 2 * 60 then
-		return ('%d minutes'):format(math.floor(s / 60))
+		return ('%d minutes'):format(floor(s / 60))
 	elseif s > 60 then
 		return '1 minute'
 	else
@@ -1130,6 +1130,15 @@ end
 function glue.timeago(time, from_time)
 	local s = os.difftime(from_time or os.time(), time)
 	return string.format(s > 0 and '%s ago' or 'in %s', rel_time(math.abs(s)))
+end
+
+--size formatting ------------------------------------------------------------
+
+local suffixes = {'k', 'M', 'G', 'T'}
+function glue.tobytes(x, prec)
+	local base = ln(x) / ln(1024)
+	local suffix = suffixes[floor(base)] or ''
+	return 1024^(base - floor(base)) .. suffix
 end
 
 --error handling -------------------------------------------------------------
