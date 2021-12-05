@@ -1138,7 +1138,7 @@ local suffixes = {'k', 'M', 'G', 'T'}
 function glue.tobytes(x, decimals)
 	local base = ln(x) / ln(1024)
 	local suffix = suffixes[floor(base)] or ''
-	local fmt = decimals and decimals ~= 2 and '%.'..decimals..'f%s' or '%.0f%s'
+	local fmt = decimals and decimals ~= 0 and '%.'..decimals..'f%s' or '%.0f%s'
 	return (fmt):format(1024^(base - floor(base)), suffix)
 end
 
