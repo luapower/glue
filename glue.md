@@ -95,6 +95,8 @@ __time__
 `glue.month([utc, ][ts], [plus_months]) -> ts`                     timestamp at month's beginning from `ts`
 `glue.year([utc, ][ts], [plus_years]) -> ts`                       timestamp at year's beginning from `ts`
 `glue.timeago(ts[, from_ts]) -> s`                                 format relative time
+__sizes__
+`glue.kbytes(x [,decimals]) -> s`                                  format byte size in k/M/G/T-bytes
 __errors__
 `glue.assert(v [,message [,format_args...]]) -> v`                 assert with error message formatting
 `glue.protect(func) -> protected_func`                             wrap an error-raising function

@@ -11,6 +11,14 @@ local min, max, floor, ceil, ln =
 local select, unpack, pairs, rawget = select, unpack, pairs, rawget
 local concat = table.concat
 
+--types ----------------------------------------------------------------------
+
+glue.isstr  = function(s) return type(s) == 'string' end
+glue.isnum  = function(x) return type(x) == 'number' end
+glue.isint  = function(x) return type(x) == 'number' and floor(x) == x end
+glue.istab  = function(x) return type(x) == 'table'  end
+glue.isfunc = function(f) return type(f) == 'function' end
+
 --math -----------------------------------------------------------------------
 
 function glue.round(x, p)
@@ -1135,7 +1143,7 @@ end
 --size formatting ------------------------------------------------------------
 
 local suffixes = {'k', 'M', 'G', 'T'}
-function glue.tobytes(x, decimals)
+function glue.kbytes(x, decimals)
 	local base = ln(x) / ln(1024)
 	local suffix = suffixes[floor(base)] or ''
 	local fmt = decimals and decimals ~= 0 and '%.'..decimals..'f%s' or '%.0f%s'
