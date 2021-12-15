@@ -1238,7 +1238,7 @@ an internal buffer based on the `len` argument.
   * the allocation function returns the buffer's current capacity which
     can be equal or greater than the requested length.
   * the returned buffer is anchored by the allocation function. calling
-    `alloc(false)` unanchores the buffer.
+    `alloc(false)` unanchors the buffer.
   * the contents of the buffer _are not preserved_ between allocations
     but you _are allowed_ to access both buffers between two consecutive
     allocations in order to do that yourself.

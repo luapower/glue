@@ -560,6 +560,8 @@ function glue.string.fromhex(s, isvalid)
 		if s:find'[^0-9a-fA-F]' then
 			return nil
 		end
+	else
+		s = s:gsub('[^0-9a-fA-F]', '')
 	end
 	if #s % 2 == 1 then
 		return glue.string.fromhex('0'..s)
@@ -1378,12 +1380,35 @@ glue.i8a = ffi.typeof'int8_t[?]'
 glue.u8p = ffi.typeof'uint8_t*'
 glue.u8a = ffi.typeof'uint8_t[?]'
 
+glue.i16p = ffi.typeof'int16_t*'
+glue.i16a = ffi.typeof'int16_t[?]'
+glue.u16p = ffi.typeof'uint16_t*'
+glue.u16a = ffi.typeof'uint16_t[?]'
+
 glue.i32p = ffi.typeof'int32_t*'
 glue.i32a = ffi.typeof'int32_t[?]'
 glue.u32p = ffi.typeof'uint32_t*'
 glue.u32a = ffi.typeof'uint32_t[?]'
 
+glue.i64p = ffi.typeof'int64_t*'
+glue.i64a = ffi.typeof'int64_t[?]'
+glue.u64p = ffi.typeof'uint64_t*'
+glue.u64a = ffi.typeof'uint64_t[?]'
+
+glue.f32p = ffi.typeof'float*'
+glue.f32a = ffi.typeof'float[?]'
+glue.f64p = ffi.typeof'double*'
+glue.f64a = ffi.typeof'double[?]'
+
+ffi.cdef[[
+void *malloc(size_t);
+void *realloc(void*, size_t);
+void free(void*);
+]]
+
 --static, auto-growing buffer allocation pattern (ctype must be vla).
+--TODO: make a realloc()-based version and make a note in the doc
+--that it won't pressure the gc correctly.
 function glue.buffer(ctype)
 	local vla = ffi.typeof(ctype or glue.u8a)
 	local buf, len = nil, -1
@@ -1400,6 +1425,8 @@ end
 
 --like glue.buffer() but preserves data on reallocations
 --also returns minlen instead of capacity.
+--TODO: make a realloc()-based version and make a note in the doc
+--that it won't pressure the gc correctly.
 function glue.dynarray(ctype, min_capacity)
 	ctype = ctype or glue.u8a
 	local buffer = glue.buffer(ctype)
