@@ -114,6 +114,8 @@ __allocation__
 `glue.freelist([create], [destroy]) -> alloc, free`                freelist allocation pattern
 `glue.buffer(ctype) -> alloc(minlen) -> buf,capacity`              auto-growing buffer
 `glue.dynarray(ctype[,cap]) -> alloc(minlen|false) -> buf, minlen` auto-growing buffer that preserves data
+`glue.dynarray_pump([dynarray]) -> write(), collect()`             make a buffer with a `write()` API for writing into
+`glue.dynarray_loader([dynarray]) -> get(), put(), collect()`      make a buffer with a `get()/put()` API for writing into
 __ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
