@@ -1,5 +1,5 @@
 
---Lua "assorted lengths of wire" library.
+--Lua GLUE: Ideal for wood and paper.
 --Written by Cosmin Apreutesei. Public domain.
 
 if not ... then require'glue_test'; return end

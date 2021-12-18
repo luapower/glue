@@ -1,5 +1,5 @@
 ---
-tagline: assorted lengths of wire
+tagline: Ideal for wood and paper
 read this at: http://luapower.com/glue
 ---
 
