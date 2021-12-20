@@ -10,6 +10,7 @@ local min, max, floor, ceil, ln =
 	math.min, math.max, math.floor, math.ceil, math.log
 local select, unpack, pairs, rawget = select, unpack, pairs, rawget
 local concat = table.concat
+local type = type
 
 --types ----------------------------------------------------------------------
 

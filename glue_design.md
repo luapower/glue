@@ -36,8 +36,8 @@ need to be wrapped first.
 ### Write in Lua
 
 String lambdas, callable strings, list comprehensions are all fun, but they
-they add syntax and and a learning curve and should be generally avoided in
-contexts where their use is spare.
+add syntax and a learning curve and should be generally avoided in contexts
+where their use is spare.
 
 ### Sugar
 

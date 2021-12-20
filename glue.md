@@ -7,6 +7,12 @@ read this at: http://luapower.com/glue
 
 ## API Summary
 ------------------------------------------------------------------ ---------------------------------------------------------
+__types__
+`glue.isstr`                                                       is string
+`glue.isnum`                                                       is number
+`glue.isint`                                                       is integer (includes 1/0 and -1/0)
+`glue.istab`                                                       is table
+`glue.isfunc`                                                      is function
 __math__
 `glue.round(x[, p]) -> y`                                          round x to nearest integer or multiple of `p` (half up)
 `glue.snap(x[, p]) -> y`                                           synonym for glue.round
