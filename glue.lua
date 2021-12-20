@@ -815,6 +815,13 @@ function tuple_mt:__tostring()
 	end
 	return string.format('(%s)', concat(t, ', '))
 end
+function tuple_mt:__pwrite(write, write_value) --integration with the pp module.
+	write'tuple('; write_value(self[1])
+	for i=2,self.n do
+		write','; write_value(self[i])
+	end
+	write')'
+end
 function glue.tuples(...)
 	return glue.memoize(function(...)
 		return setmetatable(glue.pack(...), tuple_mt)
@@ -983,7 +990,7 @@ if jit then
 end
 
 --write a string, number, table or the results of a read function to a file.
---uses binary mode by default.
+--uses binary mode by default. atomic by default.
 function glue.writefile(filename, s, mode, tmpfile)
 	local append = mode == 'a' or mode == 'at'
 	if tmpfile == nil and not append then
