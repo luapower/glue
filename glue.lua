@@ -482,6 +482,19 @@ end
 --for a string, return a function that given a byte index in the string
 --returns the line and column numbers corresponding to that index.
 function glue.string.lineinfo(s, i)
+	if i then --simpler version with no garbage for when the index is given.
+		assert(i > 0 and i <= #s + 1)
+		local line, col = 1, 1
+		local byte = string.byte
+		for i = 1, i - 1 do
+			col = col + 1
+			if byte(s, i) == 10 then
+				line = line + 1
+				col = 1
+			end
+		end
+		return line, col
+	end
 	--collect char indices of all the lines in s, incl. the index at #s + 1
 	local t = {}
 	for i in s:gmatch'()[^\r\n]*\r?\n?' do
@@ -506,11 +519,7 @@ function glue.string.lineinfo(s, i)
 			end
 		end
 	end
-	if i then
-		return lineinfo(i)
-	else
-		return lineinfo
-	end
+	return lineinfo
 end
 
 --string trim12 from Lua wiki.

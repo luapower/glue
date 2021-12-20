@@ -161,6 +161,16 @@ assert_lines('\n\n\r', {'\n','\n','\r',''})
 
 test(glue.trim('  a  d '), 'a  d')
 
+test({(pcall(glue.lineinfo, 'abc', 0))}, {false})
+test({(pcall(glue.lineinfo('abc'), 0))}, {false})
+test({(pcall(glue.lineinfo, 'abc', 5))}, {false})
+test({(pcall(glue.lineinfo('abc'), 5))}, {false})
+test({glue.lineinfo('abc', 1)}, {1, 1})
+test({glue.lineinfo('a\nb\nc', 4)}, {2, 2}) --on \n
+test({glue.lineinfo('a\nb\nc', 5)}, {3, 1})
+test({glue.lineinfo('a\nb\nc')(4)}, {2, 2}) --on \n
+test({glue.lineinfo('a\nb\nc')(5)}, {3, 1})
+
 test(glue.esc'^{(.-)}$', '%^{%(%.%-%)}%$')
 test(glue.esc'%\0%', '%%%z%%')
 
