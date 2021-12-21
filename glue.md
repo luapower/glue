@@ -25,6 +25,7 @@ __math__
 `glue.nextpow2(x) -> y`                                            next power-of-2 number
 `glue.repl(x, v, r) -> x`                                          replace v with r in x
 `glue.random_string(n) -> s`                                       generate random string of length `n`
+`glue.uuid() -> s`                                                 generate random UUID v4
 __varargs__
 `glue.pack(...) -> t`                                              pack varargs
 `glue.unpack(t, [i] [,j]) -> ...`                                  unpack varargs
@@ -180,6 +181,10 @@ If x == v, return r, otherwise return x.
 ### `glue.random_string(n) -> s`
 
 Generate random string of length `n`. If you're not on LuaJIT, `n` is arg-stack-bound.
+
+### `glue.uuid() -> s`
+
+Generate random UUID v4.
 
 ------------------------------------------------------------------------------
 
