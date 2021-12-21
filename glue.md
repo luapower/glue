@@ -180,11 +180,14 @@ If x == v, return r, otherwise return x.
 
 ### `glue.random_string(n) -> s`
 
-Generate random string of length `n`. If you're not on LuaJIT, `n` is arg-stack-bound.
+Generate random string of length `n`.
 
 ### `glue.uuid() -> s`
 
-Generate random UUID v4.
+Generate random UUID (v4).
+
+Don't forget to seed the randomizer first, eg. with
+`math.randomseed(require'time'.clock())` or what have you.
 
 ------------------------------------------------------------------------------
 
