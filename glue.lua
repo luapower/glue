@@ -82,28 +82,12 @@ else
 	end
 end
 
-if jit then
-	local tohex, band, bor = bit.tohex, bit.band, bit.bor
-	function glue.uuid()
-		return ('%s%s-%s-%s%s-%s%s-%s%s%s'):format(
-			tohex(random(0, 0xffff), 4),
-			tohex(random(0, 0xffff), 4),
-			tohex(random(0, 0xffff), 4),
-			tohex(bor(band(random(0, 0xff), 0x0F), 0x40), 2), tohex(random(0, 0xff), 2),
-			tohex(bor(band(random(0, 0xff), 0x3F), 0x80), 2), tohex(random(0, 0xff), 2),
-			tohex(random(0, 0xffff), 4),
-			tohex(random(0, 0xffff), 4),
-			tohex(random(0, 0xffff), 4))
-	end
-else
-	function glue.uuid() --from github.com/rxi/lume
-		local fn = function(x)
-			local r = math.random(16) - 1
-			r = (x == 'x') and (r + 1) or (r % 4) + 9
-			return ('0123456789abcdef'):sub(r, r)
-		end
-		return (('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'):gsub('[xy]', fn))
-	end
+function glue.uuid()
+	return ('%08x-%04x-%04x-%04x-%08x%04x'):format(
+		random(0xffffffff), random(0xffff),
+		0x4000 + random(0x0fff), --4xxx
+		0x8000 + random(0x3fff), --10bb-bbbb-bbbb-bbbb
+		random(0xffffffff), random(0xffff))
 end
 
 --varargs --------------------------------------------------------------------
