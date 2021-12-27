@@ -108,8 +108,8 @@ __errors__
 `glue.assert(v [,message [,format_args...]]) -> v`                 assert with error message formatting
 `glue.protect(func) -> protected_func`                             wrap an error-raising function
 `glue.pcall(f, ...) -> true, ... | false, traceback`               pcall with traceback
-`glue.fpcall(f, ...) -> result | nil, traceback`                   coding with finally and except
-`glue.fcall(f, ...) -> result`
+`glue.fpcall(f, ...) -> result | nil, traceback`                   coding with finally and except (protected)
+`glue.fcall(f, ...) -> result`                                     coding with finally and except
 __modules__
 `glue.module([name, ][parent]) -> M`                               create a module
 `glue.autoload(t, submodules) -> M`                                autoload table keys from submodules
@@ -1086,6 +1086,7 @@ local result = glue.fpcall(function(finally, except, ...)
   return final_resource
 end, ...)
 ```
+> __NOTE__: Lua 5.2 and LuaJIT only.
 
 ------------------------------------------------------------------------------
 
