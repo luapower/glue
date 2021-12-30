@@ -1556,18 +1556,25 @@ function glue.dynarray_loader(dynarr)
 end
 
 --load up a dynarray with repeated reads given a `read(self, buf, sz, expires)` method.
-function glue.readall(read, self, expires)
+function glue.readall(read, self, ...)
 	local get, put, collect = glue.dynarray_loader()
 	while true do
 		local buf, sz = get(4096)
-		local len, err = read(self, buf, sz, expires)
-		if not len then --short read
-			return nil, err, collect()
-		elseif len == 0 then --eof
-			return collect()
-		else
-			put(len)
-		end
+		local len, err = read(self, buf, sz, ...)
+		if not len then return nil, err, collect() end --short read
+		if len == 0 then return collect() end --eof
+		put(len)
+	end
+end
+
+function glue.buffer_reader(p, n)
+	return function(buf, sz)
+		sz = math.min(n, sz)
+		if sz == 0 then return nil, 'eof' end
+		ffi.copy(buf, p, sz)
+		p = p + sz
+		n = n - sz
+		return sz
 	end
 end
 

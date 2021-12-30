@@ -123,6 +123,8 @@ __allocation__
 `glue.dynarray(ctype[,cap]) -> alloc(minlen|false) -> buf, minlen` auto-growing buffer that preserves data
 `glue.dynarray_pump([dynarray]) -> write(), collect()`             make a buffer with a `write()` API for writing into
 `glue.dynarray_loader([dynarray]) -> get(), put(), collect()`      make a buffer with a `get()/put()` API for writing into
+`glue.readall(read, self, ...) -> buf, len`                        repeat read based on a `read` function
+`glue.buffer_reader(buf, len) -> read`                             make a read function that consumes a buffer
 __ffi__
 `glue.addr(ptr) -> number | string`                                store pointer address in Lua value
 `glue.ptr([ctype, ]number|string) -> ptr`                          convert address to pointer
@@ -1266,6 +1268,19 @@ an internal buffer based on the `len` argument.
 
 Like `glue.buffer()` but preserves data between reallocations, and always
 returns `minlen` instead of capacity.
+
+------------------------------------------------------------------------------
+
+### `glue.readall(read, self, ...) -> buf, len`
+
+Repeat read based on a `read(self, buf, len, ...) -> readlen` function.
+
+------------------------------------------------------------------------------
+
+### `glue.buffer_reader(buf, len) -> read`
+
+Return a `read(buf, len) -> readlen` function that consumes data from the
+supplied buffer.
 
 ------------------------------------------------------------------------------
 
