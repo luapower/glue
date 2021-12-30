@@ -1569,6 +1569,7 @@ end
 
 function glue.buffer_reader(p, n)
 	return function(buf, sz)
+		if not p then return p, n end
 		sz = math.min(n, sz)
 		if sz == 0 then return nil, 'eof' end
 		ffi.copy(buf, p, sz)

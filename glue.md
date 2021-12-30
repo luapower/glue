@@ -1277,10 +1277,12 @@ Repeat read based on a `read(self, buf, len, ...) -> readlen` function.
 
 ------------------------------------------------------------------------------
 
-### `glue.buffer_reader(buf, len) -> read`
+### `glue.buffer_reader(buf,len | nil,err) -> read`
 
 Return a `read(buf, len) -> readlen` function that consumes data from the
-supplied buffer.
+supplied buffer. The supplied `buf,len` can also be `nil,err` in which case
+the `read` function will always return just that. The buffer must be a
+`(u)int8_t` pointer or VLA.
 
 ------------------------------------------------------------------------------
 
