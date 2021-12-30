@@ -1409,28 +1409,18 @@ end
 
 --like glue.buffer() but preserves data on reallocations
 --also returns minlen instead of capacity.
-local have_sbuf, sbuf = pcall(require, 'string.buffer')
 function glue.dynarray(ctype, min_capacity)
 	ctype = ctype or glue.u8a
-	if have_sbuf and ffi.istype(ctype, glue.u8a) then --faster version without copy.
-		--NOTE: this version returns a `T*` not a `T[?]` so don't use ffi.istype() on it.
-		local sbuf = sbuf.new()
-		return function(minlen)
-			local buf, capacity = sbuf:reserve(max(min_capacity or 0, minlen))
-			return buf, minlen
+	local buffer = glue.buffer(ctype)
+	local elem_size = ffi.sizeof(ctype, 1)
+	local buf0, minlen0
+	return function(minlen)
+		local buf, len = buffer(max(min_capacity or 0, minlen))
+		if buf ~= buf0 and buf ~= nil and buf0 ~= nil then
+			ffi.copy(buf, buf0, minlen0 * elem_size)
 		end
-	else
-		local buffer = glue.buffer(ctype)
-		local elem_size = ffi.sizeof(ctype, 1)
-		local buf0, minlen0
-		return function(minlen)
-			local buf, len = buffer(max(min_capacity or 0, minlen))
-			if buf ~= buf0 and buf ~= nil and buf0 ~= nil then
-				ffi.copy(buf, buf0, minlen0 * elem_size)
-			end
-			buf0, minlen0 = buf, minlen
-			return buf, minlen
-		end
+		buf0, minlen0 = buf, minlen
+		return buf, minlen
 	end
 end
 
